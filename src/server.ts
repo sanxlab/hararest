@@ -8,7 +8,7 @@ const server = app.listen(port, () => {
   logger.info(`Server running in ${config.nodeEnv} mode on port ${port}`);
 });
 
-// Handle Unhandled Rejections
+
 process.on('unhandledRejection', (err: Error) => {
   logger.error('UNHANDLED REJECTION! 💥 Shutting down...');
   logger.error(err.name, err.message);
@@ -17,7 +17,7 @@ process.on('unhandledRejection', (err: Error) => {
   });
 });
 
-// Handle Uncaught Exceptions
+
 process.on('uncaughtException', (err: Error) => {
   logger.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   logger.error(err.name, err.message);

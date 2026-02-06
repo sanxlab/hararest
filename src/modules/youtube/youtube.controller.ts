@@ -38,7 +38,7 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
       if (err) {
         next(new AppError('Error downloading file', 500));
       }
-      // Cleanup file after download
+      
       fs.unlink(filePath, () => {});
     });
   } catch (error) {

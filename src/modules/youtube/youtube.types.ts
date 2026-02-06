@@ -45,5 +45,5 @@ export interface VideoInfo {
   comments: number;
   uploaded: string;
   channel: ChannelInfo;
-  videos: string[]; // List of available qualities e.g. ["720p", "1080p"]
+  videos: string[]; 
 }

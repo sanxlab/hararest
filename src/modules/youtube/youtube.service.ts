@@ -19,7 +19,7 @@ export class YoutubeService {
         this.cookiePath = config.youtube.cookiePath;
         this.tmpDir = config.youtube.tmpDir;
 
-        // Ensure tmp dir exists
+        
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
         }
@@ -29,7 +29,7 @@ export class YoutubeService {
         const cmd = `${this.binPath} --cookies ${this.cookiePath} -j "${url}"`;
 
         try {
-            const { stdout } = await execPromise(cmd, { maxBuffer: 1024 * 1024 * 10 }); // Increase buffer for large JSON
+            const { stdout } = await execPromise(cmd, { maxBuffer: 1024 * 1024 * 10 }); 
             const rawInfo: YtDlpJSON = JSON.parse(stdout);
 
             const qualityMap = new Set<string>();
