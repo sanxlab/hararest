@@ -1,0 +1,9 @@
+*.log
+*.txt
+.env
+package-lock.json
+node_modules
+bin
+dist
+logs
+tmp
