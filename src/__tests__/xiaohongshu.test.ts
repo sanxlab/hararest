@@ -20,24 +20,26 @@ describe('Xiaohongshu Module', () => {
             const mockState = {
                 noteData: {
                     data: {
-                        noteId: 'test_id',
-                        time: 12345678,
-                        type: 'video',
-                        title: 'Test Title',
-                        desc: 'Test Desc',
-                        user: { userId: 'u1', nickName: 'User', avatar: 'a.jpg' },
-                        tagList: [],
-                        interactInfo: { likedCount: '10', collectedCount: '5', shareCount: '2', niceCount: '1' },
-                        commentData: { commentCount: 3 },
-                        imageList: [{ url: 'v.jpg', width: 100, height: 100, fileId: 'v1' }],
-                        cover: { fileId: 'c1', url: 'cover.jpg' },
-                        video: {
-                            media: {
-                                stream: {
-                                    h264: [{ width: 720, height: 1280, videoBitrate: 1000, duration: 10, size: 5000, masterUrl: 'video.mp4' }]
+                        noteData: {
+                            noteId: 'test_id',
+                            time: 12345678,
+                            type: 'video',
+                            title: 'Test Title',
+                            desc: 'Test Desc',
+                            user: { userId: 'u1', nickName: 'User', avatar: 'a.jpg' },
+                            tagList: [],
+                            interactInfo: { likedCount: '10', collectedCount: '5', shareCount: '2', niceCount: '1' },
+                            imageList: [{ url: 'v.jpg', width: 100, height: 100, fileId: 'v1' }],
+                            cover: { fileId: 'c1', url: 'cover.jpg' },
+                            video: {
+                                media: {
+                                    stream: {
+                                        h264: [{ width: 720, height: 1280, videoBitrate: 1000, duration: 10, size: 5000, masterUrl: 'video.mp4' }]
+                                    }
                                 }
                             }
-                        }
+                        },
+                        commentData: { commentCount: 3 }
                     }
                 }
             };
