@@ -6,7 +6,20 @@ export class BratService {
         try {
             const page = await browser.newPage();
             await page.goto('https://www.bratgenerator.com/');
-            await page.click('#toggleButtonWhite');
+            await page.waitForSelector('#toggleButtonBlue');
+            await page.evaluate(() => {
+                document.querySelector("#onetrust-consent-sdk")?.remove();
+                document.querySelector("div[style$=\"99999;\"]")?.remove();
+            });
+            await page.evaluate(() => {
+                // @ts-ignore
+                setupTheme('blue');
+            });
+            await new Promise(r => setTimeout(r, 1000));
+            await page.evaluate(() => {
+                // @ts-ignore
+                setupTheme('white');
+            });
             await page.evaluate('textInput.value = "";');
             await page.type('#textInput', text);
 
