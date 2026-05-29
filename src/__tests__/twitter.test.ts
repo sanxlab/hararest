@@ -23,32 +23,36 @@ describe('Twitter Module', () => {
         it('should return media links for valid X URL', async () => {
             cloudscraper.get.mockResolvedValueOnce(`
                 <html>
+                    <script>
+                        var k_url_search = 'https://savetwitter.net/api/ajaxSearch';
+                        var k_lang = 'en';
+                    </script>
                     <body>
-                        <input name="csrfmiddlewaretoken" value="csrf-token" />
-                        <input name="gql" value="gql-token" />
+                        <input name="cf-turnstile-response" value="turnstile-token" />
                     </body>
                 </html>
             `);
 
-            cloudscraper.post.mockResolvedValueOnce(`
-                <html>
-                    <body>
-                        <a class="tw-btn" href="https://cdn.example/video-720.mp4" data-filename="720p: mp4">
-                            Download 720p
-                        </a>
-                    </body>
-                </html>
-            `);
+            cloudscraper.post.mockResolvedValueOnce(JSON.stringify({
+                status: 'ok',
+                data: `
+                    <div>
+                        <a href="https://video.twimg.com/ext_tw_video/123.mp4">Download MP4 (720p)</a>
+                    </div>
+                `
+            }));
 
             const response = await supertest(app).get('/api/twitter/download?url=https://x.com/user/status/123');
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe('success');
             expect(response.body.data.input_url).toBe('https://x.com/user/status/123');
+            expect(response.body.data.search_url).toBe('https://savetwitter.net/api/ajaxSearch');
             expect(response.body.data.media_links[0]).toEqual({
-                label: 'Download 720p',
+                label: 'Download MP4 (720p)',
                 quality: '720p',
-                url: 'https://cdn.example/video-720.mp4'
+                media_type: 'video',
+                url: 'https://video.twimg.com/ext_tw_video/123.mp4'
             });
         });
 

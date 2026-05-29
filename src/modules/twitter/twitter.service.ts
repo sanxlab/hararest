@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
-import { TwitterDownloadResult, TwitterMediaLink } from './twitter.types';
+import { TwitterDownloadResult, TwitterMediaLink, TwitterMediaType } from './twitter.types';
 
 interface CloudscraperRequestOptions {
     uri: string;
@@ -16,11 +16,17 @@ interface CloudscraperClient {
     post: (options: CloudscraperRequestOptions) => Promise<unknown>;
 }
 
+interface SaveTwitterResponse {
+    status?: string;
+    data?: unknown;
+    msg?: unknown;
+}
+
 const cloudscraper = require('cloudscraper') as CloudscraperClient;
 
-const BASE_URL = 'https://twittervideodownloader.com';
-const LANDING_URL = `${BASE_URL}/en/`;
-const DOWNLOAD_URL = `${BASE_URL}/download`;
+const BASE_URL = 'https://savetwitter.net';
+const LANDING_URL = `${BASE_URL}/en4`;
+const DEFAULT_SEARCH_URL = `${BASE_URL}/api/ajaxSearch`;
 
 const DEFAULT_HEADERS = {
     'User-Agent':
@@ -29,6 +35,20 @@ const DEFAULT_HEADERS = {
 };
 
 export class TwitterService {
+    private extractVar(htmlText: string, name: string, defaultValue: string): string {
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`${escaped}\\s*=\\s*['"]([^'"]+)['"]`);
+        const match = htmlText.match(regex);
+        return match ? match[1] : defaultValue;
+    }
+
+    private parsePageConfig(htmlText: string): { searchUrl: string; lang: string } {
+        return {
+            searchUrl: this.extractVar(htmlText, 'k_url_search', DEFAULT_SEARCH_URL),
+            lang: this.extractVar(htmlText, 'k_lang', 'en')
+        };
+    }
+
     private normalizeTweetUrl(rawUrl: string): string {
         const value = rawUrl.trim();
         if (!value) {
@@ -58,14 +78,16 @@ export class TwitterService {
         }
     }
 
-    private parseHiddenInputs(htmlText: string): { csrfToken: string; gqlToken: string } {
-        const $ = cheerio.load(htmlText);
-        const csrfToken = ($('input[name="csrfmiddlewaretoken"]').attr('value') || '').trim();
-        const gqlToken = ($('input[name="gql"]').attr('value') || '').trim();
-        return { csrfToken, gqlToken };
+    private stripTags(text: string): string {
+        const $ = cheerio.load(`<div>${text || ''}</div>`);
+        return $('div').text().replace(/\s+/g, ' ').trim();
     }
 
-    private extractErrors(htmlText: string): string[] {
+    private extractErrors(htmlText: string, responseMessage: string): string[] {
+        if (responseMessage) {
+            return [this.stripTags(responseMessage)];
+        }
+
         const $ = cheerio.load(htmlText);
         const messages: string[] = [];
 
@@ -82,16 +104,46 @@ export class TwitterService {
     private extractMediaLinks(htmlText: string): TwitterMediaLink[] {
         const $ = cheerio.load(htmlText);
         const mediaLinks: TwitterMediaLink[] = [];
+        const seenUrls = new Set<string>();
 
-        $('a.tw-btn[href]').each((_, element) => {
-            const href = ($(element).attr('href') || '').trim();
+        $('a[href]').each((_, element) => {
+            const href = ($(element).attr('href') || '').trim().replace(/&amp;/g, '&');
             if (!href.startsWith('http')) {
                 return;
             }
 
+            const label = $(element).text().replace(/\s+/g, ' ').trim();
+            const title = ($(element).attr('title') || '').trim();
+            const fingerprint = `${label} ${title} ${href}`.toLowerCase();
+
+            const looksLikeDownloadText = /(download|mp4|mp3|gif|photo|image)/i.test(label)
+                || /(download|mp4|mp3|gif|photo|image)/i.test(title);
+            const looksLikeMediaUrl =
+                /dl\.snapcdn\.app\/get\?token=|video\.twimg\.com|pbs\.twimg\.com|\.mp4(\?|$)|\.mp3(\?|$)|\.(jpg|jpeg|png|webp)(\?|$)/i.test(
+                    href
+                );
+
+            if (!(looksLikeDownloadText || looksLikeMediaUrl)) {
+                return;
+            }
+
+            if (seenUrls.has(href)) {
+                return;
+            }
+            seenUrls.add(href);
+
+            let mediaType: TwitterMediaType = 'video';
+            if (/mp3|audio/.test(fingerprint)) {
+                mediaType = 'audio';
+            } else if (/photo|image|jpg|jpeg|png|webp/.test(fingerprint)) {
+                mediaType = 'image';
+            }
+
+            const qualityMatch = label.match(/\(([^)]+)\)/);
             mediaLinks.push({
-                label: $(element).text().replace(/\s+/g, ' ').trim(),
-                quality: (($(element).attr('data-filename') || '').replace(': mp4', '') || '').trim(),
+                label,
+                quality: qualityMatch ? qualityMatch[1].trim() : '',
+                media_type: mediaType,
                 url: href
             });
         });
@@ -99,7 +151,7 @@ export class TwitterService {
         return mediaLinks;
     }
 
-    private toHTML(payload: unknown): string {
+    private toText(payload: unknown): string {
         if (typeof payload === 'string') {
             return payload;
         }
@@ -127,15 +179,13 @@ export class TwitterService {
                 timeout: 30000
             });
 
-            const landingHtml = this.toHTML(landingResponse);
-            const { csrfToken, gqlToken } = this.parseHiddenInputs(landingHtml);
-
-            if (!csrfToken || !gqlToken) {
-                throw new AppError('Failed to read required form tokens from landing page.', 500);
-            }
+            const landingHtml = this.toText(landingResponse);
+            const pageConfig = this.parsePageConfig(landingHtml);
+            const $ = cheerio.load(landingHtml);
+            const cftoken = ($('input[name="cf-turnstile-response"]').attr('value') || '').trim();
 
             const resultResponse = await cloudscraper.post({
-                uri: DOWNLOAD_URL,
+                uri: pageConfig.searchUrl,
                 headers: {
                     ...DEFAULT_HEADERS,
                     Origin: BASE_URL,
@@ -143,22 +193,36 @@ export class TwitterService {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 form: {
-                    csrfmiddlewaretoken: csrfToken,
-                    tweet: tweetUrl,
-                    gql: gqlToken
+                    q: tweetUrl,
+                    lang: pageConfig.lang,
+                    cftoken
                 },
                 jar,
                 timeout: 45000
             });
 
-            const resultHtml = this.toHTML(resultResponse);
-            if (resultHtml.toLowerCase().includes('just a moment')) {
+            const resultBody = this.toText(resultResponse);
+            if (resultBody.toLowerCase().includes('just a moment')) {
                 throw new AppError('Blocked by Cloudflare challenge while scraping.', 503);
             }
 
+            let data: SaveTwitterResponse;
+            try {
+                data = JSON.parse(resultBody) as SaveTwitterResponse;
+            } catch {
+                throw new AppError('SaveTwitter response is not valid JSON.', 500);
+            }
+
+            if (data.status !== 'ok') {
+                throw new AppError(`Unexpected status: ${data.status || 'unknown'}`, 500);
+            }
+
+            const resultHtml = typeof data.data === 'string' ? data.data : '';
+            const responseMessage = typeof data.msg === 'string' ? data.msg : '';
             const mediaLinks = this.extractMediaLinks(resultHtml);
+
             if (mediaLinks.length === 0) {
-                const errors = this.extractErrors(resultHtml);
+                const errors = this.extractErrors(resultHtml, responseMessage);
                 if (errors.length > 0) {
                     throw new AppError(errors.join(' | '), 404);
                 }
@@ -169,7 +233,7 @@ export class TwitterService {
             return {
                 status: 'ok',
                 input_url: tweetUrl,
-                downloader_url: DOWNLOAD_URL,
+                search_url: pageConfig.searchUrl,
                 media_links: mediaLinks
             };
         } catch (error) {
