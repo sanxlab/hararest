@@ -1,10 +1,21 @@
+jest.mock('node-fetch');
+jest.mock('child_process', () => {
+    const actual = jest.requireActual('child_process');
+    return {
+        ...actual,
+        execFile: jest.fn()
+    };
+});
+
 import supertest from 'supertest';
 import app from '../app';
 import fetch from 'node-fetch';
+import { execFile } from 'child_process';
 
-// Mock node-fetch
-jest.mock('node-fetch');
 const mockedFetch = fetch as unknown as jest.Mock;
+const mockedExecFile = execFile as unknown as jest.Mock;
+
+type ExecFileCallback = (error: NodeJS.ErrnoException | null, stdout: string, stderr: string) => void;
 
 describe('Facebook Module', () => {
     beforeEach(() => {
@@ -12,35 +23,46 @@ describe('Facebook Module', () => {
     });
 
     describe('GET /api/facebook', () => {
-        it('should return video info for valid URL', async () => {
-            // 1. Mock HEAD request for size
-            mockedFetch.mockResolvedValueOnce({
-                headers: { get: () => '1024' },
+        it('should return video info from python fallback when primary extractor fails', async () => {
+            mockedFetch.mockRejectedValueOnce(new Error('primary extractor failed'));
+
+            mockedExecFile.mockImplementation((...args: unknown[]) => {
+                const callback = args[args.length - 1];
+                if (typeof callback === 'function') {
+                    (callback as ExecFileCallback)(
+                        null,
+                        JSON.stringify({
+                            status: 'ok',
+                            media_links: [
+                                {
+                                    quality: 'hd',
+                                    label: 'Download HD',
+                                    url: 'https://video.example.com/file.mp4'
+                                }
+                            ]
+                        }),
+                        ''
+                    );
+                }
+
+                return {} as never;
             });
-            // 2. Mock Snapsave POST response (the script)
-            const mockScript = `
-                eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('0 1 = \\'<2 3="4"><5 6="7" 8="9://a.b/c.d" /></2>\\';',14,14,'var|html|div|class|image|img|src|https|www|example|com|image|jpg'.split('|'),0,{}))
-            `;
-            // The logic expects this to evaluate to code that sets a variable 'html' or similar
-            // However, the service logic is complex:
-            // 1. eval(script.replace("eval", "")) -> returns unpacked code
-            // 2. beautify -> extracts line 2
-            // 3. eval(line 3) -> gives HTML
 
-            // To simplify testing without replicating the exact packer logic which is brittle to mock correctly in a short string:
-            // We can mock the service behaviour if we extracted it, but here we are testing integration.
-            // Let's rely on the service handling the mock response.
-            // If the service logic is robust, it needs a real-ish packed string.
+            mockedFetch.mockResolvedValueOnce({
+                headers: { get: () => '1024' }
+            });
 
-            // To avoid complex packing simulation, let's look at the failure paths or try to mock the internal logic if possible.
-            // Since we can't easily generate valid packed JS that passes the exact implementation steps without a packer lib, 
-            // We might just verify the controller handles errors or simpler paths.
+            const response = await supertest(app).get('/api/facebook?url=https://facebook.com/watch?v=123');
 
-            // Actually, let's mock a success case by adjusting the mock implementation of the Service?
-            // No, we should test the route.
-
-            // Use a simplified flow?
-            // If we can't easily mock the response for the logic, we might need to mock the service prototype.
+            expect(response.status).toBe(200);
+            expect(response.body.status).toBe('success');
+            expect(response.body.data.thumbnail).toBe('');
+            expect(response.body.data.videos[0]).toEqual({
+                quality: 'hd',
+                url: 'https://video.example.com/file.mp4',
+                size: 1024,
+                fSize: '1.0 KB'
+            });
         });
 
         it('should return 400 if url is missing', async () => {

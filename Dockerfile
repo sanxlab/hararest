@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     chromium \
     && rm -rf /var/lib/apt/lists/*
 
-# Python env for Instagram SnapInsta fallback
+# Python env for Instagram/Facebook fallback scrapers
 RUN python3 -m venv /opt/instagram-fallback && \
     /opt/instagram-fallback/bin/pip install --no-cache-dir cloudscraper==1.2.71
 
@@ -40,6 +40,7 @@ ENV NODE_ENV=production
 ENV YTDLP_PATH=/usr/local/bin/yt-dlp
 ENV PYTHON_BIN=/opt/instagram-fallback/bin/python
 ENV INSTAGRAM_FALLBACK_PYTHON_SCRIPT=/app/src/modules/instagram/snapinsta_scraper.py
+ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
 # Default port, can be overridden
 ENV PORT=1337 
 
