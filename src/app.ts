@@ -18,6 +18,7 @@ import facebookRouter from './modules/facebook/facebook.route';
 import instagramRouter from './modules/instagram/instagram.route';
 import tiktokRouter from './modules/tiktok/tiktok.route';
 import xiaohongshuRouter from './modules/xiaohongshu/xiaohongshu.route';
+import twitterRouter from './modules/twitter/twitter.route';
 
 
 app.use('/health', healthRouter);
@@ -27,6 +28,7 @@ app.use('/api/facebook', facebookRouter);
 app.use('/api/instagram', instagramRouter);
 app.use('/api/tiktok', tiktokRouter);
 app.use('/api/xiaohongshu', xiaohongshuRouter);
+app.use('/api/twitter', twitterRouter);
 
 app.get('/', (req, res) => {
   res.send(new Date().toISOString());
