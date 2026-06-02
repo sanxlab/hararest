@@ -1,6 +1,6 @@
 FROM node:22-bookworm
 
-# Install system dependencies
+# Install system dependencies, including Chromium for puppeteer-core.
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     curl \
@@ -20,6 +20,7 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV CHROME_PATH=/usr/bin/chromium
 
 WORKDIR /app
 
@@ -41,8 +42,12 @@ ENV YTDLP_PATH=/usr/local/bin/yt-dlp
 ENV PYTHON_BIN=/opt/instagram-fallback/bin/python
 ENV INSTAGRAM_FALLBACK_PYTHON_SCRIPT=/app/src/modules/instagram/snapinsta_scraper.py
 ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
+ENV INSTAGRAM_COOKIE_FILE=/app/cookies/www.instagram.com_cookies.txt
 # Default port, can be overridden
 ENV PORT=1337 
+
+# Mount Instagram cookies here at runtime instead of baking them into the image.
+VOLUME ["/app/cookies"]
 
 # Expose the port
 EXPOSE 1337

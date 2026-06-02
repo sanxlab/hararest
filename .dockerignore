@@ -6,3 +6,6 @@ logs
 .env
 bin
 *.log
+www.instagram.com_cookies*.txt
+cookies
+cookies.txt
