@@ -18,6 +18,11 @@ RUN python3 -m venv /opt/instagram-fallback && \
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp
 
+RUN printf '%s\n' \
+    '--js-runtimes node' \
+    '--remote-components ejs:github' \
+    > /etc/yt-dlp.conf
+
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV CHROME_PATH=/usr/bin/chromium
@@ -43,6 +48,7 @@ ENV PYTHON_BIN=/opt/instagram-fallback/bin/python
 ENV INSTAGRAM_FALLBACK_PYTHON_SCRIPT=/app/src/modules/instagram/snapinsta_scraper.py
 ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
 ENV INSTAGRAM_COOKIE_FILE=/app/cookies/www.instagram.com_cookies.txt
+ENV YTDLP_COOKIES_PATH=/app/cookies/yt-dlp_cookies.txt
 # Default port, can be overridden
 ENV PORT=1337 
 
