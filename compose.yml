@@ -1,0 +1,24 @@
+services:
+  hararest:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - '${TAILSCALE_IP}:8080:1337'
+    volumes:
+      - ./cookies:/app/cookies
+    depends_on:
+      - bgutil-provider
+    networks:
+      - hararest-network
+
+  bgutil-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:latest
+    init: true
+    networks:
+      - hararest-network
+
+networks:
+  hararest-network:
+    driver: bridge

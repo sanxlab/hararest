@@ -26,13 +26,13 @@ export const getInfoHandler = async (req: Request, res: Response, next: NextFunc
 
 export const downloadVideoHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { url, quality } = req.query;
+    const { url } = req.query;
 
     if (!url || typeof url !== 'string') {
       return next(new AppError('URL is required', 400));
     }
 
-    const filePath = await youtubeService.downloadVideo(url, (quality as string) || '480p');
+    const filePath = await youtubeService.downloadVideo(url);
 
     res.download(filePath, (err) => {
       if (err) {

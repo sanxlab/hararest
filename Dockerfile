@@ -14,13 +14,18 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m venv /opt/instagram-fallback && \
     /opt/instagram-fallback/bin/pip install --no-cache-dir cloudscraper==1.2.71
 
-# Install yt-dlp
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
-    chmod a+rx /usr/local/bin/yt-dlp
+# Install yt-dlp together with the BgUtils PO Token provider plugin. Keeping both
+# in the same virtual environment lets yt-dlp discover the plugin at runtime.
+RUN python3 -m venv /opt/yt-dlp && \
+    /opt/yt-dlp/bin/pip install --no-cache-dir --upgrade \
+        'yt-dlp>=2025.05.22' \
+        bgutil-ytdlp-pot-provider && \
+    ln -s /opt/yt-dlp/bin/yt-dlp /usr/local/bin/yt-dlp
 
 RUN printf '%s\n' \
     '--js-runtimes node' \
     '--remote-components ejs:github' \
+    '--extractor-args youtubepot-bgutilhttp:base_url=http://bgutil-provider:4416' \
     > /etc/yt-dlp.conf
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true

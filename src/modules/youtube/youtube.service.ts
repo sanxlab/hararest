@@ -1,35 +1,96 @@
-import { exec } from 'child_process';
-import util from 'util';
+import { execFile } from 'child_process';
 import fs from 'fs';
 import { config } from '../../config/default';
 import { AppError } from '../../utils/AppError';
 import { VideoInfo, YtDlpJSON } from './youtube.types';
 import logger from '../../utils/logger';
 
-const execPromise = util.promisify(exec);
+interface YtDlpResult {
+    stdout: string;
+    stderr: string;
+}
+
+interface YtDlpCommandError extends Error {
+    stdout?: string;
+    stderr?: string;
+}
+
+const VIDEO_FORMAT = '18/b[height<=360]/bv*[height<=360]+ba/b';
+const MAX_BUFFER = 1024 * 1024 * 10;
 
 export class YoutubeService {
     private binPath: string;
     private cookiePath: string;
     private tmpDir: string;
-    private extractorArgs = 'youtube:player-client=default,mweb';
 
     constructor() {
         this.binPath = config.youtube.binPath;
         this.cookiePath = config.youtube.cookiePath;
         this.tmpDir = config.youtube.tmpDir;
 
-        
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
         }
     }
 
-    async getInfo(url: string): Promise<VideoInfo> {
-        const cmd = `${this.binPath} --cookies ${this.cookiePath} -j "${url}"`;
+    private hasCookieFile(): boolean {
+        try {
+            const cookieFile = fs.statSync(this.cookiePath);
+            return cookieFile.isFile() && cookieFile.size > 0;
+        } catch {
+            return false;
+        }
+    }
+
+    private executeYtDlp(args: string[], useCookie: boolean): Promise<YtDlpResult> {
+        const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...args] : args;
+
+        return new Promise((resolve, reject) => {
+            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER }, (error, stdout, stderr) => {
+                if (error) {
+                    const commandError = error as YtDlpCommandError;
+                    commandError.stdout = stdout;
+                    commandError.stderr = stderr;
+                    reject(commandError);
+                    return;
+                }
+
+                resolve({ stdout, stderr });
+            });
+        });
+    }
+
+    private isHttp403(error: unknown): boolean {
+        if (!(error instanceof Error)) {
+            return false;
+        }
+
+        const commandError = error as YtDlpCommandError;
+        const output = [commandError.message, commandError.stdout, commandError.stderr]
+            .filter((value): value is string => typeof value === 'string')
+            .join('\n');
+
+        return /\b403\b/.test(output);
+    }
+
+    private async runYtDlp(args: string[]): Promise<YtDlpResult> {
+        const useCookie = this.hasCookieFile();
 
         try {
-            const { stdout } = await execPromise(cmd, { maxBuffer: 1024 * 1024 * 10 }); 
+            return await this.executeYtDlp(args, useCookie);
+        } catch (error) {
+            if (!useCookie || !this.isHttp403(error)) {
+                throw error;
+            }
+
+            logger.warn('yt-dlp returned HTTP 403 with cookies; retrying once without cookies.');
+            return this.executeYtDlp(args, false);
+        }
+    }
+
+    async getInfo(url: string): Promise<VideoInfo> {
+        try {
+            const { stdout } = await this.runYtDlp(['-j', url]);
             const rawInfo: YtDlpJSON = JSON.parse(stdout);
 
             const qualityMap = new Set<string>();
@@ -75,17 +136,20 @@ export class YoutubeService {
         }
     }
 
-    async downloadVideo(url: string, quality: string = '480p'): Promise<string> {
-        const heightVal = quality.replace('p', '');
+    async downloadVideo(url: string): Promise<string> {
         const ts = Date.now();
-
-        const formatSelector = `bv[height=${heightVal}]+ba/b[height=${heightVal}]/b`;
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
 
-        const cmd = `${this.binPath} --cookies ${this.cookiePath} -f "${formatSelector}" -o "${outputTemplate}" --merge-output-format mp4 "${url}"`;
-
         try {
-            const { stdout } = await execPromise(cmd);
+            const { stdout } = await this.runYtDlp([
+                '-f',
+                VIDEO_FORMAT,
+                '-o',
+                outputTemplate,
+                '--merge-output-format',
+                'mp4',
+                url,
+            ]);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp4`;
 
@@ -111,10 +175,17 @@ export class YoutubeService {
 
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
 
-        const cmd = `${this.binPath} --cookies ${this.cookiePath} -f "bestaudio/best" -o "${outputTemplate}" --extract-audio --audio-format mp3 "${url}"`;
-
         try {
-            const { stdout } = await execPromise(cmd);
+            const { stdout } = await this.runYtDlp([
+                '-f',
+                'bestaudio/best',
+                '-o',
+                outputTemplate,
+                '--extract-audio',
+                '--audio-format',
+                'mp3',
+                url,
+            ]);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp3`;
 
