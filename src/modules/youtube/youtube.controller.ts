@@ -1,9 +1,35 @@
 import { NextFunction, Request, Response } from 'express';
 import { YoutubeService } from './youtube.service';
 import { AppError } from '../../utils/AppError';
+import logger from '../../utils/logger';
 import fs from 'fs';
 
 const youtubeService = new YoutubeService();
+
+const cleanupFile = (filePath: string) => {
+  fs.unlink(filePath, (err) => {
+    if (err && err.code !== 'ENOENT') {
+      logger.warn('Failed to clean up downloaded file', { filePath, error: err.message });
+    }
+  });
+};
+
+const handleDownloadError = (err: Error, filePath: string, res: Response, next: NextFunction) => {
+  logger.error('Error sending downloaded file', {
+    filePath,
+    headersSent: res.headersSent,
+    error: err.message,
+    stack: err.stack,
+  });
+
+  cleanupFile(filePath);
+
+  if (res.headersSent) {
+    return;
+  }
+
+  next(new AppError('Error downloading file', 500));
+};
 
 export const getInfoHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -36,10 +62,11 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
 
     res.download(filePath, (err) => {
       if (err) {
-        next(new AppError('Error downloading file', 500));
+        handleDownloadError(err, filePath, res, next);
+        return;
       }
-      
-      fs.unlink(filePath, () => {});
+
+      cleanupFile(filePath);
     });
   } catch (error) {
     next(error);
@@ -58,10 +85,11 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
 
     res.download(filePath, (err) => {
       if (err) {
-        next(new AppError('Error downloading file', 500));
+        handleDownloadError(err, filePath, res, next);
+        return;
       }
 
-      fs.unlink(filePath, () => {});
+      cleanupFile(filePath);
     });
   } catch (error) {
     next(error);
