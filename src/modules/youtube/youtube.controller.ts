@@ -5,6 +5,12 @@ import logger from '../../utils/logger';
 import fs from 'fs';
 
 const youtubeService = new YoutubeService();
+const DOWNLOAD_TIMEOUT_MS = 10 * 60 * 1000;
+
+const extendDownloadTimeout = (req: Request, res: Response) => {
+  req.setTimeout(DOWNLOAD_TIMEOUT_MS);
+  res.setTimeout(DOWNLOAD_TIMEOUT_MS);
+};
 
 const cleanupFile = (filePath: string) => {
   fs.unlink(filePath, (err) => {
@@ -78,6 +84,8 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
       return next(new AppError('URL is required', 400));
     }
 
+    extendDownloadTimeout(req, res);
+
     const filePath = await youtubeService.downloadVideo(url);
 
     res.download(filePath, (err) => {
@@ -100,6 +108,8 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
     if (!url || typeof url !== 'string') {
       return next(new AppError('URL is required', 400));
     }
+
+    extendDownloadTimeout(req, res);
 
     const filePath = await youtubeService.downloadAudio(url);
 
