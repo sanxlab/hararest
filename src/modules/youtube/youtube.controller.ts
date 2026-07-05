@@ -14,15 +14,35 @@ const cleanupFile = (filePath: string) => {
   });
 };
 
-const handleDownloadError = (err: Error, filePath: string, res: Response, next: NextFunction) => {
+const isRequestAbortedError = (err: Error, req: Request, res: Response) =>
+  err.message === 'Request aborted' || req.aborted || res.destroyed;
+
+const handleDownloadError = (
+  err: Error,
+  filePath: string,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  cleanupFile(filePath);
+
+  if (isRequestAbortedError(err, req, res)) {
+    logger.warn('Download request aborted before the file was fully sent', {
+      filePath,
+      headersSent: res.headersSent,
+      requestAborted: req.aborted,
+      responseDestroyed: res.destroyed,
+      error: err.message,
+    });
+    return;
+  }
+
   logger.error('Error sending downloaded file', {
     filePath,
     headersSent: res.headersSent,
     error: err.message,
     stack: err.stack,
   });
-
-  cleanupFile(filePath);
 
   if (res.headersSent) {
     return;
@@ -62,7 +82,7 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
 
     res.download(filePath, (err) => {
       if (err) {
-        handleDownloadError(err, filePath, res, next);
+        handleDownloadError(err, filePath, req, res, next);
         return;
       }
 
@@ -85,7 +105,7 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
 
     res.download(filePath, (err) => {
       if (err) {
-        handleDownloadError(err, filePath, res, next);
+        handleDownloadError(err, filePath, req, res, next);
         return;
       }
 
