@@ -1,11 +1,73 @@
-
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
-import { XiaohongshuResult, XiaohongshuImage, XiaohongshuVideo } from './xiaohongshu.types';
+import { XiaohongshuResult, XiaohongshuImage } from './xiaohongshu.types';
+
+interface XiaohongshuTagState {
+    id?: string;
+    name?: string;
+}
+
+interface XiaohongshuUserState {
+    userId?: string;
+    nickName?: string;
+    avatar?: string;
+}
+
+interface XiaohongshuImageState {
+    fileId?: string;
+    url?: string;
+    width?: number;
+    height?: number;
+    livePhoto?: boolean;
+}
+
+interface XiaohongshuVideoStream {
+    width?: number;
+    height?: number;
+    videoBitrate?: number;
+    duration?: number;
+    size?: number;
+    masterUrl?: string;
+}
+
+interface XiaohongshuNoteState {
+    noteId?: string;
+    time?: number;
+    type?: string;
+    title?: string;
+    desc?: string;
+    user?: XiaohongshuUserState;
+    tagList?: XiaohongshuTagState[];
+    interactInfo?: {
+        likedCount?: string | number;
+        collectedCount?: string | number;
+        shareCount?: string | number;
+        niceCount?: string | number;
+    };
+    cover?: XiaohongshuImageState;
+    imageList?: XiaohongshuImageState[];
+    video?: {
+        media?: {
+            stream?: Record<string, XiaohongshuVideoStream[]>;
+        };
+    };
+}
+
+interface XiaohongshuStateRoot {
+    noteData?: {
+        data?: {
+            noteData?: XiaohongshuNoteState;
+            commentData?: {
+                commentCount?: number;
+            };
+        };
+    };
+}
 
 export class XiaohongshuService {
-    private readonly userAgent = 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36';
+    private readonly userAgent =
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36';
 
     public async download(url: string): Promise<XiaohongshuResult> {
         if (!url) {
@@ -17,15 +79,15 @@ export class XiaohongshuService {
             const stateJSON = this.extractInitialState(html);
             const sanitizedJSON = this.sanitizeJSObjectToJSON(stateJSON);
 
-            let root: any;
+            let root: XiaohongshuStateRoot;
             try {
-                root = JSON.parse(sanitizedJSON);
-            } catch (error) {
+                root = JSON.parse(sanitizedJSON) as XiaohongshuStateRoot;
+            } catch {
                 throw new AppError('Failed to parse initial state JSON', 500);
             }
 
-            const noteData = root?.noteData?.data?.noteData;
-            const commentCount = root?.noteData?.data?.commentData?.commentCount || 0;
+            const noteData = root.noteData?.data?.noteData;
+            const commentCount = root.noteData?.data?.commentData?.commentCount || 0;
 
             if (!noteData) {
                 throw new AppError('Unexpected state: noteData not found', 500);
@@ -42,7 +104,7 @@ export class XiaohongshuService {
                     name: String(noteData.user?.nickName || ''),
                     avatar: String(noteData.user?.avatar || '')
                 },
-                tags: (noteData.tagList || []).map((tag: any) => ({
+                tags: (noteData.tagList || []).map((tag) => ({
                     id: String(tag.id || ''),
                     name: String(tag.name || '')
                 })),
@@ -62,24 +124,22 @@ export class XiaohongshuService {
                 const images: XiaohongshuImage[] = [];
                 let coverUrl: string | null = null;
 
-                if (Array.isArray(noteData.imageList)) {
-                    for (const item of noteData.imageList) {
-                        const fileId = String(item.fileId || '');
-                        const img: XiaohongshuImage = {
-                            url: String(item.url || ''),
-                            width: Number(item.width || 0),
-                            height: Number(item.height || 0),
-                            livePhoto: Boolean(item.livePhoto)
-                        };
+                for (const item of noteData.imageList || []) {
+                    const fileId = String(item.fileId || '');
+                    const img: XiaohongshuImage = {
+                        url: String(item.url || ''),
+                        width: Number(item.width || 0),
+                        height: Number(item.height || 0),
+                        livePhoto: Boolean(item.livePhoto)
+                    };
 
-                        if (fileId && fileId === coverFileId && !coverUrl) {
-                            coverUrl = img.url;
-                            continue;
-                        }
+                    if (fileId && fileId === coverFileId && !coverUrl) {
+                        coverUrl = img.url;
+                        continue;
+                    }
 
-                        if (fileId && fileId !== coverFileId) {
-                            images.push(img);
-                        }
+                    if (fileId && fileId !== coverFileId) {
+                        images.push(img);
                     }
                 }
 
@@ -87,23 +147,23 @@ export class XiaohongshuService {
                 result.images = images;
             } else {
                 const mediaStream = noteData.video?.media?.stream;
-                if (mediaStream) {
-                    const chosenStream = this.firstStream(mediaStream, ['h265', 'h266', 'h264', 'av1']);
-                    if (chosenStream) {
-                        result.video = {
-                            width: Number(chosenStream.width || 0),
-                            height: Number(chosenStream.height || 0),
-                            bitrate: Number(chosenStream.videoBitrate || 0),
-                            duration: Number(chosenStream.duration || 0),
-                            size: Number(chosenStream.size || 0),
-                            url: String(chosenStream.masterUrl || '')
-                        };
-                    }
+                const chosenStream = mediaStream
+                    ? this.firstStream(mediaStream, ['h265', 'h266', 'h264', 'av1'])
+                    : null;
+
+                if (chosenStream) {
+                    result.video = {
+                        width: Number(chosenStream.width || 0),
+                        height: Number(chosenStream.height || 0),
+                        bitrate: Number(chosenStream.videoBitrate || 0),
+                        duration: Number(chosenStream.duration || 0),
+                        size: Number(chosenStream.size || 0),
+                        url: String(chosenStream.masterUrl || '')
+                    };
                 }
             }
 
             return result;
-
         } catch (error) {
             if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
@@ -112,10 +172,10 @@ export class XiaohongshuService {
     }
 
     private async fetchHTML(url: string): Promise<string> {
-        const { data } = await axios.get(url, {
+        const { data } = await axios.get<string>(url, {
             headers: {
                 'User-Agent': this.userAgent,
-                'Accept': 'text/html,application/xhtml+xml'
+                Accept: 'text/html,application/xhtml+xml'
             }
         });
         return data;
@@ -129,7 +189,7 @@ export class XiaohongshuService {
             const text = $(el).text();
             if (text.includes('window.__INITIAL_STATE__')) {
                 scriptContent = text;
-                return false; // break loop
+                return false;
             }
         });
 
@@ -137,13 +197,11 @@ export class XiaohongshuService {
             throw new AppError('Initial state script not found', 500);
         }
 
-        // Regex to extract JSON object from window.__INITIAL_STATE__ = { ... }
         const match = scriptContent.match(/window\.__INITIAL_STATE__\s*=\s*(\{.*\})\s*;?/);
         if (match && match[1]) {
             return match[1];
         }
 
-        // Fallback: manual parsing
         const idx = scriptContent.indexOf('window.__INITIAL_STATE__');
         if (idx === -1) throw new AppError('Initial state not found in script', 500);
 
@@ -164,27 +222,26 @@ export class XiaohongshuService {
     }
 
     private sanitizeJSObjectToJSON(str: string): string {
-        // Remove BOM and whitespace
         let s = str.trim();
 
-        // Retrieve undefined to null
         s = s.replace(/:\s*undefined\b/g, ':null');
         s = s.replace(/=\s*undefined\b/g, '=null');
         s = s.replace(/\bundefined\b/g, 'null');
 
-        // Retrieve NaN and Infinity to null
         s = s.replace(/\bNaN\b/g, 'null');
         s = s.replace(/\b(Infinity|-Infinity)\b/g, 'null');
 
         return s;
     }
 
-    // Helper to pick the first available stream based on priority keys
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private firstStream(streamMap: any, keys: string[]): any | null {
+    private firstStream(
+        streamMap: Record<string, XiaohongshuVideoStream[]>,
+        keys: string[]
+    ): XiaohongshuVideoStream | null {
         for (const key of keys) {
-            if (Array.isArray(streamMap[key]) && streamMap[key].length > 0) {
-                return streamMap[key][0];
+            const streams = streamMap[key];
+            if (Array.isArray(streams) && streams.length > 0) {
+                return streams[0];
             }
         }
         return null;

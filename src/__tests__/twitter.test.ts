@@ -6,8 +6,9 @@ jest.mock('cloudscraper', () => ({
 
 import supertest from 'supertest';
 import app from '../app';
+import cloudscraper from 'cloudscraper';
 
-const cloudscraper = require('cloudscraper') as {
+const mockedCloudscraper = cloudscraper as unknown as {
     jar: jest.Mock;
     get: jest.Mock;
     post: jest.Mock;
@@ -16,12 +17,12 @@ const cloudscraper = require('cloudscraper') as {
 describe('Twitter Module', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        cloudscraper.jar.mockReturnValue({});
+        mockedCloudscraper.jar.mockReturnValue({});
     });
 
     describe('GET /api/twitter/download', () => {
         it('should return media links for valid X URL', async () => {
-            cloudscraper.get.mockResolvedValueOnce(`
+            mockedCloudscraper.get.mockResolvedValueOnce(`
                 <html>
                     <script>
                         var k_url_search = 'https://savetwitter.net/api/ajaxSearch';
@@ -33,7 +34,7 @@ describe('Twitter Module', () => {
                 </html>
             `);
 
-            cloudscraper.post.mockResolvedValueOnce(JSON.stringify({
+            mockedCloudscraper.post.mockResolvedValueOnce(JSON.stringify({
                 status: 'ok',
                 data: `
                     <div>

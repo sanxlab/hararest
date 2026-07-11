@@ -184,20 +184,17 @@ export class InstagramService {
                     location: new URL('https://dev.snapsave.app')
                 };
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const evalResult = (0, eval)(script.replace('eval', ''));
                 js = beautify(evalResult).split('\n')[2];
-            } catch (error) {
+            } catch {
                 throw new AppError('Failed to decode response from Snapsave', 500);
             }
 
             let html: string;
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const innerCode = js.slice(js.indexOf('<') - 1, -1);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 html = (0, eval)(innerCode);
-            } catch (err) {
+            } catch {
                 throw new AppError('Failed to execute decoded script', 500);
             }
 

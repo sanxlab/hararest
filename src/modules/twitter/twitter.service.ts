@@ -1,28 +1,13 @@
+import cloudscraper from 'cloudscraper';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
 import { TwitterDownloadResult, TwitterMediaLink, TwitterMediaType } from './twitter.types';
-
-interface CloudscraperRequestOptions {
-    uri: string;
-    headers: Record<string, string>;
-    jar?: unknown;
-    timeout?: number;
-    form?: Record<string, string>;
-}
-
-interface CloudscraperClient {
-    jar: () => unknown;
-    get: (options: CloudscraperRequestOptions) => Promise<unknown>;
-    post: (options: CloudscraperRequestOptions) => Promise<unknown>;
-}
 
 interface SaveTwitterResponse {
     status?: string;
     data?: unknown;
     msg?: unknown;
 }
-
-const cloudscraper = require('cloudscraper') as CloudscraperClient;
 
 const BASE_URL = 'https://savetwitter.net';
 const LANDING_URL = `${BASE_URL}/en4`;

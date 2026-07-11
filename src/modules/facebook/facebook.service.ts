@@ -150,7 +150,6 @@ export class FacebookService {
                 location: new URL('https://dev.snapsave.app')
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const evalResult = (0, eval)(script.replace('eval', ''));
             js = beautify(evalResult).split('\n')[2];
         } catch {
@@ -160,7 +159,6 @@ export class FacebookService {
         let html: string;
         try {
             const innerCode = js.slice(js.indexOf('<') - 1, -1);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             html = (0, eval)(innerCode);
         } catch {
             throw new AppError('Failed to execute decoded script', 500);

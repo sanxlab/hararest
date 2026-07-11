@@ -1,10 +1,5 @@
 import supertest from 'supertest';
 import app from '../app';
-import fetch from 'node-fetch';
-
-// Mock node-fetch
-jest.mock('node-fetch');
-const mockedFetch = fetch as unknown as jest.Mock;
 
 describe('Instagram Module', () => {
     beforeEach(() => {
