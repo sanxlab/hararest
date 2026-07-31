@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     python3 \
     python3-venv \
+    tesseract-ocr \
+    tesseract-ocr-ind \
+    tesseract-ocr-eng \
     && rm -rf /var/lib/apt/lists/*
 
 # Python env for Instagram/Facebook fallback scrapers.
