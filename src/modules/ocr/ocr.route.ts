@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { extractText } from './ocr.controller';
+import { extractTextHandler } from './ocr.controller';
 
 const router = Router();
 
-router.post('/', extractText);
+router.post('/', extractTextHandler);
 
 export default router;
