@@ -58,6 +58,12 @@ ENV PORT=1337
 # Mount cookies here at runtime instead of baking them into the image.
 VOLUME ["/app/cookies"]
 
+# Create logs directory for winston-daily-rotate-file
+RUN mkdir -p /app/logs && chown -R node:node /app
+
+# Run as non-root user for security (node user is built-in to the node image)
+USER node
+
 EXPOSE 1337
 
 CMD ["node", "dist/server.js"]
