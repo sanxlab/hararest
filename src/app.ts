@@ -25,6 +25,8 @@ import xiaohongshuRouter from './modules/xiaohongshu/xiaohongshu.route';
 import twitterRouter from './modules/twitter/twitter.route';
 import threadsRouter from './modules/threads/threads.route';
 import ocrRouter from './modules/ocr/ocr.route';
+import pinterestRouter from './modules/pinterest/pinterest.route';
+import pixivRouter from './modules/pixiv/pixiv.route';
 
 
 app.use('/health', healthRouter);
@@ -35,6 +37,8 @@ app.use('/api/tiktok', downloadLimiter, ssrfProtect(['tiktok.com', 'www.tiktok.c
 app.use('/api/xiaohongshu', downloadLimiter, ssrfProtect(['xiaohongshu.com', 'www.xiaohongshu.com', 'xhslink.com']), xiaohongshuRouter);
 app.use('/api/twitter', downloadLimiter, ssrfProtect(['twitter.com', 'www.twitter.com', 'x.com', 'www.x.com']), twitterRouter);
 app.use('/api/threads', downloadLimiter, ssrfProtect(['threads.net', 'www.threads.net']), threadsRouter);
+app.use('/api/pinterest', downloadLimiter, ssrfProtect(['pinterest.com', 'www.pinterest.com', 'id.pinterest.com', 'pin.it']), pinterestRouter);
+app.use('/api/pixiv', downloadLimiter, ssrfProtect(['pixiv.net', 'www.pixiv.net']), pixivRouter);
 
 // Use raw body parser for OCR so it accepts binary image data
 app.use('/api/ocr', express.raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '15mb' }), ocrRouter);
