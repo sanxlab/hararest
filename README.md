@@ -71,3 +71,7 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 - `npm test` : Menjalankan semua *unit testing* dan integrasi menggunakan Jest.
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
+
+## Brave Search
+
+- `GET /api/brave/search?q=kata+kunci&num=5` memakai Brave Search API. Isi `BRAVE_SEARCH_API_KEY` pada `.env`; parameter `num` menerima 1–20 hasil.

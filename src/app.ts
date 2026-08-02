@@ -27,6 +27,7 @@ import threadsRouter from './modules/threads/threads.route';
 import ocrRouter from './modules/ocr/ocr.route';
 import pinterestRouter from './modules/pinterest/pinterest.route';
 import pixivRouter from './modules/pixiv/pixiv.route';
+import braveRouter from './modules/brave/brave.route';
 
 
 app.use('/health', healthRouter);
@@ -42,6 +43,9 @@ app.use('/api/pixiv', downloadLimiter, ssrfProtect(['pixiv.net', 'www.pixiv.net'
 
 // Use raw body parser for OCR so it accepts binary image data
 app.use('/api/ocr', express.raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '15mb' }), ocrRouter);
+
+// Brave Search (query-based, no SSRF protection needed)
+app.use('/api/brave', braveRouter);
 
 app.get('/', (req, res) => {
   res.send(new Date().toISOString());
