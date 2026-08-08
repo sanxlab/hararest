@@ -2,7 +2,7 @@ import { execFile } from 'child_process';
 import fs from 'fs';
 import { config } from '../../config/default';
 import { AppError } from '../../utils/AppError';
-import { VideoInfo, YtDlpJSON } from './youtube.types';
+import { VideoInfo, YtDlpJSON, SearchResult } from './youtube.types';
 import logger from '../../utils/logger';
 
 interface YtDlpResult {
@@ -203,6 +203,43 @@ export class YoutubeService {
             logger.error('YTDL Download Error:', error);
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw new AppError(`Failed to download video: ${message}`, 500);
+        }
+    }
+
+    async search(query: string, limit: number = 5): Promise<SearchResult[]> {
+        try {
+            const { stdout } = await this.runYtDlp([
+                `ytsearch${limit}:${query}`,
+                '--flat-playlist',
+                '-j',
+                '--no-warnings',
+            ]);
+
+            const results: SearchResult[] = stdout
+                .trim()
+                .split('\n')
+                .filter((line) => line.trim())
+                .map((line) => {
+                    const raw = JSON.parse(line);
+                    return {
+                        id: raw.id,
+                        title: raw.title,
+                        thumbnail: raw.thumbnails?.[raw.thumbnails.length - 1]?.url || `https://i.ytimg.com/vi/${raw.id}/hqdefault.jpg`,
+                        duration: raw.duration || 0,
+                        views: raw.view_count || 0,
+                        channel: {
+                            name: raw.channel || raw.uploader || '',
+                            id: raw.channel_id || '',
+                        },
+                        url: raw.url || `https://www.youtube.com/watch?v=${raw.id}`,
+                    };
+                });
+
+            return results;
+        } catch (error) {
+            logger.error('YTDL Search Error:', error);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            throw new AppError(`Failed to search YouTube: ${message}`, 500);
         }
     }
 }

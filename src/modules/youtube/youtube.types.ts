@@ -47,3 +47,16 @@ export interface VideoInfo {
   channel: ChannelInfo;
   videos: string[]; 
 }
+
+export interface SearchResult {
+  id: string;
+  title: string;
+  thumbnail: string;
+  duration: number;
+  views: number;
+  channel: {
+    name: string;
+    id: string;
+  };
+  url: string;
+}

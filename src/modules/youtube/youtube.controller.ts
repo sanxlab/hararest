@@ -125,3 +125,24 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
     next(error);
   }
 };
+
+export const searchHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { q, limit } = req.query;
+
+    if (!q || typeof q !== 'string') {
+      return next(new AppError('Search query (q) is required', 400));
+    }
+
+    const maxResults = limit ? Math.min(Math.max(1, Number(limit)), 10) : 5;
+
+    const results = await youtubeService.search(q, maxResults);
+
+    res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
