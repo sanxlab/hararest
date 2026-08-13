@@ -17,10 +17,21 @@ export class NsfwService {
           "Accept": "application/json"
         }
       });
+      
+      if (typeof response.body === "string") {
+        if (response.body.includes("<html") || response.body.includes("Just a moment")) {
+          throw new AppError(`${source} diblokir oleh Cloudflare. (Proxy gagal membypass)`, 502);
+        }
+        if (response.body.includes("Use new API")) {
+          throw new AppError(`${source} API telah usang atau berubah.`, 502);
+        }
+      }
+      
       return response.body;
     } catch (error: any) {
+      if (error instanceof AppError) throw error;
       logger.error(`${source} request failed`, { error: error.message });
-      throw new AppError(`Failed to fetch from ${source}`, 502);
+      throw new AppError(`Gagal mengambil data dari ${source}: ${error.message}`, 502);
     }
   }
 
@@ -40,14 +51,12 @@ export class NsfwService {
   }
 
   public async getNhentaiGallery(id: string): Promise<any> {
-    // Using v2 API
-    const url = `https://nhentai.net/api/v2/g/${encodeURIComponent(id)}`;
+    const url = `https://nhentai.net/api/gallery/${encodeURIComponent(id)}`;
     return this.fetchJson(url, "NHentai Gallery");
   }
 
   public async searchNhentai(query: string): Promise<any> {
-    // Using v2 API
-    const url = `https://nhentai.net/api/v2/search?query=${encodeURIComponent(query)}`;
+    const url = `https://nhentai.net/api/galleries/search?query=${encodeURIComponent(query)}`;
     return this.fetchJson(url, "NHentai Search");
   }
 
