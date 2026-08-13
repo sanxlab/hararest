@@ -23,17 +23,23 @@ export class NsfwService {
       
       const content = await page.evaluate(() => document.body.innerText);
       
+      let parsed;
       try {
-        return JSON.parse(content);
+        parsed = JSON.parse(content);
       } catch (err) {
-        if (content.includes("Just a moment") || content.includes("Cloudflare")) {
-          throw new AppError(`${source} masih diblokir oleh Cloudflare meskipun menggunakan Puppeteer.`, 502);
-        }
-        if (content.includes("Missing authentication")) {
-           throw new AppError(`${source} API menolak akses (Missing authentication).`, 502);
+        if (!content || content.includes("Just a moment") || content.includes("Cloudflare") || content.includes("Enable JavaScript")) {
+          throw new AppError(`${source} masih diblokir oleh Cloudflare (Akses Datacenter ditolak).`, 502);
         }
         throw new AppError(`Gagal mem-parsing response Puppeteer dari ${source}`, 502);
       }
+      
+      if (typeof parsed === 'string') {
+        if (parsed.includes("Missing authentication") || parsed.includes("Cloudflare")) {
+           throw new AppError(`${source} API menolak akses (Missing authentication / diblokir).`, 502);
+        }
+      }
+      
+      return parsed;
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       logger.error(`${source} puppeteer failed`, { error: error.message });
