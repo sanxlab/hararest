@@ -90,8 +90,8 @@ export class NsfwService {
     return this.fetchJson(url, "Danbooru");
   }
 
-  public async getWaifuIm(tag: string, nsfw: boolean): Promise<any> {
-    const url = `https://api.waifu.im/search?included_tags=${encodeURIComponent(tag)}&is_nsfw=${nsfw}`;
+  public async getWaifuIm(tag: string, isNsfw: boolean = true): Promise<any> {
+    const url = `https://api.waifu.im/images?included_tags=${encodeURIComponent(tag)}&is_nsfw=${isNsfw}`;
     return this.fetchJson(url, "WaifuIm");
   }
 
