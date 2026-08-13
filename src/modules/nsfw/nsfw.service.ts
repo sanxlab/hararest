@@ -91,7 +91,7 @@ export class NsfwService {
   }
 
   public async getWaifuIm(tag: string, isNsfw: boolean = true): Promise<any> {
-    const url = `https://api.waifu.im/images?included_tags=${encodeURIComponent(tag)}&is_nsfw=${isNsfw}`;
+    const url = `https://api.waifu.im/images?IncludedTags=${encodeURIComponent(tag)}&isNsfw=${isNsfw}`;
     return this.fetchJson(url, "WaifuIm");
   }
 
