@@ -15,7 +15,14 @@ interface YtDlpCommandError extends Error {
     stderr?: string;
 }
 
-const VIDEO_FORMAT = '18/b[height<=360]/bv*[height<=360]+ba/b';
+const DEFAULT_VIDEO_FORMAT = '18/b[height<=360]/bv*[height<=360]+ba/b';
+
+function buildVideoFormat(quality?: string): string {
+    if (!quality) return DEFAULT_VIDEO_FORMAT;
+    const h = parseInt(quality.replace('p', ''), 10);
+    if (isNaN(h) || h <= 0) return DEFAULT_VIDEO_FORMAT;
+    return `bv*[height<=${h}][ext=mp4]+ba/b[height<=${h}]/bv*[height<=${h}]+ba/18/${DEFAULT_VIDEO_FORMAT}`;
+}
 const MAX_BUFFER = 1024 * 1024 * 10;
 
 export class YoutubeService {
@@ -136,14 +143,15 @@ export class YoutubeService {
         }
     }
 
-    async downloadVideo(url: string): Promise<string> {
+    async downloadVideo(url: string, quality?: string): Promise<string> {
         const ts = Date.now();
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
+        const videoFormat = buildVideoFormat(quality);
 
         try {
             const { stdout } = await this.runYtDlp([
                 '-f',
-                VIDEO_FORMAT,
+                videoFormat,
                 '-o',
                 outputTemplate,
                 '--merge-output-format',

@@ -78,7 +78,7 @@ export const getInfoHandler = async (req: Request, res: Response, next: NextFunc
 
 export const downloadVideoHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { url } = req.query;
+    const { url, quality } = req.query;
 
     if (!url || typeof url !== 'string') {
       return next(new AppError('URL is required', 400));
@@ -86,7 +86,8 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
 
     extendDownloadTimeout(req, res);
 
-    const filePath = await youtubeService.downloadVideo(url);
+    const qualityStr = typeof quality === 'string' ? quality : undefined;
+    const filePath = await youtubeService.downloadVideo(url, qualityStr);
 
     res.download(filePath, (err) => {
       if (err) {
