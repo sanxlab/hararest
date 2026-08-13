@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-ind \
     tesseract-ocr-eng \
+    chromium \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Python env for Instagram/Facebook fallback scrapers.
@@ -44,6 +46,7 @@ RUN printf '%s\n' \
 WORKDIR /app
 
 COPY package*.json ./
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN npm install --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
@@ -56,6 +59,7 @@ ENV PYTHON_BIN=/opt/media-fallback/bin/python
 ENV INSTAGRAM_FALLBACK_PYTHON_SCRIPT=/app/src/modules/instagram/snapinsta_scraper.py
 ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
 ENV YTDLP_COOKIES_PATH=/app/cookies/yt-dlp_cookies.txt
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PORT=1337
 
 # Mount cookies here at runtime instead of baking them into the image.
