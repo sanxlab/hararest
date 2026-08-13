@@ -23,7 +23,7 @@ function buildVideoFormat(quality?: string): string {
     if (isNaN(h) || h <= 0) return DEFAULT_VIDEO_FORMAT;
     return `bv*[height<=${h}][ext=mp4]+ba/b[height<=${h}]/bv*[height<=${h}]+ba/18/${DEFAULT_VIDEO_FORMAT}`;
 }
-const MAX_BUFFER = 1024 * 1024 * 10;
+const MAX_BUFFER = 1024 * 1024 * 50;
 
 export class YoutubeService {
     private binPath: string;
@@ -156,6 +156,10 @@ export class YoutubeService {
                 outputTemplate,
                 '--merge-output-format',
                 'mp4',
+                '--recode-video',
+                'mp4',
+                '--postprocessor-args',
+                'ffmpeg:-c:v libx264 -profile:v main -level 3.1 -preset veryfast -crf 23 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart',
                 url,
             ]);
 
@@ -165,7 +169,7 @@ export class YoutubeService {
                 return expectedFilename;
             }
 
-            const match = stdout.match(/(?:Merging formats into|Destination: )"?(.*?)"?(\n|$)/);
+            const match = stdout.match(/(?:Merging formats into|Destination: )\"?(.*?)\"?(\n|$)/);
             if (match && match[1]) {
                 return match[1].trim();
             }
