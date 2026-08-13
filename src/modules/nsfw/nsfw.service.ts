@@ -81,7 +81,7 @@ export class NsfwService {
   }
 
   public async getRule34(tags: string, limit: number): Promise<any> {
-    const url = `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=${limit}&tags=${encodeURIComponent(tags)}`;
+    const url = `https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=${limit}&tags=${encodeURIComponent(tags)}`;
     return this.fetchJson(url, "Rule34");
   }
 
