@@ -6,12 +6,12 @@ const nsfwService = new NsfwService();
 
 export const rule34Handler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { tags, limit } = req.query;
+    const { tags, limit, api_key, user_id } = req.query;
     if (!tags || typeof tags !== "string") {
       return next(new AppError("Query parameter \"tags\" is required.", 400));
     }
     const limitNum = limit ? parseInt(limit as string, 10) : 10;
-    const data = await nsfwService.getRule34(tags as string, limitNum);
+    const data = await nsfwService.getRule34(tags as string, limitNum, api_key as string, user_id as string);
     res.status(200).json({ status: "success", data });
   } catch (error) {
     next(error);
