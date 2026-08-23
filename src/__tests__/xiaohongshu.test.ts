@@ -1,8 +1,8 @@
+jest.mock('axios');
+
 import supertest from 'supertest';
 import app from '../app';
 import axios, { AxiosHeaders } from 'axios';
-
-jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('Xiaohongshu Module', () => {
@@ -54,7 +54,7 @@ describe('Xiaohongshu Module', () => {
                 config: { headers: new AxiosHeaders(), url: '' }
             });
 
-            const response = await supertest(app).get('/api/xiaohongshu?url=http://xhs.com/123');
+            const response = await supertest(app).get('/api/xiaohongshu?url=https://xiaohongshu.com/123');
             expect(response.status).toBe(200);
             expect(response.body.data.id).toBe('test_id');
             expect(response.body.data.type).toBe('video');

@@ -12,9 +12,9 @@ describe('Instagram Module', () => {
             expect(response.status).toBe(400);
         });
 
-        it('should return 400 for invalid instagram url', async () => {
+        it('should return 403 for a disallowed instagram url', async () => {
             const response = await supertest(app).get('/api/instagram?url=https://google.com');
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(403);
         });
     });
 });

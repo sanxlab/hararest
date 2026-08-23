@@ -1,41 +1,52 @@
 import { Request, Response, NextFunction } from 'express';
+import * as dns from 'dns/promises';
+import { BlockList, isIP } from 'node:net';
 import { AppError } from '../utils/AppError';
-import dns from 'node:dns/promises';
 
-function isSafeIP(ip: string): boolean {
-  // IPv4 regexes
-  const loopbackIPv4 = /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
-  const linkLocalIPv4 = /^169\.254\.\d{1,3}\.\d{1,3}$/;
-  const private10 = /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
-  const private172 = /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/;
-  const private192 = /^192\.168\.\d{1,3}\.\d{1,3}$/;
-  
-  // IPv6 regexes
-  const loopbackIPv6 = /^::1$/;
-  const uniqueLocalIPv6 = /^f[c-d][0-9a-f]{2}:/i;
-  const linkLocalIPv6 = /^fe80:/i;
-  const mappedLoopback = /^::ffff:127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/i;
-  const mappedLinkLocal = /^::ffff:169\.254\.\d{1,3}\.\d{1,3}$/i;
-  const mappedPrivate10 = /^::ffff:10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/i;
-  const mappedPrivate172 = /^::ffff:172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/i;
-  const mappedPrivate192 = /^::ffff:192\.168\.\d{1,3}\.\d{1,3}$/i;
+const restrictedIPs = new BlockList();
 
-  if (
-    loopbackIPv4.test(ip) || linkLocalIPv4.test(ip) || private10.test(ip) ||
-    private172.test(ip) || private192.test(ip) || loopbackIPv6.test(ip) ||
-    uniqueLocalIPv6.test(ip) || linkLocalIPv6.test(ip) || mappedLoopback.test(ip) ||
-    mappedLinkLocal.test(ip) || mappedPrivate10.test(ip) || mappedPrivate172.test(ip) ||
-    mappedPrivate192.test(ip) || ip === '0.0.0.0' || ip === '::'
-  ) {
-    return false;
-  }
-  return true;
+for (const [network, prefix] of [
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.0.2.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['198.51.100.0', 24],
+  ['203.0.113.0', 24],
+  ['224.0.0.0', 4],
+] as const) {
+  restrictedIPs.addSubnet(network, prefix, 'ipv4');
 }
 
-export const ssrfProtect = (allowedHosts: string[]) => {
+for (const [network, prefix] of [
+  ['::', 128],
+  ['::1', 128],
+  ['fc00::', 7],
+  ['fe80::', 10],
+  ['ff00::', 8],
+  ['2001:db8::', 32],
+] as const) {
+  restrictedIPs.addSubnet(network, prefix, 'ipv6');
+}
+
+function isSafeIP(ip: string): boolean {
+  const family = isIP(ip);
+  if (family === 0) {
+    return false;
+  }
+
+  return !restrictedIPs.check(ip, family === 4 ? 'ipv4' : 'ipv6');
+}
+
+export const ssrfProtect = (allowedHosts: readonly string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const url = req.query.url as string;
+      const url = req.query.url as string | undefined;
       if (!url) {
         return next();
       }
@@ -47,35 +58,28 @@ export const ssrfProtect = (allowedHosts: string[]) => {
         return next(new AppError('Invalid URL format', 400));
       }
 
-      // 1. Validate Protocol
       if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
         return next(new AppError('Invalid URL protocol. Only HTTP and HTTPS are allowed.', 400));
       }
 
-      // 2. Validate Domain Allowlist
       const hostname = parsedUrl.hostname.toLowerCase();
-      if (allowedHosts && allowedHosts.length > 0) {
-        const isAllowed = allowedHosts.some(host => {
-          return hostname === host || hostname.endsWith(`.${host}`);
-        });
-        if (!isAllowed) {
-          return next(new AppError(`Domain ${hostname} is not allowed.`, 403));
-        }
+      const isAllowed = allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
+      if (!isAllowed) {
+        return next(new AppError(`Domain ${hostname} is not allowed.`, 403));
       }
 
-      // 3. DNS Lookup & IP Validation (Basic SSRF prevention)
       try {
-        const lookupResult = await dns.lookup(hostname);
-        if (!isSafeIP(lookupResult.address)) {
+        const addresses = await dns.lookup(hostname, { all: true, verbatim: true });
+        if (addresses.length === 0 || addresses.some(({ address }) => !isSafeIP(address))) {
           return next(new AppError('Target URL resolves to a private or restricted IP address.', 403));
         }
       } catch {
         return next(new AppError(`DNS resolution failed for domain: ${hostname}`, 400));
       }
 
-      next();
+      return next();
     } catch (error) {
-      next(error);
+      return next(error);
     }
   };
 };

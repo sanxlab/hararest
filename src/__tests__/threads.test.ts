@@ -74,9 +74,9 @@ describe('Threads Module', () => {
             expect(response.status).toBe(400);
         });
 
-        it('should return 400 for non-Threads URL', async () => {
+        it('should return 403 for a disallowed Threads URL', async () => {
             const response = await supertest(app).get('/api/threads/download?url=https://google.com/test');
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(403);
         });
     });
 });

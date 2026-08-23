@@ -62,9 +62,9 @@ describe('Twitter Module', () => {
             expect(response.status).toBe(400);
         });
 
-        it('should return 400 for non-twitter URL', async () => {
+        it('should return 403 for a disallowed Twitter URL', async () => {
             const response = await supertest(app).get('/api/twitter/download?url=https://google.com/test');
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(403);
         });
     });
 });

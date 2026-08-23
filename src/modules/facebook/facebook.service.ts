@@ -2,16 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import util from 'util';
-import FormData from 'form-data';
-import beautify from 'js-beautify';
-import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
-import similarity from 'similarity';
 import { AppError } from '../../utils/AppError';
-import logger from '../../utils/logger';
 import { FacebookVideoInfo, FacebookVideo } from './facebook.types';
 
 const execFilePromise = util.promisify(execFile);
+const allowedFacebookHosts = ['facebook.com', 'fb.watch', 'fb.gg'] as const;
 
 interface FDownMediaLink {
     quality?: string;
@@ -30,7 +26,8 @@ export class FacebookService {
 
     private async getSize(url: string): Promise<number> {
         try {
-            const res = await fetch(url, { method: 'HEAD' });
+            const res = await fetch(url, { method: 'HEAD', redirect: 'error', timeout: 10000 });
+            if (!res.ok) return 0;
             return parseInt(res.headers.get('content-length') || '0', 10);
         } catch {
             return 0;
@@ -128,122 +125,24 @@ export class FacebookService {
         };
     }
 
-    private async getVideoInfoFromSnapsave(url: string): Promise<FacebookVideoInfo> {
-        const form = new FormData();
-        form.append('url', url);
-
-        const res = await fetch('https://snapsave.app/action.php', {
-            headers: {
-                'User-Agent': 'WhatsApp/2.24.6.21',
-                'Referer': 'https://snapsave.app/'
-            },
-            body: form,
-            method: 'POST'
-        });
-
-        const script = await res.text();
-
-        let js: string;
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const window = {
-                location: new URL('https://dev.snapsave.app')
-            };
-
-            const evalResult = (0, eval)(script.replace('eval', ''));
-            js = beautify(evalResult).split('\n')[2];
-        } catch {
-            throw new AppError('Failed to decode response from Snapsave', 500);
-        }
-
-        let html: string;
-        try {
-            const innerCode = js.slice(js.indexOf('<') - 1, -1);
-            html = (0, eval)(innerCode);
-        } catch {
-            throw new AppError('Failed to execute decoded script', 500);
-        }
-
-        const $ = cheerio.load(html);
-        const thumbnail = $('.image > img').attr('src');
-
-        if (!thumbnail) {
-            const errorMsg = $('div.alert-danger').text() || 'Video not found or private';
-            throw new AppError(errorMsg.trim(), 404);
-        }
-
-        const videos: FacebookVideo[] = [];
-        const rows = $('table > tbody > tr').toArray();
-
-        for (const row of rows) {
-            const quality = $(row).find('.video-quality').text().trim();
-            const videoUrlString = $(row).find('a').attr('href');
-            if (!videoUrlString) continue;
-
-            const videoUrl = new URL(videoUrlString);
-            videoUrl.searchParams.delete('dl');
-
-            const finalUrl = videoUrl.toString();
-            const size = await this.getSize(finalUrl);
-            const fSize = this.bytesToSize(size);
-
-            videos.push({
-                quality,
-                url: finalUrl,
-                size,
-                fSize
-            });
-        }
-
-        return {
-            thumbnail,
-            videos
-        };
-    }
-
     public async getVideoInfo(url: string): Promise<FacebookVideoInfo> {
         if (!url) {
             throw new AppError('URL Required', 400);
         }
 
         try {
-            const { hostname } = new URL(url);
-            const sim = similarity('facebook.com', hostname);
-            if (!(sim >= 0.65 || hostname.includes('facebook.com'))) {
+            const { hostname, protocol } = new URL(url);
+            const normalizedHost = hostname.toLowerCase();
+            const isAllowed = allowedFacebookHosts.some(
+                (host) => normalizedHost === host || normalizedHost.endsWith(`.${host}`)
+            );
+            if ((protocol !== 'http:' && protocol !== 'https:') || !isAllowed) {
                 throw new AppError('Invalid URL', 400);
             }
         } catch {
             throw new AppError('Invalid URL', 400);
         }
 
-        try {
-            return await this.getVideoInfoFromSnapsave(url);
-        } catch (error) {
-            if (error instanceof AppError && error.statusCode === 400) {
-                throw error;
-            }
-
-            const primaryError = error instanceof AppError
-                ? error.message
-                : error instanceof Error
-                    ? error.message
-                    : 'Unknown error';
-
-            logger.warn('Facebook primary extractor failed, using FDown fallback', {
-                url,
-                primaryError
-            });
-
-            try {
-                return await this.getVideoInfoFromFDown(url);
-            } catch (fallbackError) {
-                if (fallbackError instanceof AppError) {
-                    throw fallbackError;
-                }
-
-                const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : 'Unknown error';
-                throw new AppError(`Failed to fetch Facebook video. Fallback error: ${fallbackMessage}`, 500);
-            }
-        }
+        return this.getVideoInfoFromFDown(url);
     }
 }

@@ -2,16 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import util from 'util';
-import FormData from 'form-data';
-import beautify from 'js-beautify';
-import * as cheerio from 'cheerio';
 import fetch from 'node-fetch';
-import similarity from 'similarity';
 import { AppError } from '../../utils/AppError';
 import { InstagramMediaInfo, InstagramMedia } from './instagram.types';
-import logger from '../../utils/logger';
 
 const execFilePromise = util.promisify(execFile);
+const allowedInstagramHosts = ['instagram.com', 'instagr.am'] as const;
 
 interface SnapInstaMediaLink {
     url: string;
@@ -30,7 +26,8 @@ export class InstagramService {
 
     private async getSize(url: string): Promise<number> {
         try {
-            const res = await fetch(url, { method: 'HEAD' });
+            const res = await fetch(url, { method: 'HEAD', redirect: 'error', timeout: 10000 });
+            if (!res.ok) return 0;
             return parseInt(res.headers.get('content-length') || '0', 10);
         } catch {
             return 0;
@@ -48,6 +45,7 @@ export class InstagramService {
         const envScriptPath = process.env.INSTAGRAM_FALLBACK_PYTHON_SCRIPT;
         const candidates = [
             envScriptPath,
+            path.resolve(process.cwd(), 'src/modules/instagram/snapinsta_scraper.py'),
             path.resolve(process.cwd(), 'snapinsta_scraper.py'),
         ].filter((x): x is string => !!x);
 
@@ -153,123 +151,18 @@ export class InstagramService {
         }
 
         try {
-            const { hostname } = new URL(url);
-            const sim = similarity('instagram.com', hostname);
-            if (!(sim >= 0.65 || hostname.includes('instagram.com'))) {
+            const { hostname, protocol } = new URL(url);
+            const normalizedHost = hostname.toLowerCase();
+            const isAllowed = allowedInstagramHosts.some(
+                (host) => normalizedHost === host || normalizedHost.endsWith(`.${host}`)
+            );
+            if ((protocol !== 'http:' && protocol !== 'https:') || !isAllowed) {
                 throw new AppError('Invalid URL', 400);
             }
         } catch {
             throw new AppError('Invalid URL', 400);
         }
 
-        const form = new FormData();
-        form.append('url', url);
-
-        try {
-            const res = await fetch('https://snapsave.app/action.php', {
-                headers: {
-                    'User-Agent': 'WhatsApp/2.24.6.21',
-                    'Referer': 'https://snapsave.app/'
-                },
-                body: form,
-                method: 'POST'
-            });
-
-            const script = await res.text();
-
-            let js: string;
-            try {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const window = {
-                    location: new URL('https://dev.snapsave.app')
-                };
-
-                const evalResult = (0, eval)(script.replace('eval', ''));
-                js = beautify(evalResult).split('\n')[2];
-            } catch {
-                throw new AppError('Failed to decode response from Snapsave', 500);
-            }
-
-            let html: string;
-            try {
-                const innerCode = js.slice(js.indexOf('<') - 1, -1);
-                html = (0, eval)(innerCode);
-            } catch {
-                throw new AppError('Failed to execute decoded script', 500);
-            }
-
-            const $ = cheerio.load(html);
-
-            const thumbnail = $('img').attr('src');
-            if (!thumbnail) {
-                const errorMsg = $('div.alert-danger').text() || 'Media not found or private';
-                throw new AppError(errorMsg.trim(), 404);
-            }
-
-            const photos: InstagramMedia[] = [];
-            const videos: InstagramMedia[] = [];
-
-            const links = $('a').toArray();
-
-            for (const link of links) {
-                const text = $(link).text().toLowerCase();
-                const href = $(link).attr('href');
-
-                if (!href) continue;
-
-                let targetArray: InstagramMedia[] | undefined;
-
-                if (text.includes('download photo')) {
-                    targetArray = photos;
-                } else if (text.includes('download video')) {
-                    targetArray = videos;
-                }
-
-                if (!targetArray) continue;
-
-
-                const size = await this.getSize(href);
-                const fSize = this.bytesToSize(size);
-
-                targetArray.push({
-                    url: href,
-                    size,
-                    fSize
-                });
-            }
-
-            return {
-                thumbnail,
-                photos,
-                videos
-            };
-
-        } catch (error) {
-            if (error instanceof AppError && error.statusCode === 400) {
-                throw error;
-            }
-
-            const primaryError = error instanceof AppError
-                ? error.message
-                : error instanceof Error
-                    ? error.message
-                    : 'Unknown error';
-
-            logger.warn('Instagram primary extractor failed, using SnapInsta fallback', {
-                url,
-                primaryError
-            });
-
-            try {
-                return await this.getMediaInfoFromSnapInsta(url);
-            } catch (fallbackError) {
-                if (fallbackError instanceof AppError) {
-                    throw fallbackError;
-                }
-
-                const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : 'Unknown error';
-                throw new AppError(`Failed to fetch Instagram media. Fallback error: ${fallbackMessage}`, 500);
-            }
-        }
+        return this.getMediaInfoFromSnapInsta(url);
     }
 }

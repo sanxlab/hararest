@@ -23,9 +23,7 @@ describe('Facebook Module', () => {
     });
 
     describe('GET /api/facebook', () => {
-        it('should return video info from python fallback when primary extractor fails', async () => {
-            mockedFetch.mockRejectedValueOnce(new Error('primary extractor failed'));
-
+        it('should return video info from FDown extractor', async () => {
             mockedExecFile.mockImplementation((...args: unknown[]) => {
                 const callback = args[args.length - 1];
                 if (typeof callback === 'function') {
@@ -49,6 +47,7 @@ describe('Facebook Module', () => {
             });
 
             mockedFetch.mockResolvedValueOnce({
+                ok: true,
                 headers: { get: () => '1024' }
             });
 
@@ -70,9 +69,9 @@ describe('Facebook Module', () => {
             expect(response.status).toBe(400);
         });
 
-        it('should return 400 for invalid facebook url', async () => {
+        it('should return 403 for a disallowed facebook url', async () => {
             const response = await supertest(app).get('/api/facebook?url=https://google.com');
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(403);
         });
     });
 });

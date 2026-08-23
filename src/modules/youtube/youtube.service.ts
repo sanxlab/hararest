@@ -169,7 +169,7 @@ export class YoutubeService {
                 return expectedFilename;
             }
 
-            const match = stdout.match(/(?:Merging formats into|Destination: )\"?(.*?)\"?(\n|$)/);
+            const match = stdout.match(/(?:Merging formats into|Destination: )"?(.*?)"?(\n|$)/);
             if (match && match[1]) {
                 return match[1].trim();
             }

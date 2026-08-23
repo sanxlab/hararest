@@ -3,6 +3,39 @@ import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
 import { PinterestDownload, PinterestSearchResponse, PinterestSearchItem } from './pinterest.types';
 
+type JsonObject = Record<string, unknown>;
+
+const pinterestClient = axios.create({
+    timeout: 15000,
+    maxRedirects: 0,
+    maxContentLength: 5 * 1024 * 1024,
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+});
+
+function asObject(value: unknown): JsonObject | null {
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
+        ? value as JsonObject
+        : null;
+}
+
+function stringValue(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+}
+
+function extractPinterestRelay(script: string): JsonObject {
+    const match = script.match(/window\.__PWS_RELAY_REGISTER_COMPLETED_REQUEST\((\{[\s\S]*\})\);?\s*$/);
+    if (!match) {
+        throw new Error('Could not find Pinterest pin data');
+    }
+
+    const payload: unknown = JSON.parse(match[1]);
+    const json = asObject(payload);
+    if (!json) {
+        throw new Error('Pinterest pin data is invalid');
+    }
+    return json;
+}
+
 export class PinterestService {
     public async download(url: string): Promise<PinterestDownload> {
         try {
@@ -13,64 +46,39 @@ export class PinterestService {
                 targetUrl = `https://www.pinterest.com/pin/${url}`;
             }
 
-            const res = await axios.get(targetUrl);
-            const html = res.data;
-            const $ = cheerio.load(html);
-
-            const script = $('script:contains("v3GetPinQuery"):last()')
-                .text()
-                .replace("window.__PWS_RELAY_REGISTER_COMPLETED_REQUEST__", "json = ");
-            
-            let json: any = {};
-            eval(script);
-
-            const v3Query = json.data?.v3GetPinQuery || json.data?.v3GetPinQueryv2;
-            if (!v3Query || !v3Query.data) {
-                throw new Error("Could not find Pinterest pin data");
-            }
-            
-            const data = v3Query.data;
-            
-            const description = (
-                data.closeupDescription ||
-                data.closeupUnifiedDescription ||
-                data.gridDescription ||
-                data.description || ""
-            );
-
-            let videoUrl: string | null = null;
-            if (data.videos?.videoUrls) {
-                const urls = Object.values(data.videos.videoUrls).map((v: any) => v.url);
-                videoUrl = urls.find((u: string) => u.endsWith(".mp4")) || null;
-            } else if (data.storyPinData?.pages?.[0]?.blocks?.[0]?.videoDataV2) {
-                const blocks = Object.values(data.storyPinData.pages[0].blocks[0].videoDataV2).filter(Boolean);
-                for (const block of blocks) {
-                    const u = (Object.values(block as any)[0] as any)?.url;
-                    if (u && u.endsWith('.mp4')) {
-                        videoUrl = u;
-                        break;
-                    }
-                }
+            const res = await pinterestClient.get<string>(targetUrl);
+            const $ = cheerio.load(res.data);
+            const script = $('script:contains("v3GetPinQuery"):last()').text();
+            const json = extractPinterestRelay(script);
+            const dataRoot = asObject(json.data);
+            const v3Query = asObject(dataRoot?.v3GetPinQuery) || asObject(dataRoot?.v3GetPinQueryv2);
+            const data = asObject(v3Query?.data);
+            if (!data) {
+                throw new Error('Could not find Pinterest pin data');
             }
 
-            const author = data.closeupUnifiedAttribution || data.originPinner || data.pinner || {};
-            const authorName = author.fullName || author.username || '';
+            const description = stringValue(data.closeupDescription) || stringValue(data.closeupUnifiedDescription) || stringValue(data.gridDescription) || stringValue(data.description);
+            const videos = asObject(data.videos);
+            const videoUrls = asObject(videos?.videoUrls);
+            const videoUrl = videoUrls
+                ? Object.values(videoUrls)
+                    .map((value) => stringValue(asObject(value)?.url))
+                    .find((value) => value.endsWith('.mp4')) || null
+                : null;
+            const image = asObject(data.imageSpec_orig) || asObject(data.images_orig) || asObject(data.images_736x) || asObject(data.images_474x) || asObject(data.images_236x);
+            const imageUrl = stringValue(image?.url)
+                .replace(/236x|474x|736x/, 'originals') || null;
 
-            let imageUrl = (data.imageSpec_orig || data.images_orig || data.images_736x || data.images_474x || data.images_236x || {})?.url || null;
-            
-            if (imageUrl) {
-                 imageUrl = imageUrl.replace(/236x/, 'originals').replace(/474x/, 'originals').replace(/736x/, 'originals');
-            }
-            
             if (!videoUrl && !imageUrl) {
-                throw new Error("Could not extract media URL");
+                throw new Error('Could not extract media URL');
             }
 
+            const author = asObject(data.closeupUnifiedAttribution) || asObject(data.originPinner) || asObject(data.pinner);
             return {
-                title: data.title || data.gridTitle || '',
-                description: description,
-                author: authorName,
-                url: videoUrl || imageUrl,
+                title: stringValue(data.title) || stringValue(data.gridTitle),
+                description,
+                author: stringValue(author?.fullName) || stringValue(author?.username),
+                url: videoUrl || imageUrl as string,
                 type: videoUrl ? 'video' : 'image'
             };
         } catch (error) {
@@ -81,68 +89,29 @@ export class PinterestService {
 
     public async search(query: string): Promise<PinterestSearchResponse> {
         try {
-            const p_data = {
-                options: {
-                    applied_unified_filters: null,
-                    appliedProductFilters: "---",
-                    article: null,
-                    auto_correction_disabled: false,
-                    corpus: null,
-                    customized_rerank_type: null,
-                    domains: null,
-                    filters: null,
-                    journey_depth: null,
-                    page_size: 100,
-                    price_max: null,
-                    price_min: null,
-                    query_pin_sigs: null,
-                    query,
-                    redux_normalize_feed: true,
-                    request_params: null,
-                    rs: "direct_navigation",
-                    scope: "pins",
-                    selected_one_bar_modules: null,
-                    seoDrawerEnabled: false,
-                    source_id: null,
-                    source_module_id: null,
-                    source_url: `/search/pins/?q=${encodeURIComponent(query)}`,
-                    top_pin_id: null,
-                    top_pin_ids: null
-                },
-                context: {}
-            };
-            const params = new URLSearchParams({
-                source_url: p_data.options.source_url,
-                data: JSON.stringify(p_data),
-                _: String(Date.now())
-            });
-
-            const res = await axios.get("https://www.pinterest.com/resource/BaseSearchResource/get/?" + params.toString(), {
-                headers: {
-                    "x-pinterest-pws-handler": "www/search/[scope].js"
-                }
-            });
-
-            const data = res.data.resource_response.data.results;
+            const pData = { options: { query, page_size: 100, scope: 'pins', source_url: `/search/pins/?q=${encodeURIComponent(query)}` }, context: {} };
+            const params = new URLSearchParams({ source_url: pData.options.source_url, data: JSON.stringify(pData), _: String(Date.now()) });
+            const res = await pinterestClient.get<JsonObject>(`https://www.pinterest.com/resource/BaseSearchResource/get/?${params}`, { headers: { 'x-pinterest-pws-handler': 'www/search/[scope].js' } });
+            const resourceResponse = asObject(res.data.resource_response);
+            const responseData = asObject(resourceResponse?.data);
+            const pins = Array.isArray(responseData?.results) ? responseData.results : [];
             const results: PinterestSearchItem[] = [];
 
-            for (const pin of data) {
-                const up = pin.native_creator || pin.pinner || {};
-                
-                let imageUrl = '';
-                if (pin.images && pin.images.orig && pin.images.orig.url) {
-                    imageUrl = pin.images.orig.url;
-                }
-
-                if (pin.id && imageUrl) {
-                    results.push({
-                        id: pin.id,
-                        title: pin.description || pin.alt_text || pin.auto_alt_text || '',
-                        images: [imageUrl],
-                        author: up.full_name || up.username || '',
-                        link: `https://pinterest.com/pin/${pin.id}`
-                    });
-                }
+            for (const pinValue of pins) {
+                const pin = asObject(pinValue);
+                const images = asObject(pin?.images);
+                const originalImage = asObject(images?.orig);
+                const id = stringValue(pin?.id);
+                const imageUrl = stringValue(originalImage?.url);
+                if (!id || !imageUrl) continue;
+                const author = asObject(pin?.native_creator) || asObject(pin?.pinner);
+                results.push({
+                    id,
+                    title: stringValue(pin?.description) || stringValue(pin?.alt_text) || stringValue(pin?.auto_alt_text),
+                    images: [imageUrl],
+                    author: stringValue(author?.full_name) || stringValue(author?.username),
+                    link: `https://pinterest.com/pin/${id}`
+                });
             }
 
             return { results: results.slice(0, 10) };

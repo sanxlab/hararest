@@ -38,9 +38,9 @@ app.use("/api/twitter", downloadLimiter, ssrfProtect(["twitter.com", "www.twitte
 app.use("/api/threads", downloadLimiter, ssrfProtect(["threads.net", "www.threads.net"]), threadsRouter);
 app.use("/api/pinterest", downloadLimiter, ssrfProtect(["pinterest.com", "www.pinterest.com", "id.pinterest.com", "pin.it"]), pinterestRouter);
 app.use("/api/pixiv", downloadLimiter, ssrfProtect(["pixiv.net", "www.pixiv.net"]), pixivRouter);
-app.use("/api/ocr", express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);
+app.use("/api/ocr", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);
 app.use("/api/brave", braveRouter);
-app.use("/api/nsfw", nsfwRouter);
+app.use("/api/nsfw", downloadLimiter, nsfwRouter);
 
 app.get("/", (req, res) => {
   res.send(new Date().toISOString());

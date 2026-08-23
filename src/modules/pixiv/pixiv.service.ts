@@ -2,6 +2,9 @@ import axios from 'axios';
 import { AppError } from '../../utils/AppError';
 import { PixivDownload, PixivSearchResponse, PixivSearchItem } from './pixiv.types';
 
+type PixivPageResponse = { data?: { error?: boolean; body?: Array<{ urls?: { original?: string } }> } };
+type PixivSearchData = { id?: string; title?: string; url?: string; userName?: string };
+
 export class PixivService {
     private readonly headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -29,15 +32,15 @@ export class PixivService {
             const body = response.data.body;
             const urls: string[] = [];
             // Always fetch pages to get original URLs because it bypasses NSFW URL nullification
-            let pagesRes: any = null;
+            let pagesRes: PixivPageResponse | null = null;
             try {
                 pagesRes = await axios.get(`https://www.pixiv.net/ajax/illust/${id}/pages`, { headers: this.headers });
-            } catch (e) {
+            } catch {
                 // Ignore 404 errors for R-18
             }
             if (pagesRes && !pagesRes.data?.error && pagesRes.data?.body && pagesRes.data.body.length > 0) {
                 for (const page of pagesRes.data.body) {
-                    urls.push(page.urls.original);
+                    if (page.urls?.original) urls.push(page.urls.original);
                 }
             } else if (body.urls && body.urls.original) {
                 // Fallback
@@ -56,7 +59,7 @@ export class PixivService {
                             await axios.head(`${baseUrl}${ext}`, { headers: this.headers });
                             foundExt = ext;
                             break;
-                        } catch (e) {
+                        } catch {
                             // Ignore 404
                         }
                     }
@@ -94,13 +97,15 @@ export class PixivService {
                 throw new Error(response.data.message || "Failed to search on Pixiv");
             }
 
-            const illusts = response.data?.body?.illustManga?.data || [];
-            const results: PixivSearchItem[] = illusts.filter((item: any) => item.id).map((item: any) => ({
-                id: item.id,
-                title: item.title,
-                url: item.url,
-                author: item.userName
-            }));
+            const illusts = response.data?.body?.illustManga?.data as PixivSearchData[] | undefined;
+            const results: PixivSearchItem[] = (illusts || [])
+                .filter((item): item is Required<PixivSearchData> => !!item.id && !!item.title && !!item.url && !!item.userName)
+                .map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    url: item.url,
+                    author: item.userName
+                }));
 
             return { results: results.slice(0, 10) }; // Return top 10
         } catch (error) {
