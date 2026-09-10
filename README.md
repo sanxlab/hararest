@@ -81,7 +81,7 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 ## Player audio WebSocket
 
 Kotonehara dapat memakai `.playws <judul atau link YouTube>` untuk mengirim kartu
-rich HTML dengan tombol putar/jeda, posisi lagu, dan tautan player browser.
+rich HTML dengan tombol putar/jeda dan posisi lagu langsung di WhatsApp.
 HTTP API, halaman player, dan WebSocket berjalan dalam satu proses dan port Hararest.
 
 | Endpoint | Fungsi |
@@ -122,8 +122,7 @@ Tes menggunakan MP3 buatan lokal, HTTP/WS nyata, dan Chromium; tidak menghubungi
 WhatsApp atau YouTube. Cakupannya meliputi playback, pause/seek/resume, penolakan
 autoplay, klik ganda, data rusak/tidak lengkap, koneksi putus, serta cleanup Blob.
 Untuk pengujian dengan WhatsApp, renderer penerima tetap perlu mendukung rich HTML,
-JavaScript, koneksi WS, dan audio. Tautan browser disertakan oleh bot sebagai akses
-player ketika kartu tidak dapat ditampilkan.
+JavaScript, koneksi WS, dan audio.
 
 ## Validasi dan pengujian
 
