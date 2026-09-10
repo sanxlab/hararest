@@ -51,12 +51,12 @@ export class YoutubeService {
         }
     }
 
-    private executeYtDlp(args: string[], useCookie: boolean): Promise<YtDlpResult> {
+    private executeYtDlp(args: string[], useCookie: boolean, signal?: AbortSignal): Promise<YtDlpResult> {
         const runtimeArgs = ['--js-runtimes', 'node', ...args];
         const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...runtimeArgs] : runtimeArgs;
 
         return new Promise((resolve, reject) => {
-            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER, timeout: 9 * 60 * 1000, killSignal: 'SIGKILL' }, (error, stdout, stderr) => {
+            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER, timeout: 9 * 60 * 1000, killSignal: 'SIGKILL', signal }, (error, stdout, stderr) => {
                 if (error) {
                     const commandError = error as YtDlpCommandError;
                     commandError.stdout = stdout;
@@ -83,24 +83,24 @@ export class YoutubeService {
         return /\b403\b/.test(output);
     }
 
-    private async runYtDlp(args: string[]): Promise<YtDlpResult> {
+    private async runYtDlp(args: string[], signal?: AbortSignal): Promise<YtDlpResult> {
         const useCookie = this.hasCookieFile();
 
         try {
-            return await this.executeYtDlp(args, useCookie);
+            return await this.executeYtDlp(args, useCookie, signal);
         } catch (error) {
-            if (!useCookie || !this.isHttp403(error)) {
+            if (signal?.aborted || !useCookie || !this.isHttp403(error)) {
                 throw error;
             }
 
             logger.warn('yt-dlp returned HTTP 403 with cookies; retrying once without cookies.');
-            return this.executeYtDlp(args, false);
+            return this.executeYtDlp(args, false, signal);
         }
     }
 
-    async getInfo(url: string): Promise<VideoInfo> {
+    async getInfo(url: string, signal?: AbortSignal): Promise<VideoInfo> {
         try {
-            const { stdout } = await this.runYtDlp(['--no-playlist', '--playlist-end', '1', '-j', '--', url]);
+            const { stdout } = await this.runYtDlp(['--no-playlist', '--playlist-end', '1', '-j', '--', url], signal);
             const rawInfo: YtDlpJSON = JSON.parse(stdout);
 
             const qualityMap = new Set<string>();
@@ -185,7 +185,7 @@ export class YoutubeService {
         }
     }
 
-    async downloadAudio(url: string): Promise<string> {
+    async downloadAudio(url: string, options: { signal?: AbortSignal; maxBytes?: number } = {}): Promise<string> {
         const ts = randomUUID();
 
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
@@ -202,8 +202,9 @@ export class YoutubeService {
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',
+                ...(options.maxBytes ? ['--max-filesize', String(options.maxBytes)] : []),
                 '--', url,
-            ]);
+            ], options.signal);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp3`;
 
@@ -231,7 +232,7 @@ export class YoutubeService {
         }
     }
 
-    async search(query: string, limit: number = 5): Promise<SearchResult[]> {
+    async search(query: string, limit: number = 5, signal?: AbortSignal): Promise<SearchResult[]> {
         if (!query.trim() || !Number.isInteger(limit) || limit < 1 || limit > 10) {
             throw new AppError('Search requires a query and an integer limit between 1 and 10.', 400);
         }
@@ -241,7 +242,7 @@ export class YoutubeService {
                 '--flat-playlist',
                 '-j',
                 '--no-warnings',
-            ]);
+            ], signal);
 
             const results: SearchResult[] = stdout
                 .trim()

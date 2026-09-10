@@ -1,12 +1,15 @@
 import app from './app';
 import { config } from './config/default';
 import logger from './utils/logger';
+import { playerService } from './modules/player/player.route';
+import { attachPlayerWebSocket } from './modules/player/player.websocket';
 
 const port = config.port;
 
 const server = app.listen(port, () => {
   logger.info(`Server running in ${config.nodeEnv} mode on port ${port}`);
 });
+const closePlayer = attachPlayerWebSocket(server, playerService);
 
 
 // Graceful shutdown handler for Docker/Kubernetes container stop signals.
@@ -14,6 +17,7 @@ const server = app.listen(port, () => {
 // then exits cleanly. Force-kills after 10 seconds to prevent hanging.
 const gracefulShutdown = (signal: string) => {
   logger.info(`${signal} received. Shutting down gracefully...`);
+  closePlayer();
   server.close(() => {
     logger.info('All connections closed. Exiting.');
     process.exit(0);
@@ -32,6 +36,7 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 process.on('unhandledRejection', (err: Error) => {
   logger.error('UNHANDLED REJECTION! 💥 Shutting down...', { error: err.message, stack: err.stack });
+  closePlayer();
   server.close(() => {
     process.exit(1);
   });

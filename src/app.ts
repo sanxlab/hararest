@@ -30,6 +30,7 @@ import pinterestRouter from "./modules/pinterest/pinterest.route";
 import pixivRouter from "./modules/pixiv/pixiv.route";
 import braveRouter from "./modules/brave/brave.route";
 import nsfwRouter from "./modules/nsfw/nsfw.route";
+import { playerApiRouter, playerPageRouter } from './modules/player/player.route';
 
 app.use("/health", healthRouter);
 app.use("/api/youtube", downloadLimiter, ssrfProtect(["youtube.com", "youtu.be"]), youtubeRouter);
@@ -44,6 +45,8 @@ app.use("/api/pixiv", downloadLimiter, ssrfProtect(["pixiv.net", "www.pixiv.net"
 app.use("/api/ocr", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);
 app.use("/api/brave", braveRouter);
 app.use("/api/nsfw", downloadLimiter, nsfwRouter);
+app.use('/api/player', downloadLimiter, playerApiRouter);
+app.use('/player', playerPageRouter);
 
 app.get("/", (req, res) => {
   res.send(new Date().toISOString());

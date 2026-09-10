@@ -28,5 +28,10 @@ export default tseslint.config(
             ],
             'no-undef': 'off', // TypeScript handles this
         },
+    },
+    {
+        files: ['scripts/*.cjs'],
+        languageOptions: { parserOptions: { project: null } },
+        rules: { '@typescript-eslint/no-require-imports': 'off' },
     }
 );

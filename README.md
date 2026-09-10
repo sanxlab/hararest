@@ -78,6 +78,53 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 
 - `GET /api/brave/search?q=kata+kunci&num=5` memakai Brave Search API. Isi `BRAVE_SEARCH_API_KEY` pada `.env`; parameter `num` menerima 1–20 hasil.
 
+## Player audio WebSocket
+
+Kotonehara dapat memakai `.playws <judul atau link YouTube>` untuk mengirim kartu
+rich HTML dengan tombol putar/jeda, posisi lagu, dan tautan player browser.
+HTTP API, halaman player, dan WebSocket berjalan dalam satu proses dan port Hararest.
+
+| Endpoint | Fungsi |
+| --- | --- |
+| `POST /api/player/sessions` | Body JSON `{"query":"judul lagu","baseUrl":"https://api.example.com"}`; mencari/menyiapkan audio lalu mengembalikan HTTP 201 dengan metadata, `html`, `wsUrl`, `playerUrl`, dan `expiresAt` di dalam `data` |
+| `GET /player/:id` | Halaman player untuk sesi tersebut; HTTP 410 bila sesi tidak ditemukan atau kedaluwarsa |
+| `WS /ws/player/:id` | Mengirim metadata `start`, frame audio biner, lalu `end`; sesi tidak tersedia ditolak sebelum upgrade |
+
+Kotonehara mengirim origin `BASEAPI_URL` sebagai `baseUrl`. Misalnya API
+`https://api.example.com` menghasilkan WS `wss://api.example.com/ws/player/...`.
+Jika `baseUrl` tidak diberikan, Hararest memakai origin permintaan HTTP. Tidak
+perlu domain atau port tambahan. `PLAYER_PUBLIC_URL` merupakan override opsional
+jika bot mengakses API internal, sementara perangkat penerima memakai alamat publik.
+Alamat player harus dapat diakses perangkat penerima. Untuk HTTPS, reverse proxy
+perlu meneruskan WebSocket Upgrade pada `/ws/player/` dan memberi endpoint
+penyiapan audio waktu tunggu hingga 10 menit. Koneksi HTTP lokal menggunakan `ws://`.
+
+Setiap kartu memiliki sesi acak sendiri. Sesi disimpan dalam memori selama 30 menit
+dan hilang saat proses direstart. Batas default: 8 sesi, 2 penyiapan bersamaan,
+24 MiB/audio, durasi 10 menit, 16 koneksi WS total dan 4 per sesi. Link sesi dapat
+dipakai siapa pun yang memilikinya hingga kedaluwarsa. File unduhan sementara
+dihapus sesudah dibaca, termasuk saat hasil ditolak. Koneksi yang terputus saat
+penyiapan membatalkan subprocess melalui `AbortSignal`.
+
+Protokol WS: pesan JSON `start` memuat `totalChunks`, `size`, dan `mimeType`.
+Setiap frame biner berisi indeks 4 byte unsigned big-endian (mulai dari 0), diikuti
+maksimal 65.536 byte audio. JSON `end` menandai akhir transfer. Player memvalidasi
+ukuran/jumlah/indeks, menggabungkan audio menjadi Blob, lalu mulai memutarnya.
+Pemutaran menunggu transfer selesai; ini bukan pemutaran progresif/live stream.
+
+Tes browser lokal (memerlukan FFmpeg dan Chrome/Chromium):
+
+```bash
+npm run test:player-browser
+```
+
+Tes menggunakan MP3 buatan lokal, HTTP/WS nyata, dan Chromium; tidak menghubungi
+WhatsApp atau YouTube. Cakupannya meliputi playback, pause/seek/resume, penolakan
+autoplay, klik ganda, data rusak/tidak lengkap, koneksi putus, serta cleanup Blob.
+Untuk pengujian dengan WhatsApp, renderer penerima tetap perlu mendukung rich HTML,
+JavaScript, koneksi WS, dan audio. Tautan browser disertakan oleh bot sebagai akses
+player ketika kartu tidak dapat ditampilkan.
+
 ## Validasi dan pengujian
 
 Jalankan `npm run typecheck`, `npm run lint`, `npm test -- --runInBand`, lalu `npm run build`.
