@@ -17,6 +17,8 @@ interface XiaohongshuUserState {
 interface XiaohongshuImageState {
     fileId?: string;
     url?: string;
+    urlDefault?: string;
+    urlPre?: string;
     width?: number;
     height?: number;
     livePhoto?: boolean;
@@ -44,6 +46,7 @@ interface XiaohongshuNoteState {
         collectedCount?: string | number;
         shareCount?: string | number;
         niceCount?: string | number;
+        commentCount?: string | number;
     };
     cover?: XiaohongshuImageState;
     imageList?: XiaohongshuImageState[];
@@ -55,6 +58,9 @@ interface XiaohongshuNoteState {
 }
 
 interface XiaohongshuStateRoot {
+    note?: {
+        noteDetailMap?: Record<string, { note?: XiaohongshuNoteState }>;
+    };
     noteData?: {
         data?: {
             noteData?: XiaohongshuNoteState;
@@ -83,14 +89,19 @@ export class XiaohongshuService {
             try {
                 root = JSON.parse(sanitizedJSON) as XiaohongshuStateRoot;
             } catch {
-                throw new AppError('Failed to parse initial state JSON', 500);
+                throw new AppError('Failed to parse Xiaohongshu page data', 502);
             }
 
-            const noteData = root.noteData?.data?.noteData;
-            const commentCount = root.noteData?.data?.commentData?.commentCount || 0;
+            const noteId = new URL(url).pathname.match(/\/(?:explore|discovery\/item)\/([\da-f]+)/i)?.[1];
+            const desktopNotes = root.note?.noteDetailMap || {};
+            // Short links may resolve to a desktop page; only use an unambiguous note.
+            const desktopNote = noteId ? desktopNotes[noteId]?.note
+                : Object.keys(desktopNotes).length === 1 ? Object.values(desktopNotes)[0]?.note : undefined;
+            const noteData = root.noteData?.data?.noteData || desktopNote;
+            const commentCount = root.noteData?.data?.commentData?.commentCount ?? noteData?.interactInfo?.commentCount ?? 0;
 
             if (!noteData) {
-                throw new AppError('Unexpected state: noteData not found', 500);
+                throw new AppError('Xiaohongshu did not provide the post data. Try a current share link; the post may be unavailable or require login.', 502);
             }
 
             const result: XiaohongshuResult = {
@@ -113,7 +124,7 @@ export class XiaohongshuService {
                 share: String(noteData.interactInfo?.shareCount || '0'),
                 comments: Number(commentCount),
                 recommended: String(noteData.interactInfo?.niceCount || '0'),
-                cover: noteData.cover?.url || null,
+                cover: this.imageUrl(noteData.cover) || this.imageUrl(noteData.imageList?.[0]) || null,
                 images: [],
                 video: null
             };
@@ -127,7 +138,7 @@ export class XiaohongshuService {
                 for (const item of noteData.imageList || []) {
                     const fileId = String(item.fileId || '');
                     const img: XiaohongshuImage = {
-                        url: String(item.url || ''),
+                        url: this.imageUrl(item),
                         width: Number(item.width || 0),
                         height: Number(item.height || 0),
                         livePhoto: Boolean(item.livePhoto)
@@ -142,7 +153,7 @@ export class XiaohongshuService {
                     }
                 }
 
-                result.cover = coverUrl || (noteData.cover?.url ? String(noteData.cover.url) : null);
+                result.cover = coverUrl || result.cover;
                 result.images = images;
             } else {
                 const mediaStream = noteData.video?.media?.stream;
@@ -162,12 +173,19 @@ export class XiaohongshuService {
                 }
             }
 
+            if (result.type === 'video' ? !result.video?.url : result.images.length === 0) {
+                throw new AppError('Xiaohongshu did not provide downloadable media for this post.', 502);
+            }
             return result;
         } catch (error) {
             if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw new AppError(`Xiaohongshu Download Error: ${message}`, 500);
         }
+    }
+
+    private imageUrl(image?: XiaohongshuImageState): string {
+        return image?.url || image?.urlDefault || image?.urlPre || '';
     }
 
     private async fetchHTML(url: string): Promise<string> {
@@ -193,7 +211,7 @@ export class XiaohongshuService {
         });
 
         if (!scriptContent) {
-            throw new AppError('Initial state script not found', 500);
+            throw new AppError('Xiaohongshu did not provide page data; the post may be unavailable or require login.', 502);
         }
 
         const assignment = /window\.__INITIAL_STATE__\s*=\s*/.exec(scriptContent);

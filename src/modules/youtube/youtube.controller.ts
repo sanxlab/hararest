@@ -87,10 +87,10 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
 
     extendDownloadTimeout(req, res);
 
-    if (quality !== undefined && (typeof quality !== 'string' || !/^[1-9]\d{1,3}p?$/.test(quality))) {
+    if (quality !== undefined && quality !== '' && (typeof quality !== 'string' || !/^[1-9]\d{1,3}p?$/.test(quality))) {
       return next(new AppError('Quality must be a resolution such as 360p or 720p.', 400));
     }
-    const qualityStr = quality as string | undefined;
+    const qualityStr = typeof quality === 'string' && quality ? quality : undefined;
     const filePath = await youtubeService.downloadVideo(url, qualityStr);
 
     res.download(filePath, (err) => {

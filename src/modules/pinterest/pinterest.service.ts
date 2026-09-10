@@ -23,18 +23,22 @@ function stringValue(value: unknown): string {
     return typeof value === 'string' ? value : '';
 }
 
-function extractPinterestRelay(script: string): JsonObject {
-    const match = script.match(/window\.__PWS_RELAY_REGISTER_COMPLETED_REQUEST\((\{[\s\S]*\})\);?\s*$/);
-    if (!match) {
-        throw new Error('Could not find Pinterest pin data');
-    }
+function extractPinterestRelay(script: string): JsonObject | null {
+    const match = script.match(/window\.__PWS_RELAY_REGISTER_COMPLETED_REQUEST(?:__)?\(([\s\S]*)\);?\s*$/);
+    if (!match) return null;
 
-    const payload: unknown = JSON.parse(match[1]);
-    const json = asObject(payload);
-    if (!json) {
-        throw new Error('Pinterest pin data is invalid');
-    }
-    return json;
+    // Current pages pass an encoded request key followed by the JSON response.
+    // Older pages pass just the response. Parse the arguments as JSON, never JS.
+    try {
+        const args: unknown[] = JSON.parse(`[${match[1]}]`);
+        for (const arg of args) {
+            const root = asObject(asObject(arg)?.data);
+            const query = asObject(root?.v3GetPinQuery) || asObject(root?.v3GetPinQueryv2);
+            const pin = asObject(query?.data);
+            if (pin) return pin;
+        }
+    } catch { /* This script is not a completed JSON pin response. */ }
+    return null;
 }
 
 export class PinterestService {
@@ -49,13 +53,11 @@ export class PinterestService {
 
             const res = await getPublicPage<string>(targetUrl, ['pinterest.com', 'pin.it'], { headers: { 'User-Agent': 'Mozilla/5.0' } });
             const $ = cheerio.load(res.data);
-            const script = $('script:contains("v3GetPinQuery"):last()').text();
-            const json = extractPinterestRelay(script);
-            const dataRoot = asObject(json.data);
-            const v3Query = asObject(dataRoot?.v3GetPinQuery) || asObject(dataRoot?.v3GetPinQueryv2);
-            const data = asObject(v3Query?.data);
+            const data = $('script').toArray()
+                .map((script) => extractPinterestRelay($(script).text()))
+                .find((pin) => pin !== null);
             if (!data) {
-                throw new Error('Could not find Pinterest pin data');
+                throw new AppError('Could not find Pinterest pin data', 502);
             }
 
             const description = stringValue(data.closeupDescription) || stringValue(data.closeupUnifiedDescription) || stringValue(data.gridDescription) || stringValue(data.description);

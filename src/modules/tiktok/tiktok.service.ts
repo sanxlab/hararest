@@ -100,7 +100,7 @@ export class TiktokService {
             return mapVideo(assertSuccessfulResponse(data, 'Failed to download video'));
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Download Error: ${message}`, 500);
+            throw new AppError(`TikTok Download Error: ${message}`, 502);
         }
     }
 
@@ -114,7 +114,7 @@ export class TiktokService {
             return assertSuccessfulResponse(data, 'Failed to fetch trending feed').map(mapVideo);
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Trending Error: ${message}`, 500);
+            throw new AppError(`TikTok Trending Error: ${message}`, 502);
         }
     }
 
@@ -135,7 +135,7 @@ export class TiktokService {
             };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok User Feed Error: ${message}`, 500);
+            throw new AppError(`TikTok User Feed Error: ${message}`, 502);
         }
     }
 
@@ -156,7 +156,7 @@ export class TiktokService {
             };
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Search Error: ${message}`, 500);
+            throw new AppError(`TikTok Search Error: ${message}`, 502);
         }
     }
 }

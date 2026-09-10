@@ -50,6 +50,33 @@ describe('Pinterest', () => {
 });
 
 describe('Xiaohongshu', () => {
+  it('reads desktop note state and image URL variants without choosing an unrelated note', async () => {
+    const state = { note: { noteDetailMap: {
+      abc: { note: { noteId: 'abc', title: 'Wrong post', imageList: [{ urlDefault: 'wrong.jpg' }] } },
+      def: { note: { noteId: 'def', title: 'Desktop post', interactInfo: { commentCount: '4' }, imageList: [{ urlDefault: 'original.jpg' }, { urlPre: 'preview.jpg' }] } }
+    } } };
+    mockedAxios.get.mockResolvedValue({ status: 200, data: `<script>window.__INITIAL_STATE__=${JSON.stringify(state)}</script>` });
+    const result = await new XiaohongshuService().download('https://www.xiaohongshu.com/explore/def');
+    expect(result).toMatchObject({ id: 'def', title: 'Desktop post', comments: 4, cover: 'original.jpg' });
+    expect(result.images.map((item) => item.url)).toEqual(['original.jpg', 'preview.jpg']);
+  });
+
+  it('reads a single desktop video after a short-link redirect', async () => {
+    const state = { note: { noteDetailMap: { abc: { note: { noteId: 'abc', type: 'video', video: { media: { stream: { h264: [{ masterUrl: 'video.mp4' }] } } } } } } } };
+    mockedAxios.get.mockResolvedValue({ status: 200, data: `<script>window.__INITIAL_STATE__=${JSON.stringify(state)}</script>` });
+    await expect(new XiaohongshuService().download('https://xhslink.com/abc')).resolves.toMatchObject({ id: 'abc', video: { url: 'video.mp4' } });
+  });
+
+  it.each([
+    { noteData: { data: {} } },
+    { note: { noteDetailMap: {} } },
+    { noteData: { data: { noteData: { noteId: 'abc', type: 'video' } } } },
+    { noteData: { data: { noteData: { noteId: 'abc', imageList: [] } } } }
+  ])('reports unavailable post/media as an upstream failure', async (state) => {
+    mockedAxios.get.mockResolvedValue({ status: 200, data: `<script>window.__INITIAL_STATE__=${JSON.stringify(state)}</script>` });
+    await expect(new XiaohongshuService().download('https://www.xiaohongshu.com/explore/abc')).rejects.toMatchObject({ statusCode: 502 });
+  });
+
   it('preserves text and all images while parsing multiline state followed by other code', async () => {
     const note = { noteId: '123', title: 'undefined NaN Infinity -Infinity', desc: 'braces } and escaped "quotes"', cover: { fileId: 'cover', url: 'cover.jpg' }, imageList: [{ fileId: 'cover', url: 'cover.jpg' }, { url: 'second.jpg' }] };
     const state = JSON.stringify({ noteData: { data: { noteData: note } }, missing: '__MISSING__' }, null, 2).replace('"__MISSING__"', 'undefined');
@@ -85,6 +112,14 @@ describe('Pixiv', () => {
 });
 
 describe('TikTok', () => {
+  it.each(['download', 'trendingFeed', 'userFeed', 'search'] as const)('maps upstream denial in %s to a gateway error', async (method) => {
+    mockedAxios.post.mockRejectedValueOnce(new Error('Request failed with status code 403'));
+    await expect(new TiktokService()[method]('test')).rejects.toMatchObject({
+      statusCode: 502, message: expect.stringContaining('403')
+    });
+    expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps video media when images is empty and music metadata is missing', async () => {
     mockedAxios.post.mockResolvedValue({ data: { code: 0, data: { id: '123', images: [], play: 'video.mp4' } } });
     const result = await new TiktokService().download('https://tiktok.com/video/123');
@@ -101,4 +136,18 @@ describe('TikTok', () => {
     expect(params.get('cursor')).toBe('1&count=999');
     expect(result).toEqual({ lists: [], nextId: 'next', next: true });
   });
+});
+
+it('parses the two-argument Pinterest Relay callback returned by production', async () => {
+    const response = { data: { v3GetPinQueryv2: { data: {
+        title: 'Landscape', images_orig: { url: 'https://i.pinimg.com/originals/test.jpg' },
+        originPinner: { username: 'artist' }
+    } } } };
+    mockedAxios.get.mockResolvedValue({ status: 200, data: `
+        <script>window.__PWS_RELAY_REGISTER_COMPLETED_REQUEST__("%7B%22queryID%22%3A%22test%22%7D",${JSON.stringify(response)});</script>
+        <script>window.__PWS_RELAY_REGISTER_COMPLETED_REQUEST__("other-query",{"data":{"otherQuery":{}}});</script>
+    ` });
+    await expect(new PinterestService().download('https://pinterest.com/pin/123')).resolves.toMatchObject({
+        title: 'Landscape', url: 'https://i.pinimg.com/originals/test.jpg', type: 'image', author: 'artist'
+    });
 });

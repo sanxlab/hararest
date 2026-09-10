@@ -10,7 +10,7 @@ Sebelum melakukan instalasi, pastikan sistem Anda telah terpasang perangkat luna
 - **npm** (biasanya sudah termasuk dengan instalasi Node.js)
 - **Python** (versi 3.10+ untuk menjalankan skrip *scraper* fallback)
 - **Google Chrome** atau **Chromium** (diperlukan untuk fitur Puppeteer)
-- **yt-dlp** dan **FFmpeg** (unduhan dan konversi YouTube)
+- **yt-dlp** dan **FFmpeg** (unduhan dan konversi YouTube; yt-dlp juga digunakan sebagai fallback Facebook)
 - **Tesseract OCR** dengan data bahasa `ind` dan `eng` (fitur OCR)
 
 ## Cara Instalasi (Pengembangan Lokal)
@@ -84,7 +84,10 @@ Jalankan `npm run typecheck`, `npm run lint`, `npm test -- --runInBand`, lalu `n
 Tes memakai fixture/mocks untuk layanan eksternal; kelulusan tes tidak menjamin scraper
 pihak ketiga sedang tersedia. Konfigurasi produksi tidak menyertakan berkas tes di `dist`.
 
-Parameter query harus berupa satu string yang tidak kosong. `limit` pencarian YouTube
+Parameter query harus berupa satu string yang tidak kosong, kecuali `quality=` pada
+endpoint audio/video YouTube yang diperlakukan sebagai kualitas default untuk
+kompatibilitas client lama. Client baru sebaiknya menghilangkan parameter kualitas
+yang tidak dipilih. `limit` pencarian YouTube
 menerima 1–10, `num` Brave 1–20, dan `limit` Danbooru 1–200; nilai di luar rentang
 menghasilkan HTTP 400. Kualitas YouTube memakai resolusi seperti `360p` atau `720p`.
 Threads menerima domain `threads.net` dan `threads.com`. Endpoint unduhan YouTube
@@ -94,5 +97,11 @@ OCR menerima body biner JPEG, PNG, atau WebP (maksimal 15 MiB) di `POST /api/ocr
 Pastikan `tesseract --list-langs` menampilkan `ind` dan `eng` pada instalasi lokal.
 Dockerfile sudah memasang FFmpeg dan Tesseract beserta kedua bahasa tersebut.
 
-Lihat [laporan audit dan riset](docs/bug-audit-2026-09-10.md) untuk temuan,
-sumber dokumentasi, hasil pengujian, dan batasan verifikasi langsung.
+Facebook mencoba extractor yt-dlp jika FDown gagal. Pastikan `YTDLP_PATH` menunjuk
+ke executable yang tersedia; image Docker sudah mengonfigurasikannya. Beri client
+timeout yang cukup untuk kedua extractor (hingga 240 detik).
+
+Ketersediaan scraper bergantung pada akses upstream dan posting yang masih tersedia.
+TikTok search/user feed dapat ditolak Cloudflare; Xiaohongshu dapat memerlukan
+share link terbaru atau login. HTTP 502 menandakan kegagalan upstream. Limiter
+operasi scraper membatasi sepuluh permintaan per menit per IP, bersama lintas modul.

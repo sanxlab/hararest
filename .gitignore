@@ -8,3 +8,7 @@ logs
 tmp
 cookies
 .clinerules
+
+# Local audit notes
+/docs/bug-audit-*.md
+/docs/integration-audit-*.md

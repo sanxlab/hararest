@@ -75,3 +75,27 @@ describe('Facebook Module', () => {
         });
     });
 });
+
+it('falls back to yt-dlp when FDown is blocked and excludes silent DASH streams', async () => {
+    mockedExecFile.mockReset();
+    mockedExecFile.mockImplementation((...args: unknown[]) => {
+        const commandArgs = args[1] as string[];
+        const callback = args[args.length - 1] as ExecFileCallback;
+        if (commandArgs.includes('--dump-single-json')) {
+            callback(null, JSON.stringify({ thumbnail: 'https://cdn.example.com/thumb.jpg', formats: [
+                { format_id: 'sd', ext: 'mp4', url: 'https://cdn.example.com/sd.mp4', filesize: 1024 },
+                { format_id: 'hd', ext: 'mp4', url: 'https://cdn.example.com/hd.mp4', filesize: 2048 },
+                { format_id: 'dash', ext: 'mp4', url: 'https://cdn.example.com/silent.mp4', acodec: 'none' },
+                { format_id: 'audio', ext: 'm4a', url: 'https://cdn.example.com/audio.m4a', vcodec: 'none' },
+            ] }), '');
+        } else callback(Object.assign(new Error('FDown failed'), { stderr: '{"message":"Robot Check"}' }), '', '{"message":"Robot Check"}');
+        return {} as never;
+    });
+    const response = await supertest(app).get('/api/facebook').query({ url: 'https://facebook.com/watch?v=123' });
+    expect(response.status).toBe(200);
+    expect(response.body.data.videos).toEqual([
+        { quality: 'sd', url: 'https://cdn.example.com/sd.mp4', size: 1024, fSize: '1.0 KB' },
+        { quality: 'hd', url: 'https://cdn.example.com/hd.mp4', size: 2048, fSize: '2.0 KB' },
+    ]);
+    expect(mockedExecFile).toHaveBeenCalledTimes(2);
+});

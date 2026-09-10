@@ -119,6 +119,8 @@ def extract_error_messages(result_html: str) -> list[str]:
                     "invalid",
                     "unable",
                     "error",
+                    "robot",
+                    "captcha",
                 )
             )
             if text and looks_like_error and "update (" not in lowered:
