@@ -34,6 +34,7 @@ describe('Youtube Module', () => {
                 formats: [
                     { ext: 'mp4', height: 720 },
                     { ext: 'mp4', height: 480 },
+                    { ext: 'mp4', height: 1080 },
                 ],
             });
 
@@ -54,6 +55,8 @@ describe('Youtube Module', () => {
             expect(response.body.status).toBe('success');
             expect(response.body.data.id).toBe('video123');
             expect(response.body.data.title).toBe('Test Video');
+            expect(response.body.data.videos).toEqual(['480p', '720p', '1080p']);
+            expect(mockExecFile.mock.calls[0][1]).toContain('--no-playlist');
         });
 
         it('should return 400 if url is missing', async () => {
@@ -101,12 +104,16 @@ describe('Youtube Module', () => {
                     _options: object,
                     callback: (error: Error | null, stdout: string, stderr: string) => void
                 ) => {
-                    callback(null, 'Destination: /tmp/video.mp4\n', '');
+                    const output = _args[_args.indexOf('-o') + 1].replace('%(ext)s', 'mp4');
+                    fs.writeFileSync(output, 'video');
+                    callback(null, output + '\n', '');
                 }
             );
 
             const service = new YoutubeService();
-            await expect(service.downloadVideo('https://youtube.com/watch?v=video123')).resolves.toBe('/tmp/video.mp4');
+            const output = await service.downloadVideo('https://youtube.com/watch?v=video123');
+            expect(fs.readFileSync(output, 'utf8')).toBe('video');
+            fs.unlinkSync(output);
 
             expect(mockExecFile).toHaveBeenCalledWith(
                 expect.any(String),
@@ -139,14 +146,18 @@ describe('Youtube Module', () => {
                         _options: object,
                         callback: (error: Error | null, stdout: string, stderr: string) => void
                     ) => {
-                        callback(null, 'Destination: /tmp/retried-video.mp4\n', '');
+                        const output = _args[_args.indexOf('-o') + 1].replace('%(ext)s', 'mp4');
+                        fs.writeFileSync(output, 'retried-video');
+                        callback(null, output + '\n', '');
                     }
                 );
 
             const service = new YoutubeService();
             (service as unknown as { cookiePath: string }).cookiePath = cookiePath;
 
-            await expect(service.downloadVideo('https://youtube.com/watch?v=video123')).resolves.toBe('/tmp/retried-video.mp4');
+            const output = await service.downloadVideo('https://youtube.com/watch?v=video123');
+            expect(fs.readFileSync(output, 'utf8')).toBe('retried-video');
+            fs.unlinkSync(output);
             expect(mockExecFile).toHaveBeenNthCalledWith(
                 1,
                 expect.any(String),
@@ -164,5 +175,55 @@ describe('Youtube Module', () => {
 
             fs.rmSync(cookieDir, { recursive: true, force: true });
         });
+    });
+});
+
+describe('YouTube download lifecycle', () => {
+    let directory: string;
+    let service: YoutubeService;
+    beforeEach(() => {
+        mockExecFile.mockReset();
+        directory = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-regression-'));
+        service = new YoutubeService();
+        Object.assign(service, { tmpDir: directory, cookiePath: path.join(directory, 'absent-cookies') });
+    });
+    afterEach(() => {
+        jest.restoreAllMocks();
+        fs.rmSync(directory, { recursive: true, force: true });
+    });
+
+    it('isolates simultaneous downloads even with the same timestamp', async () => {
+        jest.spyOn(Date, 'now').mockReturnValue(123456789);
+        mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            const extension = args.includes('--extract-audio') ? 'mp3' : 'mp4';
+            const output = args[args.indexOf('-o') + 1].replace('%(ext)s', extension);
+            fs.writeFileSync(output, 'finished');
+            setImmediate(() => callback(null, output + '\n', ''));
+        });
+        const outputs = await Promise.all([service.downloadVideo('https://youtu.be/123'), service.downloadVideo('https://youtu.be/123'), service.downloadAudio('https://youtu.be/123')]);
+        expect(new Set(outputs).size).toBe(3);
+        expect(outputs.every((file) => fs.existsSync(file))).toBe(true);
+        for (const call of mockExecFile.mock.calls) {
+            expect(call[1]).toEqual(expect.arrayContaining(['--no-playlist', '--print', 'after_move:filepath']));
+            expect(call[2]).toMatchObject({ timeout: 540000 });
+        }
+    });
+
+    it('removes partial output after a failed download', async () => {
+        fs.writeFileSync(path.join(directory, 'unrelated.mp4'), 'keep');
+        mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            const output = args[args.indexOf('-o') + 1].replace('%(ext)s', 'mp4.part');
+            fs.writeFileSync(output, 'partial');
+            callback(new Error('network failure'), '', '');
+        });
+        await expect(service.downloadVideo('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
+        expect(fs.readdirSync(directory)).toEqual(['unrelated.mp4']);
+    });
+
+    it('does not return a progress-log path to an unfinished intermediate file', async () => {
+        mockExecFile.mockImplementation((_file: string, _args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            callback(null, 'Destination: /tmp/intermediate.webm\n', '');
+        });
+        await expect(service.downloadAudio('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
     });
 });

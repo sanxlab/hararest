@@ -21,7 +21,10 @@ export const downloadTiktokHandler = async (req: Request, res: Response, next: N
 export const trendingTiktokHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { region } = req.query;
-        const data = await tiktokService.trendingFeed(region as string);
+        if (region !== undefined && (typeof region !== 'string' || !/^[A-Za-z]{2}$/.test(region))) {
+            return next(new AppError('Region must be a two-letter country code.', 400));
+        }
+        const data = await tiktokService.trendingFeed(typeof region === 'string' ? region.toUpperCase() : undefined);
         res.status(200).json({ status: 'success', data });
     } catch (error) {
         next(error);

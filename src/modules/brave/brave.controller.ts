@@ -1,3 +1,4 @@
+import { queryInteger } from '../../utils/query';
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../../utils/AppError';
 import { BraveService } from './brave.service';
@@ -20,7 +21,7 @@ export const searchHandler = async (
       return next(new AppError('Parameter "num" must be an integer.', 400));
     }
 
-    const results = await braveService.search(q, num === undefined ? 5 : Number(num));
+    const results = await braveService.search(q, queryInteger(num, 'num', 5, 20));
 
     res.status(200).json({
       status: 'success',

@@ -13,9 +13,18 @@ export class PixivService {
     };
 
     private extractId(urlOrId: string): string {
-        const match = urlOrId.match(/\d{8,}/);
-        if (match) return match[0];
-        return urlOrId.replace(/\D/g, '');
+        const value = urlOrId.trim();
+        if (/^[1-9]\d*$/.test(value)) return value;
+        try {
+            const url = new URL(value);
+            if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.port ||
+                !(url.hostname === 'pixiv.net' || url.hostname.endsWith('.pixiv.net'))) throw new Error();
+            const match = url.pathname.match(/^\/(?:[a-z]{2}\/)?artworks\/([1-9]\d*)\/?$/);
+            if (match) return match[1];
+            const legacyId = url.searchParams.get('illust_id');
+            if (url.pathname === '/member_illust.php' && legacyId && /^[1-9]\d*$/.test(legacyId)) return legacyId;
+        } catch { /* Invalid URLs are reported as client errors below. */ }
+        throw new AppError('Invalid Pixiv ID or artwork URL', 400);
     }
 
     public async download(urlOrId: string): Promise<PixivDownload> {
@@ -24,17 +33,18 @@ export class PixivService {
             if (!id) throw new Error("Invalid Pixiv ID or URL");
 
             // Fetch illust details
-            const response = await axios.get(`https://www.pixiv.net/ajax/illust/${id}`, { headers: this.headers });
+            const response = await axios.get(`https://www.pixiv.net/ajax/illust/${id}`, { headers: this.headers, timeout: 15000, maxRedirects: 0 });
             if (response.data?.error) {
                 throw new Error(response.data.message || "Failed to fetch from Pixiv");
             }
 
-            const body = response.data.body;
+            const body = response.data?.body;
+            if (!body || typeof body !== 'object') throw new AppError('Invalid Pixiv response', 502);
             const urls: string[] = [];
             // Always fetch pages to get original URLs because it bypasses NSFW URL nullification
             let pagesRes: PixivPageResponse | null = null;
             try {
-                pagesRes = await axios.get(`https://www.pixiv.net/ajax/illust/${id}/pages`, { headers: this.headers });
+                pagesRes = await axios.get(`https://www.pixiv.net/ajax/illust/${id}/pages`, { headers: this.headers, timeout: 15000, maxRedirects: 0 });
             } catch {
                 // Ignore 404 errors for R-18
             }
@@ -53,10 +63,10 @@ export class PixivService {
                     const basePath = match[1]; // e.g. 2026/08/01/12/05/25/147878257-hash_p
                     const baseUrl = `https://i.pximg.net/img-original/img/${basePath}0`;
                     
-                    let foundExt = '.jpg';
+                    let foundExt: string | undefined;
                     for (const ext of ['.jpg', '.png', '.gif']) {
                         try {
-                            await axios.head(`${baseUrl}${ext}`, { headers: this.headers });
+                            await axios.head(`${baseUrl}${ext}`, { headers: this.headers, timeout: 15000, maxRedirects: 0 });
                             foundExt = ext;
                             break;
                         } catch {
@@ -64,6 +74,7 @@ export class PixivService {
                         }
                     }
                     
+                    if (!foundExt) throw new AppError('Original Pixiv media is unavailable.', 404);
                     const pageCount = body.pageCount || 1;
                     for (let i = 0; i < pageCount; i++) {
                         urls.push(`https://i.pximg.net/img-original/img/${basePath}${i}${foundExt}`);
@@ -83,15 +94,16 @@ export class PixivService {
                 urls
             };
         } catch (error) {
+            if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Pixiv Download Error: ${message}`, 500);
+            throw new AppError(`Pixiv Download Error: ${message}`, 502);
         }
     }
 
     public async search(query: string): Promise<PixivSearchResponse> {
         try {
             const url = `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(query)}?word=${encodeURIComponent(query)}&order=date_d&mode=all&p=1&s_mode=s_tag_full`;
-            const response = await axios.get(url, { headers: this.headers });
+            const response = await axios.get(url, { headers: this.headers, timeout: 15000, maxRedirects: 0 });
             
             if (response.data?.error) {
                 throw new Error(response.data.message || "Failed to search on Pixiv");
@@ -109,8 +121,9 @@ export class PixivService {
 
             return { results: results.slice(0, 10) }; // Return top 10
         } catch (error) {
+            if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Pixiv Search Error: ${message}`, 500);
+            throw new AppError(`Pixiv Search Error: ${message}`, 502);
         }
     }
 }

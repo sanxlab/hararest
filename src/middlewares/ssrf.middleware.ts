@@ -19,6 +19,7 @@ for (const [network, prefix] of [
   ['198.51.100.0', 24],
   ['203.0.113.0', 24],
   ['224.0.0.0', 4],
+  ['240.0.0.0', 4],
 ] as const) {
   restrictedIPs.addSubnet(network, prefix, 'ipv4');
 }
@@ -34,7 +35,7 @@ for (const [network, prefix] of [
   restrictedIPs.addSubnet(network, prefix, 'ipv6');
 }
 
-function isSafeIP(ip: string): boolean {
+export function isSafeIP(ip: string): boolean {
   const family = isIP(ip);
   if (family === 0) {
     return false;
@@ -43,43 +44,47 @@ function isSafeIP(ip: string): boolean {
   return !restrictedIPs.check(ip, family === 4 ? 'ipv4' : 'ipv6');
 }
 
+export async function assertPublicUrl(url: string, allowedHosts?: readonly string[]): Promise<URL> {
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    throw new AppError('Invalid URL format', 400);
+  }
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    throw new AppError('Invalid URL protocol. Only HTTP and HTTPS are allowed.', 400);
+  }
+  if (parsedUrl.username || parsedUrl.password || parsedUrl.port) {
+    throw new AppError('URL credentials and non-standard ports are not allowed.', 400);
+  }
+  const hostname = parsedUrl.hostname.toLowerCase();
+  if (allowedHosts && !allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`))) {
+    throw new AppError(`Domain ${hostname} is not allowed.`, 403);
+  }
+  let addresses;
+  try {
+    addresses = await dns.lookup(hostname.replace(/^\[|\]$/g, ''), { all: true, verbatim: true });
+  } catch {
+    throw new AppError(`DNS resolution failed for domain: ${hostname}`, 400);
+  }
+  if (addresses.length === 0 || addresses.some(({ address }) => !isSafeIP(address))) {
+    throw new AppError('Target URL resolves to a private or restricted IP address.', 403);
+  }
+  return parsedUrl;
+}
+
 export const ssrfProtect = (allowedHosts: readonly string[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const url = req.query.url as string | undefined;
-      if (!url) {
-        return next();
+      const url = req.query.url;
+      if (url === undefined) return next();
+      if (typeof url !== 'string' || !url.trim()) {
+        throw new AppError('URL must be a non-empty string.', 400);
       }
-
-      let parsedUrl: URL;
-      try {
-        parsedUrl = new URL(url);
-      } catch {
-        return next(new AppError('Invalid URL format', 400));
-      }
-
-      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-        return next(new AppError('Invalid URL protocol. Only HTTP and HTTPS are allowed.', 400));
-      }
-
-      const hostname = parsedUrl.hostname.toLowerCase();
-      const isAllowed = allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
-      if (!isAllowed) {
-        return next(new AppError(`Domain ${hostname} is not allowed.`, 403));
-      }
-
-      try {
-        const addresses = await dns.lookup(hostname, { all: true, verbatim: true });
-        if (addresses.length === 0 || addresses.some(({ address }) => !isSafeIP(address))) {
-          return next(new AppError('Target URL resolves to a private or restricted IP address.', 403));
-        }
-      } catch {
-        return next(new AppError(`DNS resolution failed for domain: ${hostname}`, 400));
-      }
-
-      return next();
+      await assertPublicUrl(url, allowedHosts);
+      next();
     } catch (error) {
-      return next(error);
+      next(error);
     }
   };
 };

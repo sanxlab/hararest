@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { execFile } from 'child_process';
 import fs from 'fs';
 import { config } from '../../config/default';
@@ -33,7 +35,7 @@ export class YoutubeService {
     constructor() {
         this.binPath = config.youtube.binPath;
         this.cookiePath = config.youtube.cookiePath;
-        this.tmpDir = config.youtube.tmpDir;
+        this.tmpDir = path.resolve(config.youtube.tmpDir);
 
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
@@ -50,10 +52,11 @@ export class YoutubeService {
     }
 
     private executeYtDlp(args: string[], useCookie: boolean): Promise<YtDlpResult> {
-        const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...args] : args;
+        const runtimeArgs = ['--js-runtimes', 'node', ...args];
+        const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...runtimeArgs] : runtimeArgs;
 
         return new Promise((resolve, reject) => {
-            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER }, (error, stdout, stderr) => {
+            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER, timeout: 9 * 60 * 1000, killSignal: 'SIGKILL' }, (error, stdout, stderr) => {
                 if (error) {
                     const commandError = error as YtDlpCommandError;
                     commandError.stdout = stdout;
@@ -97,7 +100,7 @@ export class YoutubeService {
 
     async getInfo(url: string): Promise<VideoInfo> {
         try {
-            const { stdout } = await this.runYtDlp(['-j', url]);
+            const { stdout } = await this.runYtDlp(['--no-playlist', '--playlist-end', '1', '-j', '--', url]);
             const rawInfo: YtDlpJSON = JSON.parse(stdout);
 
             const qualityMap = new Set<string>();
@@ -115,7 +118,7 @@ export class YoutubeService {
                 });
             }
 
-            qualities.sort();
+            qualities.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
             return {
                 id: rawInfo.id,
@@ -144,7 +147,7 @@ export class YoutubeService {
     }
 
     async downloadVideo(url: string, quality?: string): Promise<string> {
-        const ts = Date.now();
+        const ts = randomUUID();
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
         const videoFormat = buildVideoFormat(quality);
 
@@ -160,30 +163,30 @@ export class YoutubeService {
                 'mp4',
                 '--postprocessor-args',
                 'ffmpeg:-c:v libx264 -profile:v main -level 3.1 -preset veryfast -crf 23 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart',
-                url,
+                '--no-playlist',
+                '--playlist-end', '1',
+                '--print', 'after_move:filepath',
+                '--', url,
             ]);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp4`;
 
-            if (fs.existsSync(expectedFilename)) {
-                return expectedFilename;
-            }
-
-            const match = stdout.match(/(?:Merging formats into|Destination: )"?(.*?)"?(\n|$)/);
-            if (match && match[1]) {
-                return match[1].trim();
+            const finalPath = stdout.trim().split('\n').at(-1)?.trim();
+            if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
+                return path.resolve(finalPath);
             }
 
             throw new Error('Could not determine output filename');
         } catch (error) {
+            this.cleanupDownload(ts);
             logger.error('YTDL Download Error:', error);
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to download video: ${message}`, 500);
+            throw new AppError(`Failed to download media: ${message}`, 500);
         }
     }
 
     async downloadAudio(url: string): Promise<string> {
-        const ts = Date.now();
+        const ts = randomUUID();
 
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
 
@@ -196,29 +199,42 @@ export class YoutubeService {
                 '--extract-audio',
                 '--audio-format',
                 'mp3',
-                url,
+                '--no-playlist',
+                '--playlist-end', '1',
+                '--print', 'after_move:filepath',
+                '--', url,
             ]);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp3`;
 
-            if (fs.existsSync(expectedFilename)) {
-                return expectedFilename;
-            }
-
-            const match = stdout.match(/(?:Merging formats into|Destination: )"?(.*?)"?(\n|$)/);
-            if (match && match[1]) {
-                return match[1].trim();
+            const finalPath = stdout.trim().split('\n').at(-1)?.trim();
+            if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
+                return path.resolve(finalPath);
             }
 
             throw new Error('Could not determine output filename');
         } catch (error) {
+            this.cleanupDownload(ts);
             logger.error('YTDL Download Error:', error);
             const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to download video: ${message}`, 500);
+            throw new AppError(`Failed to download media: ${message}`, 500);
+        }
+    }
+
+    private cleanupDownload(id: string): void {
+        try {
+            for (const name of fs.readdirSync(this.tmpDir)) {
+                if (name.startsWith(`${id}.`)) fs.rmSync(path.join(this.tmpDir, name), { force: true });
+            }
+        } catch (error) {
+            logger.warn('Failed to clean up partial download', { error });
         }
     }
 
     async search(query: string, limit: number = 5): Promise<SearchResult[]> {
+        if (!query.trim() || !Number.isInteger(limit) || limit < 1 || limit > 10) {
+            throw new AppError('Search requires a query and an integer limit between 1 and 10.', 400);
+        }
         try {
             const { stdout } = await this.runYtDlp([
                 `ytsearch${limit}:${query}`,

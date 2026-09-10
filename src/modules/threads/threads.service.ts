@@ -40,14 +40,7 @@ export class ThreadsService {
     }
 
     private async fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-        try {
-            return await fetch(url, { ...options, signal: controller.signal });
-        } finally {
-            clearTimeout(timeout);
-        }
+        return fetch(url, { ...options, signal: AbortSignal.timeout(timeoutMs) });
     }
 
     private extractCookieHeader(response: Response): string {
@@ -141,7 +134,9 @@ export class ThreadsService {
                 .toArray()
                 .map((img) => $(img).attr('src') || '')
                 .filter(Boolean);
-            const downloadUrl = $item.find('a.download__item__download_btn').first().attr('href') || undefined;
+            const href = $item.find('a.download__item__download_btn').first().attr('href');
+            const candidate = href ? new URL(href, THREADSTER_HOME) : undefined;
+            const downloadUrl = candidate && /^https?:$/.test(candidate.protocol) ? candidate.toString() : undefined;
 
             items.push(
                 this.removeEmpty({
@@ -158,7 +153,7 @@ export class ThreadsService {
             );
         });
 
-        return items;
+        return items.filter((item) => item.download_url);
     }
 
     public async download(rawUrl: string): Promise<ThreadsDownloadResult> {
@@ -181,6 +176,7 @@ export class ThreadsService {
             this.assertOk(homeResponse, 'Failed to open Threadster home page');
 
             const cookie = this.extractCookieHeader(homeResponse);
+            await homeResponse.body?.cancel();
             const body = new URLSearchParams({ url: sourceUrl });
             const downloadResponse = await this.fetchWithTimeout(
                 THREADSTER_DOWNLOAD,

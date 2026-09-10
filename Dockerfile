@@ -3,7 +3,8 @@ FROM node:22-bookworm AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN npm ci
 
 COPY tsconfig.json ./
 COPY src ./src
@@ -33,7 +34,7 @@ RUN python3 -m venv /opt/media-fallback && \
 # in the same virtual environment lets yt-dlp discover the plugin at runtime.
 RUN python3 -m venv /opt/yt-dlp && \
     /opt/yt-dlp/bin/pip install --no-cache-dir --upgrade \
-        'yt-dlp>=2025.05.22' \
+        'yt-dlp[default]>=2025.05.22' \
         bgutil-ytdlp-pot-provider && \
     ln -s /opt/yt-dlp/bin/yt-dlp /usr/local/bin/yt-dlp
 
@@ -46,8 +47,8 @@ RUN printf '%s\n' \
 WORKDIR /app
 
 COPY package*.json ./
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-RUN npm install --omit=dev && npm cache clean --force
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/modules/instagram/snapinsta_scraper.py ./src/modules/instagram/snapinsta_scraper.py

@@ -1,3 +1,4 @@
+import { getPublicPage } from '../../utils/http';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
@@ -46,7 +47,7 @@ export class PinterestService {
                 targetUrl = `https://www.pinterest.com/pin/${url}`;
             }
 
-            const res = await pinterestClient.get<string>(targetUrl);
+            const res = await getPublicPage<string>(targetUrl, ['pinterest.com', 'pin.it'], { headers: { 'User-Agent': 'Mozilla/5.0' } });
             const $ = cheerio.load(res.data);
             const script = $('script:contains("v3GetPinQuery"):last()').text();
             const json = extractPinterestRelay(script);
@@ -63,7 +64,7 @@ export class PinterestService {
             const videoUrl = videoUrls
                 ? Object.values(videoUrls)
                     .map((value) => stringValue(asObject(value)?.url))
-                    .find((value) => value.endsWith('.mp4')) || null
+                    .find((value) => /\.mp4(?:[?#]|$)/i.test(value)) || null
                 : null;
             const image = asObject(data.imageSpec_orig) || asObject(data.images_orig) || asObject(data.images_736x) || asObject(data.images_474x) || asObject(data.images_236x);
             const imageUrl = stringValue(image?.url)
@@ -82,6 +83,7 @@ export class PinterestService {
                 type: videoUrl ? 'video' : 'image'
             };
         } catch (error) {
+            if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw new AppError(`Pinterest Download Error: ${message}`, 500);
         }
@@ -116,6 +118,7 @@ export class PinterestService {
 
             return { results: results.slice(0, 10) };
         } catch (error) {
+            if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw new AppError(`Pinterest Search Error: ${message}`, 500);
         }

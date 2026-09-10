@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { getPublicPage } from '../../utils/http';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
 import { XiaohongshuResult, XiaohongshuImage } from './xiaohongshu.types';
@@ -113,7 +113,7 @@ export class XiaohongshuService {
                 share: String(noteData.interactInfo?.shareCount || '0'),
                 comments: Number(commentCount),
                 recommended: String(noteData.interactInfo?.niceCount || '0'),
-                cover: null,
+                cover: noteData.cover?.url || null,
                 images: [],
                 video: null
             };
@@ -135,10 +135,9 @@ export class XiaohongshuService {
 
                     if (fileId && fileId === coverFileId && !coverUrl) {
                         coverUrl = img.url;
-                        continue;
                     }
 
-                    if (fileId && fileId !== coverFileId) {
+                    if (img.url) {
                         images.push(img);
                     }
                 }
@@ -172,7 +171,7 @@ export class XiaohongshuService {
     }
 
     private async fetchHTML(url: string): Promise<string> {
-        const { data } = await axios.get<string>(url, {
+        const { data } = await getPublicPage<string>(url, ['xiaohongshu.com', 'xhslink.com'], {
             headers: {
                 'User-Agent': this.userAgent,
                 Accept: 'text/html,application/xhtml+xml'
@@ -197,41 +196,30 @@ export class XiaohongshuService {
             throw new AppError('Initial state script not found', 500);
         }
 
-        const match = scriptContent.match(/window\.__INITIAL_STATE__\s*=\s*(\{.*\})\s*;?/);
-        if (match && match[1]) {
-            return match[1];
+        const assignment = /window\.__INITIAL_STATE__\s*=\s*/.exec(scriptContent);
+        if (!assignment) throw new AppError('Initial state assignment not found', 502);
+        const rhs = scriptContent.slice(assignment.index + assignment[0].length);
+        // Find the end of the object without consuming later scripts or braces inside strings.
+        let depth = 0;
+        let quoted = false;
+        let escaped = false;
+        for (let i = 0; i < rhs.length; i++) {
+            const char = rhs[i];
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (char === '\\') escaped = true;
+                else if (char === '"') quoted = false;
+            } else if (char === '"') quoted = true;
+            else if (char === '{') depth++;
+            else if (char === '}' && --depth === 0) return rhs.slice(0, i + 1);
         }
-
-        const idx = scriptContent.indexOf('window.__INITIAL_STATE__');
-        if (idx === -1) throw new AppError('Initial state not found in script', 500);
-
-        const part = scriptContent.substring(idx);
-        const eqIdx = part.indexOf('=');
-        if (eqIdx === -1) throw new AppError('Initial state assignment not found', 500);
-
-        let rhs = part.substring(eqIdx + 1).trim();
-        if (rhs.endsWith(';')) {
-            rhs = rhs.slice(0, -1).trim();
-        }
-
-        if (!rhs.startsWith('{')) {
-            throw new AppError('Initial state is not a JSON object', 500);
-        }
-
-        return rhs;
+        throw new AppError('Initial state is not a complete JSON object', 502);
     }
 
     private sanitizeJSObjectToJSON(str: string): string {
-        let s = str.trim();
-
-        s = s.replace(/:\s*undefined\b/g, ':null');
-        s = s.replace(/=\s*undefined\b/g, '=null');
-        s = s.replace(/\bundefined\b/g, 'null');
-
-        s = s.replace(/\bNaN\b/g, 'null');
-        s = s.replace(/\b(Infinity|-Infinity)\b/g, 'null');
-
-        return s;
+        // Match JSON strings first so captions containing "undefined" or "NaN" remain intact.
+        return str.replace(/"(?:\\.|[^"\\])*"|\bundefined\b|\bNaN\b|-?\bInfinity\b/g,
+            (token) => token.startsWith('"') ? token : 'null');
     }
 
     private firstStream(
@@ -240,9 +228,8 @@ export class XiaohongshuService {
     ): XiaohongshuVideoStream | null {
         for (const key of keys) {
             const streams = streamMap[key];
-            if (Array.isArray(streams) && streams.length > 0) {
-                return streams[0];
-            }
+            const playable = Array.isArray(streams) ? streams.find((stream) => stream.masterUrl) : undefined;
+            if (playable) return playable;
         }
         return null;
     }

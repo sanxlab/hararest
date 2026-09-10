@@ -32,27 +32,28 @@ interface BraveSearchApiResponse {
 
 export class BraveService {
   public async search(query: string, num: number = 5): Promise<BraveSearchResponse> {
+    if (!query || query.trim().length === 0) {
+      throw new AppError('Search query is required.', 400);
+    }
+
+    if (!Number.isInteger(num) || num < 1 || num > 20) {
+      throw new AppError('Parameter "num" must be an integer between 1 and 20.', 400);
+    }
+
     const apiKey = process.env.BRAVE_SEARCH_API_KEY || '';
     if (!apiKey) {
       throw new AppError('BRAVE_SEARCH_API_KEY is not configured.', 500);
     }
 
-    if (!query || query.trim().length === 0) {
-      throw new AppError('Search query is required.', 400);
-    }
-
-    if (!Number.isInteger(num) || num < 1) {
-      throw new AppError('Parameter "num" must be a positive integer.', 400);
-    }
-
     const url = new URL('https://api.search.brave.com/res/v1/web/search');
     url.searchParams.set('q', query);
-    url.searchParams.set('count', String(Math.min(num, 20)));
+    url.searchParams.set('count', String(num));
     const startedAt = performance.now();
 
     let response: Response;
     try {
       response = await fetch(url, {
+        signal: AbortSignal.timeout(15000),
         headers: {
           Accept: 'application/json',
           'X-Subscription-Token': apiKey,
@@ -64,14 +65,20 @@ export class BraveService {
     }
 
     if (!response.ok) {
-      const errorBody = await response.text();
+      const errorBody = await response.text().catch(() => 'Unable to read upstream error body');
       logger.error(`Brave Search API error: ${response.status} - ${errorBody}`);
-      throw new AppError(`Brave Search API error: ${response.status}`, response.status);
+      throw new AppError(`Brave Search API error: ${response.status}`, response.status === 429 ? 503 : 502);
     }
 
-    const data = (await response.json()) as BraveSearchApiResponse;
+    let data: BraveSearchApiResponse;
+    try {
+      data = await response.json() as BraveSearchApiResponse;
+      if (!data || (data.web?.results !== undefined && !Array.isArray(data.web.results))) throw new Error('Invalid results');
+    } catch {
+      throw new AppError('Brave Search API returned invalid JSON data.', 502);
+    }
     const results: BraveSearchResult[] = (data.web?.results || [])
-      .filter((item) => item.title && item.url)
+      .filter((item) => item && typeof item.title === 'string' && typeof item.url === 'string')
       .map((item) => ({
         title: item.title || '',
         link: item.url || '',

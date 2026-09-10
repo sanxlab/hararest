@@ -28,13 +28,13 @@ interface TikwmVideo {
     play: string;
     images?: string[];
     music: string;
-    music_info: TikwmMusicInfo;
+    music_info?: TikwmMusicInfo;
     play_count: number;
     comment_count: number;
     share_count: number;
     download_count: number;
     create_time: number;
-    author: TikwmAuthor;
+    author?: TikwmAuthor;
 }
 
 interface TikwmFeedData {
@@ -50,8 +50,8 @@ interface TikwmResponse<T> {
 }
 
 const assertSuccessfulResponse = <T>(data: TikwmResponse<T>, fallbackMessage: string): T => {
-    if (data.code !== 0) {
-        throw new Error(data.msg || fallbackMessage);
+    if (!data || data.code !== 0 || data.data == null) {
+        throw new Error(data?.msg || fallbackMessage);
     }
 
     return data.data;
@@ -64,15 +64,15 @@ const mapVideo = (video: TikwmVideo): TiktokDownload => ({
     cover: video.cover,
     duration: video.duration,
     size: video.size,
-    video: video.images ? null : video.play,
-    images: video.images || null,
+    video: video.images?.length ? null : video.play,
+    images: video.images?.length ? video.images : null,
     music: video.music,
     musicInfo: {
-        id: video.music_info.id,
-        name: video.music_info.title,
-        cover: video.music_info.cover,
-        author: video.music_info.author,
-        duration: video.music_info.duration
+        id: video.music_info?.id ?? '',
+        name: video.music_info?.title ?? '',
+        cover: video.music_info?.cover ?? '',
+        author: video.music_info?.author ?? '',
+        duration: video.music_info?.duration ?? 0
     },
     played: video.play_count,
     comments: video.comment_count,
@@ -80,10 +80,10 @@ const mapVideo = (video: TikwmVideo): TiktokDownload => ({
     download: video.download_count,
     uploaded: video.create_time,
     author: {
-        id: video.author.id,
-        username: video.author.unique_id,
-        nickname: video.author.nickname,
-        avatar: video.author.avatar
+        id: video.author?.id ?? '',
+        username: video.author?.unique_id ?? '',
+        nickname: video.author?.nickname ?? '',
+        avatar: video.author?.avatar ?? ''
     }
 });
 
@@ -94,7 +94,8 @@ export class TiktokService {
         try {
             const { data } = await axios.post<TikwmResponse<TikwmVideo>>(
                 `${this.baseUrl}/`,
-                `url=${encodeURIComponent(url)}`
+                `url=${encodeURIComponent(url)}`,
+                { timeout: 30000 }
             );
             return mapVideo(assertSuccessfulResponse(data, 'Failed to download video'));
         } catch (error) {
@@ -107,7 +108,8 @@ export class TiktokService {
         try {
             const { data } = await axios.post<TikwmResponse<TikwmVideo[]>>(
                 `${this.baseUrl}/feed/list`,
-                `region=${encodeURIComponent(region)}`
+                `region=${encodeURIComponent(region)}`,
+                { timeout: 30000 }
             );
             return assertSuccessfulResponse(data, 'Failed to fetch trending feed').map(mapVideo);
         } catch (error) {
@@ -118,10 +120,11 @@ export class TiktokService {
 
     public async userFeed(user: string, nextId?: string): Promise<TiktokUserFeed> {
         try {
-            const cursor = nextId ? `&cursor=${nextId}` : '';
+            const cursor = nextId ? `&cursor=${encodeURIComponent(nextId)}` : '';
             const { data } = await axios.post<TikwmResponse<TikwmFeedData>>(
                 `${this.baseUrl}/user/posts`,
-                `unique_id=${encodeURIComponent(user)}&count=15${cursor}`
+                `unique_id=${encodeURIComponent(user)}&count=15${cursor}`,
+                { timeout: 30000 }
             );
             const feed = assertSuccessfulResponse(data, 'Failed to fetch user feed');
 
@@ -138,10 +141,11 @@ export class TiktokService {
 
     public async search(query: string, nextId?: string): Promise<TiktokUserFeed> {
         try {
-            const cursor = nextId ? `&cursor=${nextId}` : '';
+            const cursor = nextId ? `&cursor=${encodeURIComponent(nextId)}` : '';
             const { data } = await axios.post<TikwmResponse<TikwmFeedData>>(
                 `${this.baseUrl}/feed/search`,
-                `keywords=${encodeURIComponent(query)}&count=15${cursor}`
+                `keywords=${encodeURIComponent(query)}&count=15${cursor}`,
+                { timeout: 30000 }
             );
             const feed = assertSuccessfulResponse(data, 'Failed to search videos');
 

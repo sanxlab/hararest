@@ -1,9 +1,11 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
+const isTest = process.env.NODE_ENV === 'test';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const logger = winston.createLogger({
+  silent: isTest,
   level: isProduction ? 'info' : 'debug',
   format: winston.format.combine(
     winston.format.timestamp(),
@@ -17,7 +19,7 @@ const logger = winston.createLogger({
         ? winston.format.combine(winston.format.timestamp(), winston.format.json())
         : winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
-    new DailyRotateFile({
+    ...(!isTest ? [new DailyRotateFile({
       filename: 'logs/error-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       level: 'error',
@@ -31,7 +33,7 @@ const logger = winston.createLogger({
       zippedArchive: true,
       maxSize: '20m',
       maxFiles: '14d',
-    }),
+    })] : []),
   ],
 });
 

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import util from 'util';
-import fetch from 'node-fetch';
+import { getMediaSize, bytesToSize } from '../../utils/mediaSize';
 import { AppError } from '../../utils/AppError';
 import { FacebookVideoInfo, FacebookVideo } from './facebook.types';
 
@@ -23,23 +23,6 @@ interface FDownResponse {
 
 export class FacebookService {
     private readonly pythonBin = process.env.PYTHON_BIN || 'python';
-
-    private async getSize(url: string): Promise<number> {
-        try {
-            const res = await fetch(url, { method: 'HEAD', redirect: 'error', timeout: 10000 });
-            if (!res.ok) return 0;
-            return parseInt(res.headers.get('content-length') || '0', 10);
-        } catch {
-            return 0;
-        }
-    }
-
-    private bytesToSize(bytes: number): string {
-        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-        if (bytes === 0 || isNaN(bytes)) return '0 B';
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-    }
 
     private resolveFDownScriptPath(): string {
         const envScriptPath = process.env.FACEBOOK_FALLBACK_PYTHON_SCRIPT;
@@ -63,7 +46,7 @@ export class FacebookService {
 
         try {
             const parsed = JSON.parse(raw) as { message?: string };
-            return parsed.message || fallback;
+            return parsed?.message || fallback;
         } catch {
             return raw;
         }
@@ -93,8 +76,8 @@ export class FacebookService {
             throw new AppError('FDown fallback returned invalid JSON', 500);
         }
 
-        if (parsed.status !== 'ok') {
-            throw new AppError(parsed.message || 'FDown fallback failed', 500);
+        if (!parsed || parsed.status !== 'ok') {
+            throw new AppError(parsed?.message || 'FDown fallback failed', 500);
         }
 
         const links = Array.isArray(parsed.media_links)
@@ -109,12 +92,12 @@ export class FacebookService {
 
         const videos: FacebookVideo[] = await Promise.all(
             links.map(async (link) => {
-                const size = await this.getSize(link.url);
+                const size = await getMediaSize(link.url);
                 return {
                     quality: (link.quality || link.label || 'unknown').trim(),
                     url: link.url,
                     size,
-                    fSize: this.bytesToSize(size)
+                    fSize: bytesToSize(size)
                 };
             })
         );

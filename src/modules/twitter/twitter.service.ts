@@ -28,8 +28,10 @@ export class TwitterService {
     }
 
     private parsePageConfig(htmlText: string): { searchUrl: string; lang: string } {
+        const searchUrl = new URL(this.extractVar(htmlText, 'k_url_search', DEFAULT_SEARCH_URL), BASE_URL);
+        if (searchUrl.origin !== BASE_URL) throw new AppError('SaveTwitter returned an invalid search endpoint.', 502);
         return {
-            searchUrl: this.extractVar(htmlText, 'k_url_search', DEFAULT_SEARCH_URL),
+            searchUrl: searchUrl.toString(),
             lang: this.extractVar(htmlText, 'k_lang', 'en')
         };
     }

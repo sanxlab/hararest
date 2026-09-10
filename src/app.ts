@@ -1,3 +1,4 @@
+import './config/default';
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -6,13 +7,15 @@ import { ssrfProtect } from "./middlewares/ssrf.middleware";
 import { apiLimiter, downloadLimiter } from "./middlewares/ratelimit.middleware";
 import { AppError } from "./utils/AppError";
 
+import { validateQuery } from './middlewares/query.middleware';
+
 const app = express();
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", apiLimiter);
+app.use("/api", apiLimiter, validateQuery);
 
 import healthRouter from "./modules/health/health.route";
 import youtubeRouter from "./modules/youtube/youtube.route";
@@ -35,7 +38,7 @@ app.use("/api/instagram", downloadLimiter, ssrfProtect(["instagram.com", "www.in
 app.use("/api/tiktok", downloadLimiter, ssrfProtect(["tiktok.com", "www.tiktok.com", "vt.tiktok.com", "vm.tiktok.com"]), tiktokRouter);
 app.use("/api/xiaohongshu", downloadLimiter, ssrfProtect(["xiaohongshu.com", "www.xiaohongshu.com", "xhslink.com"]), xiaohongshuRouter);
 app.use("/api/twitter", downloadLimiter, ssrfProtect(["twitter.com", "www.twitter.com", "x.com", "www.x.com"]), twitterRouter);
-app.use("/api/threads", downloadLimiter, ssrfProtect(["threads.net", "www.threads.net"]), threadsRouter);
+app.use("/api/threads", downloadLimiter, ssrfProtect(["threads.net", "threads.com"]), threadsRouter);
 app.use("/api/pinterest", downloadLimiter, ssrfProtect(["pinterest.com", "www.pinterest.com", "id.pinterest.com", "pin.it"]), pinterestRouter);
 app.use("/api/pixiv", downloadLimiter, ssrfProtect(["pixiv.net", "www.pixiv.net"]), pixivRouter);
 app.use("/api/ocr", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);

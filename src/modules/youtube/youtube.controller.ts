@@ -1,3 +1,4 @@
+import { queryInteger } from '../../utils/query';
 import { NextFunction, Request, Response } from 'express';
 import { YoutubeService } from './youtube.service';
 import { AppError } from '../../utils/AppError';
@@ -51,7 +52,7 @@ const handleDownloadError = (
   });
 
   if (res.headersSent) {
-    return;
+    return next(err);
   }
 
   next(new AppError('Error downloading file', 500));
@@ -86,7 +87,10 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
 
     extendDownloadTimeout(req, res);
 
-    const qualityStr = typeof quality === 'string' ? quality : undefined;
+    if (quality !== undefined && (typeof quality !== 'string' || !/^[1-9]\d{1,3}p?$/.test(quality))) {
+      return next(new AppError('Quality must be a resolution such as 360p or 720p.', 400));
+    }
+    const qualityStr = quality as string | undefined;
     const filePath = await youtubeService.downloadVideo(url, qualityStr);
 
     res.download(filePath, (err) => {
@@ -135,7 +139,7 @@ export const searchHandler = async (req: Request, res: Response, next: NextFunct
       return next(new AppError('Search query (q) is required', 400));
     }
 
-    const maxResults = limit ? Math.min(Math.max(1, Number(limit)), 10) : 5;
+    const maxResults = queryInteger(limit, 'limit', 5, 10);
 
     const results = await youtubeService.search(q, maxResults);
 

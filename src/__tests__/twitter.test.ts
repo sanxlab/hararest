@@ -25,7 +25,7 @@ describe('Twitter Module', () => {
             mockedCloudscraper.get.mockResolvedValueOnce(`
                 <html>
                     <script>
-                        var k_url_search = 'https://savetwitter.net/api/ajaxSearch';
+                        var k_url_search = '/api/ajaxSearch';
                         var k_lang = 'en';
                     </script>
                     <body>

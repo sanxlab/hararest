@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const ConfigSchema = z.object({
   port: z.coerce.number().int().min(1).max(65535).default(1337),

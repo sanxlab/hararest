@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { AppError } from "../../utils/AppError";
 import logger from "../../utils/logger";
 import puppeteer from 'puppeteer-extra';
@@ -26,6 +27,9 @@ export class NsfwService {
     try {
       browser = await puppeteer.launch({
         headless: true,
+        executablePath: [process.env.PUPPETEER_EXECUTABLE_PATH, process.env.CHROME_PATH,
+          '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']
+          .find((candidate) => candidate && fs.existsSync(candidate)),
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
       });
       const page = await browser.newPage();
@@ -54,7 +58,7 @@ export class NsfwService {
       logger.error(`${source} puppeteer failed`, { error: message });
       throw new AppError(`Puppeteer gagal mengakses ${source}: ${message}`, 502);
     } finally {
-      if (browser) await browser.close();
+      if (browser) await browser.close().catch((error: unknown) => logger.warn('Browser cleanup failed', { error }));
     }
   }
 
@@ -63,6 +67,8 @@ export class NsfwService {
       const gotScraping = await this.getGotScraping();
       const response = await gotScraping.get(url, {
         responseType: "json",
+        timeout: { request: 15000 },
+        retry: { limit: 1 },
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept": "application/json"
@@ -97,7 +103,7 @@ export class NsfwService {
   }
 
   public async getWaifuIm(tag: string, isNsfw: boolean = true): Promise<unknown> {
-    const url = `https://api.waifu.im/images?IncludedTags=${encodeURIComponent(tag)}&isNsfw=${isNsfw}`;
+    const url = `https://api.waifu.im/images?IncludedTags=${encodeURIComponent(tag)}&IsNsfw=${isNsfw}`;
     return this.fetchJson(url, "WaifuIm");
   }
 

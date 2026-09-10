@@ -5,7 +5,7 @@ services:
       - path: .env
         required: false
     ports:
-      - '${TAILSCALE_IP}:8080:1337'
+      - '${TAILSCALE_IP:-127.0.0.1}:8080:1337'
     volumes:
       - ./cookies:/app/cookies
     depends_on:
