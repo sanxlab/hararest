@@ -3,6 +3,7 @@ import { config } from './config/default';
 import logger from './utils/logger';
 import { playerService } from './modules/player/player.route';
 import { attachPlayerWebSocket } from './modules/player/player.websocket';
+import { jobService } from './modules/jobs/jobs.route';
 
 const port = config.port;
 
@@ -18,7 +19,9 @@ const closePlayer = attachPlayerWebSocket(server, playerService);
 const gracefulShutdown = (signal: string) => {
   logger.info(`${signal} received. Shutting down gracefully...`);
   closePlayer();
-  server.close(() => {
+  const jobsClosed = jobService.close();
+  server.close(async () => {
+    await jobsClosed;
     logger.info('All connections closed. Exiting.');
     process.exit(0);
   });
@@ -37,7 +40,9 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 process.on('unhandledRejection', (err: Error) => {
   logger.error('UNHANDLED REJECTION! 💥 Shutting down...', { error: err.message, stack: err.stack });
   closePlayer();
-  server.close(() => {
+  const jobsClosed = jobService.close();
+  server.close(async () => {
+    await jobsClosed;
     process.exit(1);
   });
 });

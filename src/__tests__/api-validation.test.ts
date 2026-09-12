@@ -10,6 +10,7 @@ import { ThreadsService } from '../modules/threads/threads.service';
 jest.mock('../middlewares/ratelimit.middleware', () => ({
   apiLimiter: (_req: unknown, _res: unknown, next: () => void) => next(),
   downloadLimiter: (_req: unknown, _res: unknown, next: () => void) => next(),
+  jobStatusLimiter: (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 jest.mock('../modules/brave/brave.service');
 jest.mock('../modules/pinterest/pinterest.service');

@@ -32,10 +32,10 @@ export class YoutubeService {
     private cookiePath: string;
     private tmpDir: string;
 
-    constructor() {
+    constructor(tmpDir = config.youtube.tmpDir) {
         this.binPath = config.youtube.binPath;
         this.cookiePath = config.youtube.cookiePath;
-        this.tmpDir = path.resolve(config.youtube.tmpDir);
+        this.tmpDir = path.resolve(tmpDir);
 
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
@@ -146,7 +146,7 @@ export class YoutubeService {
         }
     }
 
-    async downloadVideo(url: string, quality?: string): Promise<string> {
+    async downloadVideo(url: string, quality?: string, options: { signal?: AbortSignal; maxBytes?: number } = {}): Promise<string> {
         const ts = randomUUID();
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
         const videoFormat = buildVideoFormat(quality);
@@ -166,8 +166,9 @@ export class YoutubeService {
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',
+                ...(options.maxBytes ? ['--max-filesize', String(options.maxBytes)] : []),
                 '--', url,
-            ]);
+            ], options.signal);
 
             const expectedFilename = `${this.tmpDir}/${ts}.mp4`;
 

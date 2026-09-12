@@ -4,16 +4,21 @@ import cors from "cors";
 import helmet from "helmet";
 import { errorHandler } from "./middlewares/error.middleware";
 import { ssrfProtect } from "./middlewares/ssrf.middleware";
-import { apiLimiter, downloadLimiter } from "./middlewares/ratelimit.middleware";
+import { apiLimiter, downloadLimiter, jobStatusLimiter } from "./middlewares/ratelimit.middleware";
 import { AppError } from "./utils/AppError";
 
 import { validateQuery } from './middlewares/query.middleware';
+import { jobRoutes } from './modules/jobs/jobs.route';
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/jobs', jobStatusLimiter, jobRoutes.statusRouter);
+app.post('/api/youtube/jobs', apiLimiter, downloadLimiter, jobRoutes.createDownload);
+app.post('/api/player/jobs', apiLimiter, downloadLimiter, jobRoutes.createPlayer);
 
 app.use("/api", apiLimiter, validateQuery);
 

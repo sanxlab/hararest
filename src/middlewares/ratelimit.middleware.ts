@@ -1,5 +1,12 @@
 import rateLimit from 'express-rate-limit';
 
+// Polling must not consume the quota for starting expensive downloads. This
+// permits 16 active jobs at the advertised three-second interval per client IP.
+export const jobStatusLimiter = rateLimit({
+  windowMs: 60 * 1000, max: 360, standardHeaders: true, legacyHeaders: false,
+  message: { status: 'fail', message: 'Terlalu sering mengecek status job. Coba lagi nanti.' },
+});
+
 /**
  * General API rate limiter.
  * Allows 60 requests per minute per IP for lightweight endpoints
