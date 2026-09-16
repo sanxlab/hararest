@@ -28,6 +28,8 @@ import facebookRouter from "./modules/facebook/facebook.route";
 import instagramRouter from "./modules/instagram/instagram.route";
 import tiktokRouter from "./modules/tiktok/tiktok.route";
 import xiaohongshuRouter from "./modules/xiaohongshu/xiaohongshu.route";
+import bilibiliRouter from './modules/bilibili/bilibili.route';
+import { BILIBILI_HOSTS } from './modules/bilibili/bilibili.service';
 import twitterRouter from "./modules/twitter/twitter.route";
 import threadsRouter from "./modules/threads/threads.route";
 import ocrRouter from "./modules/ocr/ocr.route";
@@ -43,6 +45,7 @@ app.use("/api/facebook", downloadLimiter, ssrfProtect(["facebook.com", "www.face
 app.use("/api/instagram", downloadLimiter, ssrfProtect(["instagram.com", "www.instagram.com", "instagr.am"]), instagramRouter);
 app.use("/api/tiktok", downloadLimiter, ssrfProtect(["tiktok.com", "www.tiktok.com", "vt.tiktok.com", "vm.tiktok.com"]), tiktokRouter);
 app.use("/api/xiaohongshu", downloadLimiter, ssrfProtect(["xiaohongshu.com", "www.xiaohongshu.com", "xhslink.com"]), xiaohongshuRouter);
+app.use('/api/bilibili', downloadLimiter, ssrfProtect(BILIBILI_HOSTS), bilibiliRouter);
 app.use("/api/twitter", downloadLimiter, ssrfProtect(["twitter.com", "www.twitter.com", "x.com", "www.x.com"]), twitterRouter);
 app.use("/api/threads", downloadLimiter, ssrfProtect(["threads.net", "threads.com"]), threadsRouter);
 app.use("/api/pinterest", downloadLimiter, ssrfProtect(["pinterest.com", "www.pinterest.com", "id.pinterest.com", "pin.it"]), pinterestRouter);
