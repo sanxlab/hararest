@@ -5,7 +5,8 @@ import { AppError } from '../../utils/AppError';
 import { getPublicPage } from '../../utils/http';
 import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 import { queryInteger } from '../../utils/query';
-import { BilibiliMedia, BilibiliResult } from './bilibili.types';
+import { BilibiliMedia, BilibiliResult, BilibiliOpusResult } from './bilibili.types';
+import { downloadBilibiliOpus } from './bilibili.opus';
 
 export const BILIBILI_HOSTS = [
   'bilibili.com',
@@ -162,7 +163,7 @@ export class BilibiliService {
     rawUrl: string,
     quality = '1080p',
     requestedPage?: string,
-  ): Promise<BilibiliResult> {
+  ): Promise<BilibiliResult | BilibiliOpusResult> {
     const key = quality.toLowerCase();
     const qn = Object.hasOwn(QUALITIES, key) ? QUALITIES[key] : undefined;
     if (!qn)
@@ -181,9 +182,15 @@ export class BilibiliService {
         throw new AppError('Unable to resolve Bilibili short link.', 502);
       }
     }
+    const opus = /^\/opus\/([1-9]\d{0,24})\/?$/.exec(url.pathname);
+    if (opus && ['bilibili.com', 'www.bilibili.com', 'm.bilibili.com'].includes(url.hostname)) {
+      if (requestedPage !== undefined)
+        throw new AppError('The page parameter is only supported for videos.', 400);
+      return downloadBilibiliOpus(opus[1], HEADERS);
+    }
     const match = /^\/video\/(BV[0-9A-Za-z]{10}|av[1-9]\d*)\/?$/.exec(url.pathname);
     if (!['bilibili.com', 'www.bilibili.com', 'm.bilibili.com'].includes(url.hostname) || !match) {
-      throw new AppError('Use a bilibili.com/video/BV... or /video/av... URL.', 400);
+      throw new AppError('Use a bilibili.com/video/BV..., /video/av..., or /opus/... URL.', 400);
     }
     const urlPages = url.searchParams.getAll('p');
     if (urlPages.length > 1)

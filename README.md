@@ -74,7 +74,6 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
 
-
 ## Validasi dan pengujian
 
 Jalankan `npm run typecheck`, `npm run lint`, `npm test -- --runInBand`, lalu `npm run build`.
