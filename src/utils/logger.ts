@@ -19,7 +19,7 @@ const logger = winston.createLogger({
         ? winston.format.combine(winston.format.timestamp(), winston.format.json())
         : winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
-    ...(!isTest ? [new DailyRotateFile({
+    ...(!isTest && !isProduction ? [new DailyRotateFile({
       filename: 'logs/error-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       level: 'error',

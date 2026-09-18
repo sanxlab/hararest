@@ -4,8 +4,12 @@ dist
 tmp
 logs
 .env
+.env.*
+.kilo
+.github
 bin
 *.log
 www.instagram.com_cookies*.txt
 cookies
 cookies.txt
+*.cookies.base64

@@ -1,4 +1,4 @@
-import './config/default';
+import { config } from './config/default';
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -11,6 +11,7 @@ import { validateQuery } from './middlewares/query.middleware';
 import { jobRoutes } from './modules/jobs/jobs.route';
 
 const app = express();
+app.set('trust proxy', config.trustProxyHops);
 
 app.use(helmet());
 app.use(cors());

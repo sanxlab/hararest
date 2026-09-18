@@ -53,6 +53,9 @@ export class YoutubeService {
 
     private executeYtDlp(args: string[], useCookie: boolean, signal?: AbortSignal): Promise<YtDlpResult> {
         const runtimeArgs = ['--js-runtimes', 'node', ...args];
+        if (config.youtube.potProviderUrl) {
+            runtimeArgs.unshift('--extractor-args', `youtubepot-bgutilhttp:base_url=${config.youtube.potProviderUrl}`);
+        }
         const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...runtimeArgs] : runtimeArgs;
 
         return new Promise((resolve, reject) => {

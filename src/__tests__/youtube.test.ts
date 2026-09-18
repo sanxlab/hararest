@@ -5,6 +5,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { YoutubeService } from '../modules/youtube/youtube.service';
+import { config } from '../config/default';
 
 // Mock child_process
 jest.mock('child_process');
@@ -66,6 +67,27 @@ describe('Youtube Module', () => {
     });
 
     describe('yt-dlp process arguments', () => {
+        it.each(['', 'https://pot.example.com'])('uses the configured optional PO token provider: %s', async (provider) => {
+            const previous = config.youtube.potProviderUrl;
+            config.youtube.potProviderUrl = provider;
+            mockExecFile.mockImplementation((_file: string, _args: string[], _options: object,
+                callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                callback(null, JSON.stringify({ id: 'video123', formats: [] }), '');
+            });
+            try {
+                await new YoutubeService().getInfo('https://youtube.com/watch?v=video123');
+                const args = mockExecFile.mock.calls[0][1] as string[];
+                if (provider) {
+                    expect(args.slice(args.indexOf('--extractor-args'), args.indexOf('--extractor-args') + 2))
+                        .toEqual(['--extractor-args', `youtubepot-bgutilhttp:base_url=${provider}`]);
+                } else {
+                    expect(args).not.toContain('--extractor-args');
+                }
+            } finally {
+                config.youtube.potProviderUrl = previous;
+            }
+        });
+
         it('does not pass an empty cookie file to yt-dlp', async () => {
             const cookieDir = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-empty-cookie-'));
             const cookiePath = path.join(cookieDir, 'cookies.txt');

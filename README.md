@@ -6,10 +6,9 @@ Hararest adalah aplikasi backend API untuk mengunduh media dari berbagai platfor
 
 Sebelum melakukan instalasi, pastikan sistem Anda telah terpasang perangkat lunak berikut:
 
-- **Node.js 22.12+** (mengikuti kebutuhan Puppeteer yang terpasang)
+- **Node.js 22.12+**
 - **npm** (biasanya sudah termasuk dengan instalasi Node.js)
 - **Python** (versi 3.10+ untuk menjalankan skrip *scraper* fallback)
-- **Google Chrome** atau **Chromium** (diperlukan untuk fitur Puppeteer)
 - **yt-dlp** dan **FFmpeg** (unduhan dan konversi YouTube; yt-dlp juga digunakan sebagai fallback Facebook)
 - **Tesseract OCR** dengan data bahasa `ind` dan `eng` (fitur OCR)
 
@@ -41,7 +40,7 @@ Sebelum melakukan instalasi, pastikan sistem Anda telah terpasang perangkat luna
    ```bash
    cp .env.example .env
    ```
-   Buka berkas `.env` dan sesuaikan nilai variabel di dalamnya, khususnya `PUPPETEER_EXECUTABLE_PATH` atau `CHROME_PATH` agar menunjuk ke *binary* browser di sistem Anda.
+   Buka berkas `.env` dan sesuaikan konfigurasi layanan yang dipakai. Server tidak memerlukan Chrome/Chromium.
 
 5. **Jalankan *server* pada mode *development*:**
    ```bash
@@ -66,6 +65,10 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 
 ## Skrip Tersedia
 
+Panduan CI/CD container, GitHub Secrets, dan migrasi cookies tersedia di
+[Deploy ke Heroku](docs/heroku.md). Push ke `main` akan deploy setelah semua
+pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
+
 - `npm run dev` : Menjalankan server dalam mode pengembangan.
 - `npm run build` : Melakukan kompilasi kode TypeScript ke dalam folder `dist`.
 - `npm run start` : Menjalankan server produksi dari folder `dist`.
@@ -73,31 +76,3 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 - `npm run typecheck` : Memeriksa tipe kode aplikasi dan tes.
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
-
-## Validasi dan pengujian
-
-Jalankan `npm run typecheck`, `npm run lint`, `npm test -- --runInBand`, lalu `npm run build`.
-Tes memakai fixture/mocks untuk layanan eksternal; kelulusan tes tidak menjamin scraper
-pihak ketiga sedang tersedia. Konfigurasi produksi tidak menyertakan berkas tes di `dist`.
-
-Parameter query harus berupa satu string yang tidak kosong, kecuali `quality=` pada
-endpoint audio/video YouTube yang diperlakukan sebagai kualitas default untuk
-kompatibilitas client lama. Client baru sebaiknya menghilangkan parameter kualitas
-yang tidak dipilih. `limit` pencarian YouTube
-menerima 1–10, `num` Brave 1–20, dan `limit` Danbooru 1–200; nilai di luar rentang
-menghasilkan HTTP 400. Kualitas YouTube memakai resolusi seperti `360p` atau `720p`.
-Threads menerima domain `threads.net` dan `threads.com`. Endpoint unduhan YouTube
-menghasilkan satu file per permintaan, termasuk ketika URL berisi parameter playlist.
-
-OCR menerima body biner JPEG, PNG, atau WebP (maksimal 15 MiB) di `POST /api/ocr`.
-Pastikan `tesseract --list-langs` menampilkan `ind` dan `eng` pada instalasi lokal.
-Dockerfile sudah memasang FFmpeg dan Tesseract beserta kedua bahasa tersebut.
-
-Facebook mencoba extractor yt-dlp jika FDown gagal. Pastikan `YTDLP_PATH` menunjuk
-ke executable yang tersedia; image Docker sudah mengonfigurasikannya. Beri client
-timeout yang cukup untuk kedua extractor (hingga 240 detik).
-
-Ketersediaan scraper bergantung pada akses upstream dan posting yang masih tersedia.
-TikTok search/user feed dapat ditolak Cloudflare; Xiaohongshu dapat memerlukan
-share link terbaru atau login. HTTP 502 menandakan kegagalan upstream. Limiter
-operasi scraper membatasi sepuluh permintaan per menit per IP, bersama lintas modul.
