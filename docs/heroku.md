@@ -9,8 +9,9 @@ Hanya push ke `main` yang kemudian mengirim **image yang sama** ke
 
 ## Konfigurasi satu kali
 
-1. Buat aplikasi Heroku **Cedar** untuk dyno Basic dengan stack `container`, atau
-   ubah stack aplikasi yang sudah ada:
+1. Buat aplikasi Heroku **Cedar** untuk dyno Basic. Workflow otomatis mengatur
+   stack menjadi `container` sebelum push dan release image. Jika mengaturnya
+   secara manual, gunakan:
 
    ```bash
    heroku stack:set container --app NAMA_APP

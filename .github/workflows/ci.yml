@@ -86,6 +86,7 @@ jobs:
           : "${HEROKU_APP_NAME:?Set HEROKU_APP_NAME in GitHub Actions secrets}"
           curl --fail --silent --show-error https://cli-assets.heroku.com/install.sh -o /tmp/install-heroku.sh
           sh /tmp/install-heroku.sh
+          heroku stack:set container --app "$HEROKU_APP_NAME"
           printf '%s' "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
           docker tag hararest:ci "registry.heroku.com/$HEROKU_APP_NAME/web"
           docker push "registry.heroku.com/$HEROKU_APP_NAME/web"
