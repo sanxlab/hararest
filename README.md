@@ -64,29 +64,6 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
    Server akan mulai beroperasi di dalam kontainer Docker.
 
 
-## Reddit Downloader
-
-Gunakan `GET /api/reddit` atau `GET /api/reddit/download` dengan parameter `url`:
-
-```bash
-curl --get 'http://localhost:1337/api/reddit/download' \
-  --data-urlencode 'url=https://www.reddit.com/r/Kucing/s/zd1rVlyJGL'
-```
-
-Tautan berbagi `/s/...` dan `redd.it` diubah menjadi URL postingan sebelum diproses
-melalui SaveFrom. Respons `{ "status": "success", "data": { ... } }` berisi
-`source_url`, `resolved_url`, `title`, `thumbnail`, `uploader`, `duration` (detik),
-`download_url`, `requires_conversion`, `count`, serta pilihan `media` yang diurutkan
-menurut kualitas tertinggi. Setiap pilihan memuat `url`, `type`, `format`, `quality`,
-`quality_number`, `requires_conversion`, dan `has_audio` (`null` jika tidak diketahui).
-
-Jika `requires_conversion` bernilai `true`, buka URL tersebut untuk menyelesaikan
-konversi di SaveFrom; URL tersebut bukan file MP4 langsung. Server mengembalikan
-tautan, bukan menyimpan atau menggabungkan video. Tautan hasil dapat kedaluwarsa.
-Integrasi tidak membutuhkan browser atau API key di server, tetapi bergantung pada
-protokol klien publik SaveFrom yang dapat berubah. Postingan tanpa media menghasilkan
-404; kegagalan provider atau resolusi tautan menghasilkan 502.
-
 ## Skrip Tersedia
 
 Panduan CI/CD container, GitHub Secrets, dan migrasi cookies tersedia di
