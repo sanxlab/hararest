@@ -8,7 +8,11 @@ jest.mock('../middlewares/ratelimit.middleware', () => ({
 import axios from 'axios';
 import supertest from 'supertest';
 import app from '../app';
-import { parseBilibiliOpus } from '../modules/bilibili/bilibili.opus';
+import {
+  downloadBilibiliOpus,
+  parseBilibiliDynamic,
+  parseBilibiliOpus,
+} from '../modules/bilibili/bilibili.opus';
 
 const get = axios.get as jest.MockedFunction<typeof axios.get>;
 const id = '1247969693541597185';
@@ -58,6 +62,30 @@ function fixture(pictures = pics, postId = id) {
 }
 function html(state: unknown) {
   return `<html><img src="https://i0.hdslb.com/bfs/face/avatar.jpg"><script>window.__INITIAL_STATE__=${JSON.stringify(state)};globalThis.opusScriptExecuted = true;</script></html>`;
+}
+
+function apiFixture(postId = id) {
+  return {
+    code: 0,
+    data: {
+      item: {
+        id_str: postId,
+        visible: true,
+        modules: {
+          module_author: fixture().detail.modules[0].module_author,
+          module_dynamic: {
+            desc: { text: 'Post description' },
+            major: {
+              type: 'MAJOR_TYPE_DRAW',
+              draw: {
+                items: pics.map(({ url, ...size }) => ({ src: url, ...size })),
+              },
+            },
+          },
+        },
+      },
+    },
+  };
 }
 
 describe('Bilibili Opus', () => {
@@ -194,5 +222,109 @@ describe('Bilibili Opus', () => {
       .query({ url: `https://www.bilibili.com/opus/${id}` });
     expect(response.status).toBe(502);
     expect(JSON.stringify(response.body)).not.toContain('secret');
+  });
+
+  it('falls back to the detail API when HTTP 200 contains a CAPTCHA page', async () => {
+    get.mockResolvedValueOnce({
+      status: 200,
+      data: '<html><title>验证码_哔哩哔哩</title><div id="risk-captcha-app"></div></html>',
+      headers: {},
+    });
+    get.mockResolvedValueOnce({ status: 200, data: apiFixture(), headers: {} });
+    const response = await supertest(app)
+      .get('/api/bilibili')
+      .query({ url: `https://www.bilibili.com/opus/${id}` });
+    expect(response.status).toBe(200);
+    expect(response.body.data.description).toBe('Post description');
+    expect(response.body.data.media).toHaveLength(3);
+    expect(response.body.data.media[2].url).toBe('https://i0.hdslb.com/bfs/new_dyn/third.png');
+    expect(get.mock.calls[1][0]).toBe(
+      `https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id=${id}`,
+    );
+  });
+
+  it('uses the configured cookie only for the API request and never returns it', async () => {
+    const previous = process.env.BILIBILI_SESSDATA;
+    process.env.BILIBILI_SESSDATA = 'secret%2Ccookie';
+    try {
+      get.mockRejectedValueOnce(new Error('HTTP 412'));
+      get.mockResolvedValueOnce({ status: 200, data: apiFixture(), headers: {} });
+      const result = await downloadBilibiliOpus(id, headers);
+      expect(get.mock.calls[0][1]?.headers).not.toHaveProperty('Cookie');
+      expect(get.mock.calls[1][1]?.headers).toHaveProperty('Cookie', 'SESSDATA=secret%2Ccookie');
+      expect(JSON.stringify(result)).not.toContain('secret');
+    } finally {
+      if (previous === undefined) delete process.env.BILIBILI_SESSDATA;
+      else process.env.BILIBILI_SESSDATA = previous;
+    }
+  });
+
+  it('does not fall back for explicitly restricted HTML posts', async () => {
+    const state = fixture();
+    state.detail.basic.is_only_fans = true;
+    get.mockResolvedValueOnce({ status: 200, data: html(state), headers: {} });
+    await expect(downloadBilibiliOpus(id, headers)).rejects.toMatchObject({ statusCode: 403 });
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([-352, -412, -101, -404, 62002])(
+    'reports detail API error code %s accurately',
+    (code) => {
+      try {
+        parseBilibiliDynamic({ code }, id, headers);
+        throw new Error('Expected API error');
+      } catch (error) {
+        expect(error).toMatchObject({ statusCode: [-404, 62002].includes(code) ? 404 : 502 });
+      }
+    },
+  );
+
+  it('rejects restricted, malformed, mismatched, and unsafe API data', () => {
+    const restricted = apiFixture();
+    restricted.data.item.visible = false;
+    expect(() => parseBilibiliDynamic(restricted, id, headers)).toThrow('restricted');
+    expect(() => parseBilibiliDynamic(apiFixture('123'), id, headers)).toThrow('details');
+    expect(() => parseBilibiliDynamic({ code: 0, data: {} }, id, headers)).toThrow('details');
+    const unsafe = apiFixture();
+    unsafe.data.item.modules.module_dynamic.major.draw.items[0].src = 'https://evil.test/pic.png';
+    expect(() => parseBilibiliDynamic(unsafe, id, headers)).toThrow('Unsupported');
+  });
+
+  it('supports the Opus API layout and retains original GIFs', () => {
+    const data = apiFixture().data;
+    const result = parseBilibiliDynamic(
+      {
+        code: 0,
+        data: {
+          item: {
+            ...data.item,
+            modules: {
+              ...data.item.modules,
+              module_dynamic: {
+                desc: null,
+                major: {
+                  type: 'MAJOR_TYPE_OPUS',
+                  opus: {
+                    title: 'Opus title',
+                    summary: { text: 'Summary' },
+                    pics: [
+                      {
+                        url: 'https://i0.hdslb.com/bfs/new_dyn/image.gif',
+                        width: 400,
+                        height: 300,
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      id,
+      headers,
+    );
+    expect(result).toMatchObject({ title: 'Opus title', description: 'Summary' });
+    expect(result.media[0]).toMatchObject({ type: 'gif', width: 400, height: 300 });
   });
 });

@@ -7,6 +7,7 @@ import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 import { queryInteger } from '../../utils/query';
 import { BilibiliMedia, BilibiliResult, BilibiliOpusResult } from './bilibili.types';
 import { downloadBilibiliOpus } from './bilibili.opus';
+import { bilibiliRequestHeaders } from './bilibili.auth';
 
 export const BILIBILI_HOSTS = [
   'bilibili.com',
@@ -85,18 +86,6 @@ const playSchema = z.object({
 });
 const envelopeSchema = z.object({ code: z.number(), data: z.unknown().optional() });
 
-function encodeSessdata(value: string): string {
-  // Browser cookies may already contain escapes such as %2C. Normalize once
-  // before encoding so those escapes do not become %252C and invalidate login.
-  let decoded = value;
-  try {
-    decoded = decodeURIComponent(value);
-  } catch {
-    // Raw cookie values can contain a literal percent sign.
-  }
-  return encodeURIComponent(decoded);
-}
-
 function mediaUrl(value: string | undefined): string | undefined {
   if (!value) return undefined;
   try {
@@ -115,11 +104,7 @@ export class BilibiliService {
     params: Record<string, string | number>,
     schema: z.ZodType<T>,
   ): Promise<T> {
-    const sessdata = process.env.BILIBILI_SESSDATA?.trim();
-    const headers = {
-      ...HEADERS,
-      ...(sessdata ? { Cookie: `SESSDATA=${encodeSessdata(sessdata)}` } : {}),
-    };
+    const headers = bilibiliRequestHeaders(HEADERS);
     for (const [index, path] of paths.entries()) {
       let body: unknown;
       try {

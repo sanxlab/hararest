@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { AppError } from '../../utils/AppError';
 import { getPublicPage } from '../../utils/http';
 import { BilibiliMedia, BilibiliOpusResult } from './bilibili.types';
+import { bilibiliRequestHeaders } from './bilibili.auth';
 
 const pictureSchema = z.object({
   url: z.string(),
@@ -89,7 +90,15 @@ export function parseBilibiliOpus(
   id: string,
   headers: BilibiliOpusResult['headers'],
 ): BilibiliOpusResult {
-  const state = z.object({ detail: detailSchema }).safeParse(readInitialState(html));
+  return parseOpusState(readInitialState(html), id, headers);
+}
+
+function parseOpusState(
+  input: unknown,
+  id: string,
+  headers: BilibiliOpusResult['headers'],
+): BilibiliOpusResult {
+  const state = z.object({ detail: detailSchema }).safeParse(input);
   if (!state.success || state.data.detail.id_str !== id)
     throw new AppError('Invalid Bilibili Opus details.', 502);
   const detail = state.data.detail;
@@ -170,21 +179,141 @@ export async function downloadBilibiliOpus(
   id: string,
   headers: BilibiliOpusResult['headers'],
 ): Promise<BilibiliOpusResult> {
-  let html: string;
   try {
     const response = await getPublicPage<string>(
       `https://www.bilibili.com/opus/${id}`,
       ['www.bilibili.com'],
       { headers },
     );
-    html = response.data;
+    if (typeof response.data !== 'string') throw new AppError('Invalid Bilibili Opus page.', 502);
+    return parseBilibiliOpus(response.data, id, headers);
   } catch (error) {
-    if (error instanceof AppError) throw error;
+    // Do not use a fallback to override an explicit restriction or an empty post.
+    if (error instanceof AppError && error.statusCode !== 502) throw error;
+  }
+  let body: unknown;
+  try {
+    const response = await getPublicPage<unknown>(
+      `https://api.bilibili.com/x/polymer/web-dynamic/v1/detail?id=${id}`,
+      ['api.bilibili.com'],
+      { headers: bilibiliRequestHeaders(headers), responseType: 'json' },
+    );
+    body = response.data;
+  } catch {
     throw new AppError(
-      'Unable to fetch Bilibili Opus. The post may be unavailable or blocked.',
+      'Bilibili Opus page and detail API are unavailable or blocked by upstream. Try again later.',
       502,
     );
   }
-  if (typeof html !== 'string') throw new AppError('Invalid Bilibili Opus page.', 502);
-  return parseBilibiliOpus(html, id, headers);
+  return parseBilibiliDynamic(body, id, headers);
+}
+
+const dynamicSchema = z.object({
+  id_str: z.string(),
+  visible: z.boolean().optional(),
+  basic: z.object({ is_only_fans: z.boolean().optional() }).optional(),
+  modules: z.object({
+    module_author: z.unknown(),
+    module_blocked: z.unknown().optional(),
+    module_paywall: z.unknown().optional(),
+    module_dynamic: z.object({
+      desc: z.object({ text: z.string() }).nullish(),
+      major: z
+        .object({
+          type: z.string(),
+          blocked: z.unknown().optional(),
+          opus: z
+            .object({
+              title: z.string().nullish(),
+              summary: z.object({ text: z.string() }).nullish(),
+              pics: z.array(pictureSchema),
+            })
+            .optional(),
+          draw: z
+            .object({
+              items: z.array(
+                z.object({
+                  src: z.string(),
+                  width: z.number().int().nonnegative().default(0),
+                  height: z.number().int().nonnegative().default(0),
+                }),
+              ),
+            })
+            .optional(),
+        })
+        .nullish(),
+    }),
+  }),
+});
+
+export function parseBilibiliDynamic(
+  body: unknown,
+  id: string,
+  headers: BilibiliOpusResult['headers'],
+): BilibiliOpusResult {
+  const envelope = z.object({ code: z.number(), data: z.unknown().optional() }).safeParse(body);
+  if (!envelope.success) throw new AppError('Invalid Bilibili Opus API response.', 502);
+  const { code, data } = envelope.data;
+  if ([-404, 4101131, 62002].includes(code)) {
+    throw new AppError('Bilibili Opus post was not found or is unavailable.', 404);
+  }
+  if (code === -101) {
+    throw new AppError('Bilibili requires a valid BILIBILI_SESSDATA login cookie.', 502);
+  }
+  if (code !== 0) throw new AppError(`Bilibili Opus API rejected the request (code ${code}).`, 502);
+  const parsed = z.object({ item: dynamicSchema }).safeParse(data);
+  if (!parsed.success || parsed.data.item.id_str !== id) {
+    throw new AppError('Invalid Bilibili Opus API details.', 502);
+  }
+  const item = parsed.data.item;
+  const modules = item.modules;
+  const major = modules.module_dynamic.major;
+  if (
+    item.visible === false ||
+    item.basic?.is_only_fans ||
+    modules.module_blocked ||
+    modules.module_paywall ||
+    major?.blocked ||
+    major?.type === 'MAJOR_TYPE_BLOCKED'
+  ) {
+    throw new AppError('This Bilibili Opus post is restricted.', 403);
+  }
+  const pictures =
+    major?.type === 'MAJOR_TYPE_OPUS'
+      ? major.opus?.pics
+      : major?.type === 'MAJOR_TYPE_DRAW'
+        ? major.draw?.items.map(({ src, ...size }) => ({ url: src, ...size }))
+        : [];
+  return parseOpusState(
+    {
+      detail: {
+        id_str: item.id_str,
+        basic: { title: major?.opus?.title || '' },
+        modules: [
+          { module_author: modules.module_author },
+          {
+            module_content: {
+              paragraphs: [
+                {
+                  text: {
+                    nodes: [
+                      {
+                        word: {
+                          words:
+                            modules.module_dynamic.desc?.text || major?.opus?.summary?.text || '',
+                        },
+                      },
+                    ],
+                  },
+                },
+                { pic: { pics: pictures || [] } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    id,
+    headers,
+  );
 }
