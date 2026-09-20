@@ -2,7 +2,8 @@
 
 Workflow `.github/workflows/ci.yml` memeriksa tipe, tes, lint, dan build pada PR
 serta push ke `main`. Setelah lolos, workflow membuat image `linux/amd64` dan
-menguji `/health` sebagai user non-root dengan port dinamis serta cookie dummy.
+menguji `/health` serta render quote sebagai user non-root dengan port dinamis
+serta cookie dummy. Renderer quote dan font sudah termasuk di image Hararest.
 Hanya push ke `main` yang kemudian mengirim **image yang sama** ke
 `registry.heroku.com/<app>/web` dan menjalankan `heroku container:release web`.
 `workflow_dispatch` hanya menjalankan pemeriksaan, tanpa deploy.

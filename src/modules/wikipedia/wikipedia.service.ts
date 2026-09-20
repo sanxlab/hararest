@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { z } from 'zod';
 import { AppError } from '../../utils/AppError';
 import { getPublicPage } from '../../utils/http';
 import { WikipediaArticle, WikipediaSection } from './wikipedia.types';
@@ -36,6 +37,60 @@ function articleUrl(input: string): URL {
 const cleanText = (text: string): string => text.replace(/\s+/g, ' ').trim();
 
 export class WikipediaService {
+  async search(query: string, language = 'id', limit = 5) {
+    const q = query.trim();
+    if (!q || q.length > 300)
+      throw new AppError('Search query must contain 1–300 characters.', 400);
+    if (!/^[a-z][a-z0-9-]{0,19}$/.test(language))
+      throw new AppError('Invalid Wikipedia language.', 400);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 10)
+      throw new AppError('Search limit must be between 1 and 10.', 400);
+    const endpoint = new URL(`https://${language}.wikipedia.org/w/api.php`);
+    endpoint.search = new URLSearchParams({
+      action: 'query',
+      list: 'search',
+      srsearch: q,
+      srnamespace: '0',
+      srlimit: String(limit),
+      format: 'json',
+      formatversion: '2',
+      srprop: 'snippet',
+    }).toString();
+    try {
+      const response = await getPublicPage<unknown>(endpoint.href, ['wikipedia.org'], {
+        responseType: 'json',
+        headers: {
+          'User-Agent': 'Hararest/1.0 (Wikipedia article scraper)',
+          Accept: 'application/json',
+        },
+      });
+      const parsed = z
+        .object({
+          query: z.object({
+            search: z.array(
+              z.object({
+                pageid: z.number().int().positive(),
+                title: z.string().min(1),
+                snippet: z.string(),
+              }),
+            ),
+          }),
+        })
+        .safeParse(response.data);
+      if (!parsed.success) throw new AppError('Invalid Wikipedia search response.', 502);
+      const results = parsed.data.query.search.slice(0, limit).map((item) => ({
+        page_id: item.pageid,
+        title: item.title,
+        url: `https://${language}.wikipedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}`,
+        snippet: cleanText(cheerio.load(item.snippet).root().text()),
+      }));
+      return { query: q, language, count: results.length, results };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Failed to search Wikipedia.', 502);
+    }
+  }
+
   async scrape(input: string): Promise<WikipediaArticle> {
     const url = articleUrl(input);
     try {

@@ -72,6 +72,26 @@ jobs:
           fs.rmSync(path.dirname(config.youtube.cookiePath), { recursive: true });
           console.log('Runtime cookies and temporary storage passed');
           JS
+      - name: Render a quote with production dependencies
+        run: |
+          docker exec -i hararest-ci node <<'JS'
+          const assert = require('node:assert/strict');
+          (async () => {
+            const response = await fetch('http://127.0.0.1:18080/api/quote/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ messages: [{ from: { id: 1, name: 'CI' }, text: 'Quote 👋' }] }),
+              signal: AbortSignal.timeout(30000),
+            });
+            assert.equal(response.status, 200);
+            const body = await response.json();
+            assert.equal(body.ok, true);
+            const info = await require('sharp')(Buffer.from(body.result.image, 'base64')).metadata();
+            assert.equal(info.format, 'png');
+            assert.ok(info.width > 0 && info.height > 0);
+            console.log('Embedded quote renderer passed');
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          JS
       - name: Stop smoke-test container
         if: always()
         run: docker rm --force hararest-ci || true

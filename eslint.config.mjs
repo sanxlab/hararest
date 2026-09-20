@@ -4,7 +4,7 @@ import globals from 'globals';
 
 export default tseslint.config(
     {
-        ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'src/__mocks__/**', 'eslint.config.mjs', 'jest.config.js'],
+        ignores: ['dist/**', 'node_modules/**', 'vendor/**', '.kilo/**', 'coverage/**', 'src/__mocks__/**', 'eslint.config.mjs', 'jest.config.js'],
     },
     eslint.configs.recommended,
     ...tseslint.configs.recommended,

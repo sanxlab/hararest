@@ -2,13 +2,18 @@ FROM node:22-bookworm AS builder
 
 WORKDIR /app
 
+# Build node-canvas if a prebuilt binary is unavailable for the target platform.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN npm ci
 
 COPY tsconfig.json ./
 COPY src ./src
-RUN npm run build
+RUN npm run build && npm prune --omit=dev
 
 FROM node:22-bookworm AS runtime
 
@@ -22,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-ind \
     tesseract-ocr-eng \
+    libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libjpeg62-turbo libgif7 librsvg2-2 \
+    fonts-noto-core fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 # Python env for Instagram/Facebook fallback scrapers.
@@ -44,7 +51,8 @@ RUN printf '%s\n' \
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+COPY --from=builder /app/node_modules ./node_modules
+COPY vendor ./vendor
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/modules/instagram/snapinsta_scraper.py ./src/modules/instagram/snapinsta_scraper.py

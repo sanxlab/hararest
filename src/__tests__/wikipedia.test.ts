@@ -116,3 +116,66 @@ it('rejects missing articles and unexpected upstream markup', () => {
     service.parse('<html>Unavailable</html>', 'https://en.wikipedia.org/wiki/Wiki'),
   ).toThrow('does not contain an article');
 });
+
+it('searches Wikipedia in Indonesian and returns plain-text snippets with encoded article URLs', async () => {
+  get.mockResolvedValue({
+    status: 200,
+    headers: {},
+    data: {
+      query: {
+        search: [
+          {
+            pageid: 123,
+            title: 'Kucing & anjing',
+            snippet: '<span class="searchmatch">Kucing</span> &amp; anjing',
+          },
+        ],
+      },
+    },
+  });
+  const response = await supertest(app)
+    .get('/api/wikipedia/search')
+    .query({ q: 'kucing & anjing' });
+  expect(response.status).toBe(200);
+  expect(response.body.data).toMatchObject({
+    language: 'id',
+    count: 1,
+    results: [
+      {
+        title: 'Kucing & anjing',
+        snippet: 'Kucing & anjing',
+        url: 'https://id.wikipedia.org/wiki/Kucing_%26_anjing',
+      },
+    ],
+  });
+  const upstream = new URL(get.mock.calls[0][0]);
+  expect(upstream.searchParams.get('srsearch')).toBe('kucing & anjing');
+  expect(upstream.searchParams.get('srnamespace')).toBe('0');
+});
+
+it.each([
+  {},
+  { q: '' },
+  { q: 'x'.repeat(301) },
+  { q: 'cat', lang: 'en.evil.com' },
+  { q: 'cat', limit: '11' },
+])('rejects invalid search input %j', async (query) => {
+  expect((await supertest(app).get('/api/wikipedia/search').query(query)).status).toBe(400);
+  expect(get).not.toHaveBeenCalled();
+});
+
+it('returns an empty result list for no matches', async () => {
+  get.mockResolvedValue({ status: 200, headers: {}, data: { query: { search: [] } } });
+  expect(await service.search('no match', 'en')).toMatchObject({
+    language: 'en',
+    count: 0,
+    results: [],
+  });
+});
+
+it('reports invalid search responses and upstream errors', async () => {
+  get.mockResolvedValue({ status: 200, headers: {}, data: { error: { code: 'badrequest' } } });
+  await expect(service.search('cat')).rejects.toMatchObject({ statusCode: 502 });
+  get.mockRejectedValue(new Error('timeout'));
+  await expect(service.search('cat')).rejects.toMatchObject({ statusCode: 502 });
+});
