@@ -5,6 +5,8 @@
 !.env.example
 *.cookies.base64
 node_modules
+__pycache__/
+*.py[cod]
 bin
 dist
 logs
@@ -15,5 +17,5 @@ cookies
 # Local audit notes
 /docs/bug-audit-*.md
 /docs/integration-audit-*.md
-
+/docs/security-review-*.md
 scripts/*

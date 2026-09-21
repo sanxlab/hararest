@@ -210,16 +210,21 @@ def fetch_fdown_data(facebook_url: str) -> dict[str, Any]:
         browser={"browser": "chrome", "platform": "windows", "desktop": True}
     )
 
-    landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30)
+    landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30, allow_redirects=False)
     landing.raise_for_status()
+    if landing.is_redirect:
+        raise FDownError("FDown returned an unexpected redirect.")
 
     result = scraper.post(
         DOWNLOAD_URL,
         data={"URLz": facebook_url},
         headers=DEFAULT_HEADERS,
         timeout=45,
+        allow_redirects=False,
     )
     result.raise_for_status()
+    if result.is_redirect:
+        raise FDownError("FDown returned an unexpected redirect.")
 
     result_html = result.text
     if "just a moment" in result_html.lower():

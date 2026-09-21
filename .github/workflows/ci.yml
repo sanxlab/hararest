@@ -28,8 +28,10 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run typecheck
       - run: npm test -- --runInBand --roots src
+      - run: python3 -B src/__tests__/scraper_security_test.py
       - run: npm run lint
       - run: npm run build
 

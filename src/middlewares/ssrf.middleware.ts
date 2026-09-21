@@ -4,6 +4,13 @@ import { BlockList, isIP } from 'node:net';
 import { AppError } from '../utils/AppError';
 
 const restrictedIPs = new BlockList();
+const publicIPv6 = new BlockList();
+
+// Only native global unicast or IPv4-mapped public addresses are eligible.
+// This also excludes deprecated site-local, scoped, and NAT64 addresses, which
+// can reach a different IPv4 destination through a local translation gateway.
+publicIPv6.addSubnet('2000::', 3, 'ipv6');
+publicIPv6.addSubnet('::ffff:0:0', 96, 'ipv6');
 
 for (const [network, prefix] of [
   ['0.0.0.0', 8],
@@ -30,18 +37,26 @@ for (const [network, prefix] of [
   ['fc00::', 7],
   ['fe80::', 10],
   ['ff00::', 8],
+  ['2001::', 32], // Teredo tunnels can carry otherwise restricted IPv4 targets.
+  ['2001:2::', 48],
+  ['2001:10::', 28],
+  ['2001:20::', 28],
   ['2001:db8::', 32],
+  ['2002::', 16], // 6to4 embeds the IPv4 destination in its prefix.
+  ['3ffe::', 16],
+  ['3fff::', 20],
 ] as const) {
   restrictedIPs.addSubnet(network, prefix, 'ipv6');
 }
 
 export function isSafeIP(ip: string): boolean {
   const family = isIP(ip);
-  if (family === 0) {
+  if (family === 0 || ip.includes('%')) {
     return false;
   }
 
-  return !restrictedIPs.check(ip, family === 4 ? 'ipv4' : 'ipv6');
+  return !restrictedIPs.check(ip, family === 4 ? 'ipv4' : 'ipv6') &&
+    (family === 4 || publicIPv6.check(ip, 'ipv6'));
 }
 
 export async function assertPublicUrl(url: string, allowedHosts?: readonly string[]): Promise<URL> {

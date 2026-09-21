@@ -2,6 +2,7 @@ import { getPublicPage } from '../../utils/http';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
+import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 import { PinterestDownload, PinterestSearchResponse, PinterestSearchItem } from './pinterest.types';
 
 type JsonObject = Record<string, unknown>;
@@ -10,6 +11,9 @@ const pinterestClient = axios.create({
     timeout: 15000,
     maxRedirects: 0,
     maxContentLength: 5 * 1024 * 1024,
+    proxy: false,
+    httpAgent: publicHttpAgent,
+    httpsAgent: publicHttpsAgent,
     headers: { 'User-Agent': 'Mozilla/5.0' }
 });
 
@@ -93,7 +97,7 @@ export class PinterestService {
 
     public async search(query: string): Promise<PinterestSearchResponse> {
         try {
-            const pData = { options: { query, page_size: 100, scope: 'pins', source_url: `/search/pins/?q=${encodeURIComponent(query)}` }, context: {} };
+            const pData = { options: { query, page_size: 10, scope: 'pins', source_url: `/search/pins/?q=${encodeURIComponent(query)}` }, context: {} };
             const params = new URLSearchParams({ source_url: pData.options.source_url, data: JSON.stringify(pData), _: String(Date.now()) });
             const res = await pinterestClient.get<JsonObject>(`https://www.pinterest.com/resource/BaseSearchResource/get/?${params}`, { headers: { 'x-pinterest-pws-handler': 'www/search/[scope].js' } });
             const resourceResponse = asObject(res.data.resource_response);
@@ -116,9 +120,10 @@ export class PinterestService {
                     author: stringValue(author?.full_name) || stringValue(author?.username),
                     link: `https://pinterest.com/pin/${id}`
                 });
+                if (results.length === 10) break;
             }
 
-            return { results: results.slice(0, 10) };
+            return { results };
         } catch (error) {
             if (error instanceof AppError) throw error;
             const message = error instanceof Error ? error.message : 'Unknown error';

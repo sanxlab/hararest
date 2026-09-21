@@ -13,12 +13,33 @@ const extendDownloadTimeout = (req: Request, res: Response) => {
   res.setTimeout(DOWNLOAD_TIMEOUT_MS);
 };
 
-const cleanupFile = (filePath: string) => {
-  fs.unlink(filePath, (err) => {
+const cleanupFile = (filePath: string): Promise<void> => {
+  return fs.promises.unlink(filePath).catch((err: NodeJS.ErrnoException) => {
     if (err && err.code !== 'ENOENT') {
       logger.warn('Failed to clean up downloaded file', { filePath, error: err.message });
     }
   });
+};
+
+const prepareDownload = async (
+  req: Request,
+  res: Response,
+  work: (signal: AbortSignal) => Promise<string>,
+): Promise<string | undefined> => {
+  const abort = new AbortController();
+  const signal = AbortSignal.any([abort.signal, AbortSignal.timeout(9 * 60_000)]);
+  const onClose = () => { if (!res.writableEnded) abort.abort(); };
+  res.once('close', onClose);
+  try {
+    const file = await work(signal);
+    if (signal.aborted || res.destroyed) {
+      await cleanupFile(file);
+      return undefined;
+    }
+    return file;
+  } finally {
+    res.off('close', onClose);
+  }
 };
 
 const isRequestAbortedError = (err: Error, req: Request, res: Response) =>
@@ -91,7 +112,8 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
       return next(new AppError('Quality must be a resolution such as 360p or 720p.', 400));
     }
     const qualityStr = typeof quality === 'string' && quality ? quality : undefined;
-    const filePath = await youtubeService.downloadVideo(url, qualityStr);
+    const filePath = await prepareDownload(req, res, signal => youtubeService.downloadVideo(url, qualityStr, { signal }));
+    if (!filePath) return;
 
     res.download(filePath, (err) => {
       if (err) {
@@ -102,7 +124,7 @@ export const downloadVideoHandler = async (req: Request, res: Response, next: Ne
       cleanupFile(filePath);
     });
   } catch (error) {
-    next(error);
+    if (!res.destroyed) next(error);
   }
 };
 
@@ -116,7 +138,8 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
 
     extendDownloadTimeout(req, res);
 
-    const filePath = await youtubeService.downloadAudio(url);
+    const filePath = await prepareDownload(req, res, signal => youtubeService.downloadAudio(url, { signal }));
+    if (!filePath) return;
 
     res.download(filePath, (err) => {
       if (err) {
@@ -127,7 +150,7 @@ export const downloadAudioHandler = async (req: Request, res: Response, next: Ne
       cleanupFile(filePath);
     });
   } catch (error) {
-    next(error);
+    if (!res.destroyed) next(error);
   }
 };
 

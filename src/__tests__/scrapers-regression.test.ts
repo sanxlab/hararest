@@ -112,8 +112,15 @@ describe('Pixiv', () => {
 });
 
 describe('TikTok', () => {
+  it('does not expose raw upstream request details', async () => {
+    mockedAxios.post.mockRejectedValueOnce(new Error('Authorization=private-token /private/config'));
+    await expect(new TiktokService().download('https://tiktok.com/video/123')).rejects.toMatchObject({
+      statusCode: 502, message: expect.not.stringMatching(/private-token|private\/config/)
+    });
+  });
+
   it.each(['download', 'trendingFeed', 'userFeed', 'search'] as const)('maps upstream denial in %s to a gateway error', async (method) => {
-    mockedAxios.post.mockRejectedValueOnce(new Error('Request failed with status code 403'));
+    mockedAxios.post.mockRejectedValueOnce({ response: { status: 403 }, message: 'Request failed with status code 403' });
     await expect(new TiktokService()[method]('test')).rejects.toMatchObject({
       statusCode: 502, message: expect.stringContaining('403')
     });

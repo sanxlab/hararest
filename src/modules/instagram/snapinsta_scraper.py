@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import unquote, urljoin, urlparse
 
 import cloudscraper
 
@@ -92,8 +92,18 @@ def extract_var(html_text: str, name: str, default: str) -> str:
 
 
 def parse_page_config(html_text: str) -> PageConfig:
+    search_url = urljoin(BASE_PAGE_URL, extract_var(html_text, "k_url_search", DEFAULT_SEARCH_URL))
+    parsed = urlparse(search_url)
+    if (
+        parsed.scheme != "https"
+        or parsed.hostname != "snapinsta.to"
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.port not in (None, 443)
+    ):
+        raise SnapInstaError("SnapInsta returned an invalid search endpoint.")
     return PageConfig(
-        search_url=extract_var(html_text, "k_url_search", DEFAULT_SEARCH_URL),
+        search_url=search_url,
         lang=extract_var(html_text, "k_lang", "en"),
         ver=extract_var(html_text, "k_ver", "v2"),
     )
@@ -205,8 +215,10 @@ def fetch_snapinsta_data(instagram_url: str) -> dict[str, Any]:
         browser={"browser": "chrome", "platform": "windows", "desktop": True}
     )
 
-    landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30)
+    landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30, allow_redirects=False)
     landing.raise_for_status()
+    if landing.is_redirect:
+        raise SnapInstaError("SnapInsta returned an unexpected redirect.")
     page_config = parse_page_config(landing.text)
 
     verify = scraper.post(
@@ -214,8 +226,11 @@ def fetch_snapinsta_data(instagram_url: str) -> dict[str, Any]:
         data={"url": instagram_url},
         headers={**DEFAULT_HEADERS, "X-Requested-With": "XMLHttpRequest"},
         timeout=30,
+        allow_redirects=False,
     )
     verify.raise_for_status()
+    if verify.is_redirect:
+        raise SnapInstaError("SnapInsta returned an unexpected redirect.")
 
     verify_json = verify.json()
     token = verify_json.get("token", "")
@@ -234,8 +249,11 @@ def fetch_snapinsta_data(instagram_url: str) -> dict[str, Any]:
         data=payload,
         headers=DEFAULT_HEADERS,
         timeout=45,
+        allow_redirects=False,
     )
     search.raise_for_status()
+    if search.is_redirect:
+        raise SnapInstaError("SnapInsta returned an unexpected redirect.")
 
     try:
         data = search.json()

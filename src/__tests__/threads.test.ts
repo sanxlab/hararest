@@ -4,15 +4,8 @@ import app from '../app';
 const originalFetch = global.fetch;
 const mockedFetch = jest.fn();
 
-const createFetchResponse = (body: string, headers: Record<string, string> = {}) => ({
-    ok: true,
-    status: 200,
-    statusText: 'OK',
-    headers: {
-        get: (name: string) => headers[name.toLowerCase()] || null
-    },
-    text: jest.fn().mockResolvedValue(body)
-});
+const createFetchResponse = (body: string, headers: Record<string, string> = {}) =>
+    new Response(body, { headers });
 
 describe('Threads Module', () => {
     beforeEach(() => {

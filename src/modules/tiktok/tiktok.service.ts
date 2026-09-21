@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { AppError } from '../../utils/AppError';
+import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 import { TiktokDownload, TiktokUserFeed } from './tiktok.types';
 
 interface TikwmMusicInfo {
@@ -57,6 +58,14 @@ const assertSuccessfulResponse = <T>(data: TikwmResponse<T>, fallbackMessage: st
     return data.data;
 };
 
+const upstreamError = (operation: string, error: unknown): AppError => {
+    const status = typeof error === 'object' && error !== null
+        ? (error as { response?: { status?: unknown } }).response?.status : undefined;
+    const suffix = typeof status === 'number' && Number.isInteger(status) && status >= 100 && status <= 599
+        ? ` (HTTP ${status})` : '';
+    return new AppError(`TikTok ${operation} request failed${suffix}.`, 502);
+};
+
 const mapVideo = (video: TikwmVideo): TiktokDownload => ({
     id: video.id || video.video_id || '',
     region: video.region,
@@ -89,18 +98,25 @@ const mapVideo = (video: TikwmVideo): TiktokDownload => ({
 
 export class TiktokService {
     private baseUrl = 'https://www.tikwm.com/api';
+    private readonly requestOptions = {
+        timeout: 30000,
+        maxRedirects: 0,
+        maxContentLength: 5 * 1024 * 1024,
+        proxy: false as const,
+        httpAgent: publicHttpAgent,
+        httpsAgent: publicHttpsAgent
+    };
 
     public async download(url: string): Promise<TiktokDownload> {
         try {
             const { data } = await axios.post<TikwmResponse<TikwmVideo>>(
                 `${this.baseUrl}/`,
                 `url=${encodeURIComponent(url)}`,
-                { timeout: 30000 }
+                this.requestOptions
             );
             return mapVideo(assertSuccessfulResponse(data, 'Failed to download video'));
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Download Error: ${message}`, 502);
+            throw upstreamError('download', error);
         }
     }
 
@@ -109,12 +125,11 @@ export class TiktokService {
             const { data } = await axios.post<TikwmResponse<TikwmVideo[]>>(
                 `${this.baseUrl}/feed/list`,
                 `region=${encodeURIComponent(region)}`,
-                { timeout: 30000 }
+                this.requestOptions
             );
             return assertSuccessfulResponse(data, 'Failed to fetch trending feed').map(mapVideo);
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Trending Error: ${message}`, 502);
+            throw upstreamError('trending', error);
         }
     }
 
@@ -124,7 +139,7 @@ export class TiktokService {
             const { data } = await axios.post<TikwmResponse<TikwmFeedData>>(
                 `${this.baseUrl}/user/posts`,
                 `unique_id=${encodeURIComponent(user)}&count=15${cursor}`,
-                { timeout: 30000 }
+                this.requestOptions
             );
             const feed = assertSuccessfulResponse(data, 'Failed to fetch user feed');
 
@@ -134,8 +149,7 @@ export class TiktokService {
                 next: feed.hasMore
             };
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok User Feed Error: ${message}`, 502);
+            throw upstreamError('user feed', error);
         }
     }
 
@@ -145,7 +159,7 @@ export class TiktokService {
             const { data } = await axios.post<TikwmResponse<TikwmFeedData>>(
                 `${this.baseUrl}/feed/search`,
                 `keywords=${encodeURIComponent(query)}&count=15${cursor}`,
-                { timeout: 30000 }
+                this.requestOptions
             );
             const feed = assertSuccessfulResponse(data, 'Failed to search videos');
 
@@ -155,8 +169,7 @@ export class TiktokService {
                 next: feed.hasMore
             };
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`TikTok Search Error: ${message}`, 502);
+            throw upstreamError('search', error);
         }
     }
 }

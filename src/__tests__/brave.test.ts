@@ -29,6 +29,7 @@ it('maps web results and bounds the upstream request duration', async () => {
   const [url, options] = mockedFetch.mock.calls[0];
   expect((url as URL).searchParams.get('count')).toBe('2');
   expect(options?.signal).toBeInstanceOf(AbortSignal);
+  expect(options?.redirect).toBe('error');
 });
 
 it.each([401, 403, 500])('maps upstream HTTP %s to a gateway error', async (status) => {
@@ -39,4 +40,13 @@ it.each([401, 403, 500])('maps upstream HTTP %s to a gateway error', async (stat
 it('reports malformed upstream JSON', async () => {
   mockedFetch.mockResolvedValue(new Response('<html>error</html>'));
   await expect(service.search('test')).rejects.toMatchObject({ statusCode: 502 });
+});
+
+it('refuses an oversized upstream body before parsing JSON', async () => {
+  const cancel = jest.fn();
+  mockedFetch.mockResolvedValue(new Response(new ReadableStream({ cancel }), {
+    headers: { 'content-length': String(6 * 1024 * 1024) },
+  }));
+  await expect(service.search('test')).rejects.toMatchObject({ statusCode: 502 });
+  expect(cancel).toHaveBeenCalledTimes(1);
 });

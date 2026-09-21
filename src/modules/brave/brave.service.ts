@@ -1,5 +1,6 @@
 import { AppError } from '../../utils/AppError';
 import logger from '../../utils/logger';
+import { readResponseText } from '../../utils/readResponse';
 
 interface BraveSearchResult {
   title: string;
@@ -54,6 +55,7 @@ export class BraveService {
     try {
       response = await fetch(url, {
         signal: AbortSignal.timeout(15000),
+        redirect: 'error',
         headers: {
           Accept: 'application/json',
           'X-Subscription-Token': apiKey,
@@ -65,20 +67,22 @@ export class BraveService {
     }
 
     if (!response.ok) {
-      const errorBody = await response.text().catch(() => 'Unable to read upstream error body');
-      logger.error(`Brave Search API error: ${response.status} - ${errorBody}`);
+      await response.body?.cancel();
+      logger.error(`Brave Search API error: ${response.status}`);
       throw new AppError(`Brave Search API error: ${response.status}`, response.status === 429 ? 503 : 502);
     }
 
     let data: BraveSearchApiResponse;
     try {
-      data = await response.json() as BraveSearchApiResponse;
+      data = JSON.parse(await readResponseText(response)) as BraveSearchApiResponse;
       if (!data || (data.web?.results !== undefined && !Array.isArray(data.web.results))) throw new Error('Invalid results');
-    } catch {
+    } catch (error) {
+      if (error instanceof AppError) throw error;
       throw new AppError('Brave Search API returned invalid JSON data.', 502);
     }
     const results: BraveSearchResult[] = (data.web?.results || [])
       .filter((item) => item && typeof item.title === 'string' && typeof item.url === 'string')
+      .slice(0, num)
       .map((item) => ({
         title: item.title || '',
         link: item.url || '',

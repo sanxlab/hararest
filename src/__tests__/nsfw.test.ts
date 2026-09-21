@@ -32,6 +32,14 @@ it('reports connection failures as gateway errors', async () => {
   await expect(service.getWaifuIm('waifu', false)).rejects.toMatchObject({ statusCode: 502 });
 });
 
+it('does not expose raw upstream request details', async () => {
+  get.mockRejectedValue(new Error('Authorization=private-token /private/config'));
+  await expect(service.getWaifuIm('waifu', false)).rejects.toMatchObject({
+    statusCode: 502,
+    message: expect.not.stringMatching(/private-token|private\/config/),
+  });
+});
+
 it.each([403, 503])(
   'reports upstream HTTP %s without another extraction attempt',
   async (statusCode) => {

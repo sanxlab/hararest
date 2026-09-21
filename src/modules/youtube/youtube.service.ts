@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { execFile } from 'child_process';
+import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
 import { config } from '../../config/default';
 import { AppError } from '../../utils/AppError';
@@ -25,7 +25,10 @@ function buildVideoFormat(quality?: string): string {
     if (isNaN(h) || h <= 0) return DEFAULT_VIDEO_FORMAT;
     return `bv*[height<=${h}][ext=mp4]+ba/b[height<=${h}]/bv*[height<=${h}]+ba/18/${DEFAULT_VIDEO_FORMAT}`;
 }
-const MAX_BUFFER = 1024 * 1024 * 50;
+const MAX_BUFFER = 8 * 1024 * 1024;
+export const YOUTUBE_LIMITS = { concurrency: 4, maxFileBytes: 256 * 1024 * 1024 };
+// Shared by legacy routes, queued jobs, and player service instances.
+let activeExtractions = 0;
 
 export class YoutubeService {
     private binPath: string;
@@ -51,15 +54,16 @@ export class YoutubeService {
         }
     }
 
-    private executeYtDlp(args: string[], useCookie: boolean, signal?: AbortSignal): Promise<YtDlpResult> {
+    private async executeYtDlp(args: string[], useCookie: boolean, signal?: AbortSignal): Promise<YtDlpResult> {
         const runtimeArgs = ['--js-runtimes', 'node', ...args];
         if (config.youtube.potProviderUrl) {
             runtimeArgs.unshift('--extractor-args', `youtubepot-bgutilhttp:base_url=${config.youtube.potProviderUrl}`);
         }
         const ytdlpArgs = useCookie ? ['--cookies', this.cookiePath, ...runtimeArgs] : runtimeArgs;
 
-        return new Promise((resolve, reject) => {
-            execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER, timeout: 9 * 60 * 1000, killSignal: 'SIGKILL', signal }, (error, stdout, stderr) => {
+        let child: ChildProcess | undefined;
+        const output = new Promise<YtDlpResult>((resolve, reject) => {
+            child = execFile(this.binPath, ytdlpArgs, { maxBuffer: MAX_BUFFER, timeout: 9 * 60 * 1000, killSignal: 'SIGKILL', signal }, (error, stdout, stderr) => {
                 if (error) {
                     const commandError = error as YtDlpCommandError;
                     commandError.stdout = stdout;
@@ -71,6 +75,15 @@ export class YoutubeService {
                 resolve({ stdout, stderr });
             });
         });
+        try {
+            return await output;
+        } finally {
+            // Abort can invoke execFile's callback before the killed child exits.
+            // Retain the shared process slot until the operating system reaps it.
+            if (child && child.exitCode === null && child.signalCode === null) {
+                await new Promise<void>(resolve => child!.once('close', () => resolve()));
+            }
+        }
     }
 
     private isHttp403(error: unknown): boolean {
@@ -87,17 +100,25 @@ export class YoutubeService {
     }
 
     private async runYtDlp(args: string[], signal?: AbortSignal): Promise<YtDlpResult> {
-        const useCookie = this.hasCookieFile();
-
+        signal?.throwIfAborted();
+        if (activeExtractions >= YOUTUBE_LIMITS.concurrency) {
+            throw new AppError('YouTube extractor is busy. Try again shortly.', 503);
+        }
+        activeExtractions++;
         try {
-            return await this.executeYtDlp(args, useCookie, signal);
-        } catch (error) {
-            if (signal?.aborted || !useCookie || !this.isHttp403(error)) {
-                throw error;
-            }
+            const useCookie = this.hasCookieFile();
+            try {
+                return await this.executeYtDlp(args, useCookie, signal);
+            } catch (error) {
+                if (signal?.aborted || !useCookie || !this.isHttp403(error)) {
+                    throw error;
+                }
 
-            logger.warn('yt-dlp returned HTTP 403 with cookies; retrying once without cookies.');
-            return this.executeYtDlp(args, false, signal);
+                logger.warn('yt-dlp returned HTTP 403 with cookies; retrying once without cookies.');
+                return await this.executeYtDlp(args, false, signal);
+            }
+        } finally {
+            activeExtractions--;
         }
     }
 
@@ -143,9 +164,9 @@ export class YoutubeService {
                 videos: qualities,
             };
         } catch (error) {
-            logger.error('YTDL Info Error:', error);
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to fetch video info: ${message}`, 500);
+            if (error instanceof AppError) throw error;
+            logger.error('YTDL info failed');
+            throw new AppError('Failed to fetch video info.', 500);
         }
     }
 
@@ -153,6 +174,7 @@ export class YoutubeService {
         const ts = randomUUID();
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
         const videoFormat = buildVideoFormat(quality);
+        const maxBytes = this.downloadLimit(options.maxBytes);
 
         try {
             const { stdout } = await this.runYtDlp([
@@ -169,7 +191,7 @@ export class YoutubeService {
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',
-                ...(options.maxBytes ? ['--max-filesize', String(options.maxBytes)] : []),
+                '--max-filesize', String(maxBytes),
                 '--', url,
             ], options.signal);
 
@@ -177,15 +199,16 @@ export class YoutubeService {
 
             const finalPath = stdout.trim().split('\n').at(-1)?.trim();
             if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
+                await this.validateDownload(finalPath, maxBytes);
                 return path.resolve(finalPath);
             }
 
             throw new Error('Could not determine output filename');
         } catch (error) {
-            this.cleanupDownload(ts);
-            logger.error('YTDL Download Error:', error);
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to download media: ${message}`, 500);
+            await this.cleanupDownload(ts);
+            if (error instanceof AppError) throw error;
+            logger.error('YTDL download failed');
+            throw new AppError('Failed to download media.', 500);
         }
     }
 
@@ -193,6 +216,7 @@ export class YoutubeService {
         const ts = randomUUID();
 
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
+        const maxBytes = this.downloadLimit(options.maxBytes);
 
         try {
             const { stdout } = await this.runYtDlp([
@@ -206,7 +230,7 @@ export class YoutubeService {
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',
-                ...(options.maxBytes ? ['--max-filesize', String(options.maxBytes)] : []),
+                '--max-filesize', String(maxBytes),
                 '--', url,
             ], options.signal);
 
@@ -214,25 +238,40 @@ export class YoutubeService {
 
             const finalPath = stdout.trim().split('\n').at(-1)?.trim();
             if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
+                await this.validateDownload(finalPath, maxBytes);
                 return path.resolve(finalPath);
             }
 
             throw new Error('Could not determine output filename');
         } catch (error) {
-            this.cleanupDownload(ts);
-            logger.error('YTDL Download Error:', error);
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to download media: ${message}`, 500);
+            await this.cleanupDownload(ts);
+            if (error instanceof AppError) throw error;
+            logger.error('YTDL download failed');
+            throw new AppError('Failed to download media.', 500);
         }
     }
 
-    private cleanupDownload(id: string): void {
+    private downloadLimit(maxBytes = YOUTUBE_LIMITS.maxFileBytes): number {
+        if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0 || maxBytes > YOUTUBE_LIMITS.maxFileBytes) {
+            throw new AppError('Invalid download size limit.', 400);
+        }
+        return maxBytes;
+    }
+
+    private async validateDownload(file: string, maxBytes: number): Promise<void> {
+        const info = await fs.promises.stat(file);
+        if (!info.isFile() || info.size <= 0 || info.size > maxBytes) {
+            throw new AppError('Downloaded media is empty or exceeds the size limit.', 413);
+        }
+    }
+
+    private async cleanupDownload(id: string): Promise<void> {
         try {
-            for (const name of fs.readdirSync(this.tmpDir)) {
-                if (name.startsWith(`${id}.`)) fs.rmSync(path.join(this.tmpDir, name), { force: true });
-            }
-        } catch (error) {
-            logger.warn('Failed to clean up partial download', { error });
+            const names = await fs.promises.readdir(this.tmpDir);
+            await Promise.all(names.filter(name => name.startsWith(`${id}.`))
+                .map(name => fs.promises.rm(path.join(this.tmpDir, name), { force: true })));
+        } catch {
+            logger.warn('Failed to clean up partial download');
         }
     }
 
@@ -270,9 +309,9 @@ export class YoutubeService {
 
             return results;
         } catch (error) {
-            logger.error('YTDL Search Error:', error);
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Failed to search YouTube: ${message}`, 500);
+            if (error instanceof AppError) throw error;
+            logger.error('YTDL search failed');
+            throw new AppError('Failed to search YouTube.', 500);
         }
     }
 }

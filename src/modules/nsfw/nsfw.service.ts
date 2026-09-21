@@ -1,5 +1,6 @@
 import { AppError } from '../../utils/AppError';
 import logger from '../../utils/logger';
+import { publicLookup } from '../../utils/publicAgent';
 
 type UpstreamError = {
   name?: string;
@@ -24,6 +25,8 @@ export class NsfwService {
         responseType: 'json',
         timeout: { request: 15000 },
         retry: { limit: 1 },
+        followRedirect: false,
+        dnsLookup: publicLookup,
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -60,9 +63,8 @@ export class NsfwService {
         );
       }
       if (error instanceof AppError) throw error;
-      const message = details.message || 'Unknown error';
-      logger.error(`${source} request failed`, { error: message });
-      throw new AppError(`Gagal mengambil data dari ${source}: ${message}`, 502);
+      logger.error(`${source} request failed`);
+      throw new AppError(`Gagal mengambil data dari ${source}.`, 502);
     }
   }
 

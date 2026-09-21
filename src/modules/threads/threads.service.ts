@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
+import { readResponseText } from '../../utils/readResponse';
 import { ThreadsDownloadResult, ThreadsMediaItem, ThreadsMediaType } from './threads.types';
 
 const THREADSTER_HOME = 'https://threadster.app/';
@@ -40,7 +41,7 @@ export class ThreadsService {
     }
 
     private async fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
-        return fetch(url, { ...options, signal: AbortSignal.timeout(timeoutMs) });
+        return fetch(url, { ...options, redirect: 'error', signal: AbortSignal.timeout(timeoutMs) });
     }
 
     private extractCookieHeader(response: Response): string {
@@ -196,7 +197,7 @@ export class ThreadsService {
             );
             this.assertOk(downloadResponse, 'Failed to scrape Threadster download page');
 
-            const html = await downloadResponse.text();
+            const html = await readResponseText(downloadResponse);
             const items = this.parseResultPage(html);
 
             if (items.length === 0) {

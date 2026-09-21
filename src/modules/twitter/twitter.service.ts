@@ -1,6 +1,8 @@
-import cloudscraper from 'cloudscraper';
+import axios from 'axios';
+import { CookieJar } from 'tough-cookie';
 import * as cheerio from 'cheerio';
 import { AppError } from '../../utils/AppError';
+import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 import { TwitterDownloadResult, TwitterMediaLink, TwitterMediaType } from './twitter.types';
 
 interface SaveTwitterResponse {
@@ -20,6 +22,52 @@ const DEFAULT_HEADERS = {
 };
 
 export class TwitterService {
+    // Keep cookies isolated to one download, and validate every redirect before
+    // sending cookies or tweet data. The socket agent also checks DNS addresses.
+    private async requestPage(target: string, jar: CookieJar, form?: URLSearchParams): Promise<string> {
+        for (let hop = 0; hop <= 3; hop++) {
+            const url = new URL(target);
+            if (url.origin !== BASE_URL || url.username || url.password) {
+                throw new AppError('SaveTwitter returned an invalid endpoint.', 502);
+            }
+            const response = await axios.request<string>({
+                url: url.href,
+                method: form ? 'POST' : 'GET',
+                data: form?.toString(),
+                responseType: 'text',
+                timeout: form ? 45000 : 30000,
+                maxContentLength: 5 * 1024 * 1024,
+                maxBodyLength: 16 * 1024,
+                maxRedirects: 0,
+                proxy: false,
+                httpAgent: publicHttpAgent,
+                httpsAgent: publicHttpsAgent,
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    Cookie: await jar.getCookieString(url.href),
+                    ...(form ? {
+                        Origin: BASE_URL,
+                        Referer: LANDING_URL,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    } : {}),
+                },
+                validateStatus: status => (status >= 200 && status < 300)
+                    || [301, 302, 303, 307, 308].includes(status),
+            });
+            for (const cookie of response.headers['set-cookie'] ?? []) {
+                await jar.setCookie(cookie, url.href, { ignoreError: true });
+            }
+            if (response.status >= 200 && response.status < 300) return this.toText(response.data);
+            // A redirected POST is not a search result; never replay user data.
+            if (form || typeof response.headers.location !== 'string') {
+                throw new AppError('SaveTwitter returned an unexpected redirect.', 502);
+            }
+            target = new URL(response.headers.location, url).href;
+        }
+        throw new AppError('Too many SaveTwitter redirects.', 502);
+    }
+
     private extractVar(htmlText: string, name: string, defaultValue: string): string {
         const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`${escaped}\\s*=\\s*['"]([^'"]+)['"]`);
@@ -29,7 +77,8 @@ export class TwitterService {
 
     private parsePageConfig(htmlText: string): { searchUrl: string; lang: string } {
         const searchUrl = new URL(this.extractVar(htmlText, 'k_url_search', DEFAULT_SEARCH_URL), BASE_URL);
-        if (searchUrl.origin !== BASE_URL) throw new AppError('SaveTwitter returned an invalid search endpoint.', 502);
+        if (searchUrl.origin !== BASE_URL || searchUrl.username || searchUrl.password)
+            throw new AppError('SaveTwitter returned an invalid search endpoint.', 502);
         return {
             searchUrl: searchUrl.toString(),
             lang: this.extractVar(htmlText, 'k_lang', 'en')
@@ -44,7 +93,7 @@ export class TwitterService {
 
         try {
             const parsed = new URL(value);
-            if (!/^https?:$/.test(parsed.protocol)) {
+            if (!/^https?:$/.test(parsed.protocol) || parsed.username || parsed.password || parsed.port) {
                 return '';
             }
 
@@ -157,38 +206,20 @@ export class TwitterService {
         }
 
         try {
-            const jar = cloudscraper.jar();
-
-            const landingResponse = await cloudscraper.get({
-                uri: LANDING_URL,
-                headers: DEFAULT_HEADERS,
-                jar,
-                timeout: 30000
-            });
-
-            const landingHtml = this.toText(landingResponse);
+            const jar = new CookieJar();
+            const landingHtml = await this.requestPage(LANDING_URL, jar);
+            if (/just a moment|cf-chl-/i.test(landingHtml)) {
+                throw new AppError('Blocked by Cloudflare challenge while scraping.', 503);
+            }
             const pageConfig = this.parsePageConfig(landingHtml);
             const $ = cheerio.load(landingHtml);
             const cftoken = ($('input[name="cf-turnstile-response"]').attr('value') || '').trim();
 
-            const resultResponse = await cloudscraper.post({
-                uri: pageConfig.searchUrl,
-                headers: {
-                    ...DEFAULT_HEADERS,
-                    Origin: BASE_URL,
-                    Referer: LANDING_URL,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                form: {
-                    q: tweetUrl,
-                    lang: pageConfig.lang,
-                    cftoken
-                },
-                jar,
-                timeout: 45000
-            });
-
-            const resultBody = this.toText(resultResponse);
+            const resultBody = await this.requestPage(pageConfig.searchUrl, jar, new URLSearchParams({
+                q: tweetUrl,
+                lang: pageConfig.lang,
+                cftoken,
+            }));
             if (resultBody.toLowerCase().includes('just a moment')) {
                 throw new AppError('Blocked by Cloudflare challenge while scraping.', 503);
             }
@@ -228,8 +259,7 @@ export class TwitterService {
                 throw error;
             }
 
-            const message = error instanceof Error ? error.message : 'Unknown error';
-            throw new AppError(`Twitter Download Error: ${message}`, 500);
+            throw new AppError('Unable to contact the Twitter download provider. Try again later.', 502);
         }
     }
 }

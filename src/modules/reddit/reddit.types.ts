@@ -6,12 +6,15 @@ export interface RedditMedia {
   quality_number: number;
   requires_conversion: boolean;
   has_audio: boolean | null;
+  audio_url: string | null;
+  is_gif: boolean;
 }
 
 export interface RedditDownloadResult {
   source_url: string;
   resolved_url: string;
-  provider: 'savefrom.co.id';
+  provider: 'reddit';
+  is_gallery: boolean;
   title: string;
   thumbnail: string | null;
   uploader: string;

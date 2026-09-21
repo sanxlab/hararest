@@ -4,7 +4,8 @@ import * as child_process from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { YoutubeService } from '../modules/youtube/youtube.service';
+import { EventEmitter } from 'node:events';
+import { YoutubeService, YOUTUBE_LIMITS } from '../modules/youtube/youtube.service';
 import { config } from '../config/default';
 
 // Mock child_process
@@ -247,5 +248,65 @@ describe('YouTube download lifecycle', () => {
             callback(null, 'Destination: /tmp/intermediate.webm\n', '');
         });
         await expect(service.downloadAudio('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
+    });
+
+    it('applies a default download budget and removes outputs exceeding the final size limit', async () => {
+        mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            const output = args[args.indexOf('-o') + 1].replace('%(ext)s', 'mp3');
+            fs.writeFileSync(output, 'too large');
+            callback(null, output + '\n', '');
+        });
+        const output = await service.downloadAudio('https://youtu.be/123');
+        expect(mockExecFile.mock.calls[0][1]).toEqual(expect.arrayContaining(['--max-filesize', String(YOUTUBE_LIMITS.maxFileBytes)]));
+        fs.unlinkSync(output);
+        await expect(service.downloadAudio('https://youtu.be/123', { maxBytes: 4 })).rejects.toMatchObject({ statusCode: 413 });
+        expect(fs.readdirSync(directory)).toEqual([]);
+    });
+
+    it('shares the process budget across instances and releases slots after extraction', async () => {
+        const callbacks: Array<(error: Error | null, stdout: string, stderr: string) => void> = [];
+        mockExecFile.mockImplementation((_file: string, _args: string[], _options: object, callback: typeof callbacks[number]) => {
+            callbacks.push(callback);
+        });
+        const pending = Array.from({ length: YOUTUBE_LIMITS.concurrency }, () => new YoutubeService(directory).getInfo('https://youtu.be/123'));
+        await expect(service.getInfo('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 503 });
+        expect(mockExecFile).toHaveBeenCalledTimes(YOUTUBE_LIMITS.concurrency);
+        callbacks.forEach(callback => callback(null, JSON.stringify({ id: 'video123', formats: [] }), ''));
+        await Promise.all(pending);
+        const next = service.getInfo('https://youtu.be/123');
+        callbacks.at(-1)!(null, JSON.stringify({ id: 'video123', formats: [] }), '');
+        await expect(next).resolves.toMatchObject({ id: 'video123' });
+    });
+
+    it('retains process capacity until cancelled children actually close', async () => {
+        const children: Array<EventEmitter & { exitCode: number | null; signalCode: string | null }> = [];
+        const callbacks: Array<(error: Error | null, stdout: string, stderr: string) => void> = [];
+        mockExecFile.mockImplementation((_file: string, _args: string[], _options: object, callback: typeof callbacks[number]) => {
+            const child = Object.assign(new EventEmitter(), { exitCode: null, signalCode: null });
+            children.push(child);
+            callbacks.push(callback);
+            return child;
+        });
+        const controller = new AbortController();
+        const pending = Array.from({ length: YOUTUBE_LIMITS.concurrency }, () => service.getInfo('https://youtu.be/123', controller.signal));
+        const results = Promise.allSettled(pending);
+        controller.abort();
+        callbacks.forEach(callback => callback(new Error('Aborted'), '', ''));
+        await new Promise<void>(resolve => setImmediate(resolve));
+        await expect(service.getInfo('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 503 });
+        for (const child of children) {
+            child.signalCode = 'SIGKILL';
+            child.emit('close');
+        }
+        expect((await results).every(result => result.status === 'rejected')).toBe(true);
+    });
+
+    it('does not expose command arguments, cookie paths, or extractor stderr on failures', async () => {
+        mockExecFile.mockImplementation((_file: string, _args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            callback(new Error('Command failed: --cookies /private/cookies.txt https://example.com?token=secret'), '', 'private stderr');
+        });
+        for (const run of [() => service.getInfo('https://youtu.be/123'), () => service.search('test'), () => service.downloadAudio('https://youtu.be/123')]) {
+            await expect(run()).rejects.toMatchObject({ statusCode: 500, message: expect.not.stringMatching(/private|secret|cookies|stderr/) });
+        }
     });
 });

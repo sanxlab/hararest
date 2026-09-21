@@ -1,6 +1,7 @@
 services:
   hararest:
     build: .
+    init: true
     environment:
       YTDLP_POT_PROVIDER_URL: '${YTDLP_POT_PROVIDER_URL:-http://bgutil-provider:4416}'
     env_file:

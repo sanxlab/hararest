@@ -22,5 +22,14 @@ export const publicLookup: LookupFunction = (hostname, options, callback) => {
   }, (error: Error) => callback(error, []));
 };
 
-export const publicHttpAgent = new HttpAgent({ lookup: publicLookup });
-export const publicHttpsAgent = new HttpsAgent({ lookup: publicLookup });
+const agentOptions = {
+  lookup: publicLookup,
+  keepAlive: true,
+  maxSockets: 64,
+  maxTotalSockets: 128,
+  maxFreeSockets: 16,
+  timeout: 15000,
+};
+
+export const publicHttpAgent = new HttpAgent(agentOptions);
+export const publicHttpsAgent = new HttpsAgent(agentOptions);
