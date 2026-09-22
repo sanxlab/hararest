@@ -21,16 +21,16 @@ export function normalizeFacebookInput(raw: string): string {
   return value;
 }
 
-interface SnapSaveMediaLink {
+interface FDownMediaLink {
   quality?: string;
   label?: string;
   url: string;
 }
 
-interface SnapSaveResponse {
+interface FDownResponse {
   status?: string;
   message?: string;
-  media_links?: SnapSaveMediaLink[];
+  media_links?: FDownMediaLink[];
 }
 
 interface FacebookYtDlpFormat {
@@ -46,23 +46,23 @@ interface FacebookYtDlpFormat {
 export class FacebookService {
   private readonly pythonBin = process.env.PYTHON_BIN || 'python';
 
-  private resolveSnapSaveScriptPath(): string {
+  private resolveFDownScriptPath(): string {
     const envScriptPath = process.env.FACEBOOK_FALLBACK_PYTHON_SCRIPT;
     const candidates = [
       envScriptPath,
-      path.resolve(process.cwd(), 'src/modules/facebook/snapsave_scraper.py'),
-      path.resolve(process.cwd(), 'snapsave_scraper.py'),
+      path.resolve(process.cwd(), 'src/modules/facebook/fdown_scraper.py'),
+      path.resolve(process.cwd(), 'fdown_scraper.py'),
     ].filter((x): x is string => !!x);
 
     const scriptPath = candidates.find((candidate) => fs.existsSync(candidate));
     if (!scriptPath) {
-      throw new AppError('SnapSave fallback script not found', 500);
+      throw new AppError('FDown fallback script not found', 500);
     }
 
     return scriptPath;
   }
 
-  private extractScriptError(stderr: string, fallback = 'SnapSave fallback failed'): string {
+  private extractScriptError(stderr: string, fallback = 'FDown fallback failed'): string {
     const raw = stderr.trim();
     if (!raw) return fallback;
 
@@ -93,8 +93,8 @@ export class FacebookService {
     return finalUrl.toString();
   }
 
-  private async getVideoInfoFromSnapSave(url: string): Promise<FacebookVideoInfo> {
-    const scriptPath = this.resolveSnapSaveScriptPath();
+  private async getVideoInfoFromFDown(url: string): Promise<FacebookVideoInfo> {
+    const scriptPath = this.resolveFDownScriptPath();
 
     let stdout = '';
     try {
@@ -107,20 +107,20 @@ export class FacebookService {
       const err = error as { stderr?: string; message?: string };
       const extracted = this.extractScriptError(
         err.stderr || '',
-        err.message || 'SnapSave fallback failed',
+        err.message || 'FDown fallback failed',
       );
       throw new AppError(extracted, 500);
     }
 
-    let parsed: SnapSaveResponse;
+    let parsed: FDownResponse;
     try {
-      parsed = JSON.parse(stdout) as SnapSaveResponse;
+      parsed = JSON.parse(stdout) as FDownResponse;
     } catch {
-      throw new AppError('SnapSave fallback returned invalid JSON', 500);
+      throw new AppError('FDown fallback returned invalid JSON', 500);
     }
 
     if (!parsed || parsed.status !== 'ok') {
-      throw new AppError(parsed?.message || 'SnapSave fallback failed', 500);
+      throw new AppError(parsed?.message || 'FDown fallback failed', 500);
     }
 
     const links = Array.isArray(parsed.media_links)
@@ -241,9 +241,9 @@ export class FacebookService {
     }
 
     try {
-      return await this.getVideoInfoFromSnapSave(resolvedUrl);
+      return await this.getVideoInfoFromFDown(resolvedUrl);
     } catch (error) {
-      logger.warn('SnapSave failed; trying the direct Facebook extractor', {
+      logger.warn('FDown failed; trying the direct Facebook extractor', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
       return this.getVideoInfoFromYtDlp(resolvedUrl);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scrape downloadable video links from SnapSave for a Facebook URL."""
+"""Scrape downloadable video links from fdown.net for a Facebook URL."""
 
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from urllib.parse import urlparse
 import cloudscraper
 
 
-BASE_PAGE_URL = "https://snapsave.app/"
-DOWNLOAD_URL = "https://snapsave.app/action.php?lang=en"
+BASE_PAGE_URL = "https://fdown.net/"
+DOWNLOAD_URL = "https://fdown.net/download.php"
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -25,13 +25,13 @@ DEFAULT_HEADERS = {
         "Chrome/137.0.0.0 Safari/537.36"
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Origin": "https://snapsave.app",
+    "Origin": "https://fdown.net",
     "Referer": BASE_PAGE_URL,
 }
 
 
-class SnapSaveError(RuntimeError):
-    """Raised when snapsave.app returns an error or unsupported response format."""
+class FDownError(RuntimeError):
+    """Raised when fdown.net returns an error or unsupported response format."""
 
 
 class AnchorParser(HTMLParser):
@@ -160,38 +160,6 @@ def extract_error_messages(result_html: str) -> list[str]:
     return deduped
 
 
-
-def decode_packed_payload(source: str) -> str:
-    match = re.search(
-        r'eval\(function\(h,u,n,t,e,r\).*?\}\((".*?"),\s*\d+,"(.*?)",\s*(\d+),\s*(\d+),\s*\d+\)\)',
-        source, re.DOTALL,
-    )
-    if not match:
-        return source
-    encoded = json.loads(match.group(1))
-    symbols = match.group(2)
-    shift, base = int(match.group(3)), int(match.group(4))
-    if len(symbols) <= base:
-        raise SnapSaveError("Invalid SnapSave response alphabet.")
-    alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"[:base]
-    delimiter = symbols[base]
-    chars: list[str] = []
-    for token in encoded.split(delimiter):
-        if not token:
-            continue
-        for index, symbol in enumerate(symbols):
-            token = token.replace(symbol, str(index))
-        try:
-            number = sum(alphabet.index(char) * (base ** power) for power, char in enumerate(reversed(token)))
-            code = number - shift
-            if code < 0 or code > 0x10FFFF:
-                raise ValueError
-            chars.append(chr(code))
-        except (ValueError, IndexError) as exc:
-            raise SnapSaveError("Invalid SnapSave response payload.") from exc
-    return "".join(chars)
-
-
 def extract_media_links(result_html: str) -> list[dict[str, str]]:
     parser = AnchorParser()
     parser.feed(result_html)
@@ -208,14 +176,8 @@ def extract_media_links(result_html: str) -> list[dict[str, str]]:
         link_text = link.get("text", "")
 
         is_primary = link_id in {"sdlink", "hdlink"}
-        parsed_href = urlparse(href)
-        host = (parsed_href.hostname or "").lower()
-        looks_like_video = (
-            host in {"fbcdn.net", "rapidcdn.app", "d.rapidcdn.app"}
-            and ".mp4" in parsed_href.path.lower()
-            and not parsed_href.path.lower().endswith("/thumb")
-        )
-        if not (is_primary or looks_like_video):
+        looks_like_fb_cdn_video = "fbcdn.net" in href and ".mp4" in href.lower()
+        if not (is_primary or looks_like_fb_cdn_video):
             continue
 
         if href in seen_urls:
@@ -243,7 +205,7 @@ def extract_media_links(result_html: str) -> list[dict[str, str]]:
     return media_links
 
 
-def fetch_snapsave_data(facebook_url: str) -> dict[str, Any]:
+def fetch_fdown_data(facebook_url: str) -> dict[str, Any]:
     scraper = cloudscraper.create_scraper(
         browser={"browser": "chrome", "platform": "windows", "desktop": True}
     )
@@ -251,30 +213,29 @@ def fetch_snapsave_data(facebook_url: str) -> dict[str, Any]:
     landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30, allow_redirects=False)
     landing.raise_for_status()
     if landing.is_redirect:
-        raise SnapSaveError("SnapSave returned an unexpected redirect.")
+        raise FDownError("FDown returned an unexpected redirect.")
 
     result = scraper.post(
         DOWNLOAD_URL,
-        data={"url": facebook_url},
+        data={"URLz": facebook_url},
         headers=DEFAULT_HEADERS,
         timeout=45,
         allow_redirects=False,
     )
     result.raise_for_status()
     if result.is_redirect:
-        raise SnapSaveError("SnapSave returned an unexpected redirect.")
+        raise FDownError("FDown returned an unexpected redirect.")
 
     result_html = result.text
     if "just a moment" in result_html.lower():
-        raise SnapSaveError("Blocked by Cloudflare challenge while scraping.")
+        raise FDownError("Blocked by Cloudflare challenge while scraping.")
 
-    result_html = decode_packed_payload(result_html)
     media_links = extract_media_links(result_html)
     if not media_links:
         errors = extract_error_messages(result_html)
         if errors:
-            raise SnapSaveError(" | ".join(errors))
-        raise SnapSaveError("No downloadable Facebook video links found in result.")
+            raise FDownError(" | ".join(errors))
+        raise FDownError("No downloadable Facebook video links found in result.")
 
     return {
         "status": "ok",
@@ -286,7 +247,7 @@ def fetch_snapsave_data(facebook_url: str) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Scrape downloadable Facebook video links from snapsave.app"
+        description="Scrape downloadable Facebook video links from fdown.net"
     )
     parser.add_argument("facebook_url", help="Facebook video/reel/share URL")
     parser.add_argument(
@@ -307,8 +268,8 @@ def main() -> int:
         return 1
 
     try:
-        result = fetch_snapsave_data(normalized_url)
-    except SnapSaveError as exc:
+        result = fetch_fdown_data(normalized_url)
+    except FDownError as exc:
         print(json.dumps({"status": "error", "message": str(exc)}), file=sys.stderr)
         return 1
     except Exception as exc:  # pragma: no cover

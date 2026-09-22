@@ -56,13 +56,13 @@ COPY vendor ./vendor
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/modules/instagram/snapinsta_scraper.py ./src/modules/instagram/snapinsta_scraper.py
-COPY --from=builder /app/src/modules/facebook/snapsave_scraper.py ./src/modules/facebook/snapsave_scraper.py
+COPY --from=builder /app/src/modules/facebook/fdown_scraper.py ./src/modules/facebook/fdown_scraper.py
 
 ENV NODE_ENV=production
 ENV YTDLP_PATH=/usr/local/bin/yt-dlp
 ENV PYTHON_BIN=/opt/media-fallback/bin/python
 ENV INSTAGRAM_FALLBACK_PYTHON_SCRIPT=/app/src/modules/instagram/snapinsta_scraper.py
-ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/snapsave_scraper.py
+ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
 ENV YTDLP_COOKIES_PATH=/app/cookies/yt-dlp_cookies.txt
 ENV TMP_DIR=/tmp/hararest
 ENV PORT=1337

@@ -23,7 +23,7 @@ describe('Facebook Module', () => {
     });
 
     describe('GET /api/facebook', () => {
-        it('should return video info from SnapSave extractor', async () => {
+        it('should return video info from FDown extractor', async () => {
             mockedExecFile.mockImplementation((...args: unknown[]) => {
                 const callback = args[args.length - 1];
                 if (typeof callback === 'function') {
@@ -76,7 +76,7 @@ describe('Facebook Module', () => {
     });
 });
 
-it('falls back to yt-dlp when SnapSave is blocked and excludes silent DASH streams', async () => {
+it('falls back to yt-dlp when FDown is blocked and excludes silent DASH streams', async () => {
     mockedExecFile.mockReset();
     mockedExecFile.mockImplementation((...args: unknown[]) => {
         const commandArgs = args[1] as string[];
@@ -88,7 +88,7 @@ it('falls back to yt-dlp when SnapSave is blocked and excludes silent DASH strea
                 { format_id: 'dash', ext: 'mp4', url: 'https://cdn.example.com/silent.mp4', acodec: 'none' },
                 { format_id: 'audio', ext: 'm4a', url: 'https://cdn.example.com/audio.m4a', vcodec: 'none' },
             ] }), '');
-        } else callback(Object.assign(new Error('SnapSave failed'), { stderr: '{"message":"Robot Check"}' }), '', '{"message":"Robot Check"}');
+        } else callback(Object.assign(new Error('FDown failed'), { stderr: '{"message":"Robot Check"}' }), '', '{"message":"Robot Check"}');
         return {} as never;
     });
     const response = await supertest(app).get('/api/facebook').query({ url: 'https://facebook.com/watch?v=123' });

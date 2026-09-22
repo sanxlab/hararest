@@ -23,7 +23,7 @@ def load_scraper(module_name, relative_path):
 
 
 instagram = load_scraper("snapinsta_scraper", "src/modules/instagram/snapinsta_scraper.py")
-facebook = load_scraper("snapsave_scraper", "src/modules/facebook/snapsave_scraper.py")
+facebook = load_scraper("fdown_scraper", "src/modules/facebook/fdown_scraper.py")
 
 
 class ScraperSecurityTests(unittest.TestCase):
@@ -48,7 +48,7 @@ class ScraperSecurityTests(unittest.TestCase):
     def test_scrapers_reject_redirects_before_sending_any_post(self):
         for module, operation, expected_error in (
             (instagram, instagram.fetch_snapinsta_data, instagram.SnapInstaError),
-            (facebook, facebook.fetch_snapsave_data, facebook.SnapSaveError),
+            (facebook, facebook.fetch_fdown_data, facebook.FDownError),
         ):
             with self.subTest(scraper=module.__name__):
                 scraper = MagicMock()
