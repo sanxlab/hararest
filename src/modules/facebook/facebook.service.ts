@@ -1,3 +1,4 @@
+import { config } from '../../config/default';
 import logger from '../../utils/logger';
 import fs from 'fs';
 import path from 'path';
@@ -30,6 +31,16 @@ interface SnapSaveResponse {
   status?: string;
   message?: string;
   media_links?: SnapSaveMediaLink[];
+}
+
+interface FacebookYtDlpFormat {
+  url?: string;
+  ext?: string;
+  format_id?: string;
+  height?: number;
+  acodec?: string;
+  vcodec?: string;
+  filesize?: number;
 }
 
 export class FacebookService {
@@ -140,6 +151,67 @@ export class FacebookService {
     };
   }
 
+  private async getVideoInfoFromYtDlp(url: string): Promise<FacebookVideoInfo> {
+    try {
+      const run = await execFilePromise(
+        config.youtube.binPath,
+        [
+          '--ignore-config',
+          '--no-playlist',
+          '--skip-download',
+          '--socket-timeout',
+          '15',
+          '--retries',
+          '1',
+          '--dump-single-json',
+          '--',
+          url,
+        ],
+        { timeout: 90000, maxBuffer: 10 * 1024 * 1024 },
+      );
+      const stdout = typeof run === 'string' ? run : run.stdout;
+      const data = JSON.parse(stdout) as { thumbnail?: string; formats?: FacebookYtDlpFormat[] };
+      // DASH-only video/audio URLs cannot be played as a single downloaded file.
+      const formats = Array.isArray(data?.formats)
+        ? data.formats.filter(
+            (format) =>
+              format &&
+              typeof format.url === 'string' &&
+              /^https?:\/\//.test(format.url) &&
+              format.ext === 'mp4' &&
+              format.acodec !== 'none' &&
+              format.vcodec !== 'none',
+          )
+        : [];
+      const unique = formats.filter(
+        (format, index) => formats.findIndex((item) => item.url === format.url) === index,
+      );
+      if (!unique.length) throw new AppError('No downloadable Facebook video found.', 404);
+      const videos = await Promise.all(
+        unique.map(async (format) => {
+          const size =
+            Number.isSafeInteger(format.filesize) && (format.filesize || 0) > 0
+              ? (format.filesize as number)
+              : await getMediaSize(format.url as string);
+          return {
+            quality:
+              format.format_id?.toLowerCase().includes('hd') || (format.height || 0) >= 720
+                ? 'hd'
+                : 'sd',
+            url: format.url as string,
+            size,
+            fSize: bytesToSize(size),
+          };
+        }),
+      );
+      return { thumbnail: typeof data.thumbnail === 'string' ? data.thumbnail : '', videos };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      logger.warn('Facebook yt-dlp fallback failed', { error });
+      throw new AppError('Facebook video could not be retrieved from either extractor.', 502);
+    }
+  }
+
   public async getVideoInfo(url: string): Promise<FacebookVideoInfo> {
     url = normalizeFacebookInput(url || '');
     if (!url) {
@@ -171,10 +243,10 @@ export class FacebookService {
     try {
       return await this.getVideoInfoFromSnapSave(resolvedUrl);
     } catch (error) {
-      logger.warn('SnapSave failed; no Facebook extractor fallback is configured', {
+      logger.warn('SnapSave failed; trying the direct Facebook extractor', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
-      throw new AppError('Facebook video could not be retrieved from SnapSave.', 502);
+      return this.getVideoInfoFromYtDlp(resolvedUrl);
     }
   }
 }
