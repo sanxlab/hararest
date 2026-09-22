@@ -127,7 +127,7 @@ export class JobService {
       : undefined;
     return {
       id: job.id, state: job.state, createdAt: new Date(job.createdAt).toISOString(),
-      expiresAt: new Date(job.expiresAt).toISOString(), pollAfterMs: 3000, result, error: job.error,
+      expiresAt: new Date(job.expiresAt).toISOString(), pollAfterMs: job.state === 'queued' ? 5000 : 3000, result, error: job.error,
     };
   }
 

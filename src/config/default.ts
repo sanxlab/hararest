@@ -28,6 +28,7 @@ const ConfigSchema = z.object({
       }
     }, 'PLAYER_PUBLIC_URL must be an HTTP(S) origin without credentials, path, query, or fragment.'),
   youtube: z.object({
+    concurrency: z.coerce.number().int().min(1).max(8).default(4),
     binPath: z.string().default('./bin/yt-dlp'),
     cookiePath: z.string().default('./cookies.txt'),
     tmpDir: z.string().default('./tmp'),
@@ -59,6 +60,7 @@ export const config = ConfigSchema.parse({
   nodeEnv: process.env.NODE_ENV,
   playerPublicUrl: process.env.PLAYER_PUBLIC_URL?.trim(),
   youtube: {
+    concurrency: process.env.YTDLP_CONCURRENCY,
     binPath: process.env.YTDLP_PATH,
     cookiePath:
       restoreCookieFile(process.env.YTDLP_COOKIES_BASE64) ?? process.env.YTDLP_COOKIES_PATH,

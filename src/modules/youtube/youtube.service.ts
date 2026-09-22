@@ -26,7 +26,7 @@ function buildVideoFormat(quality?: string): string {
     return `bv*[height<=${h}][ext=mp4]+ba/b[height<=${h}]/bv*[height<=${h}]+ba/18/${DEFAULT_VIDEO_FORMAT}`;
 }
 const MAX_BUFFER = 8 * 1024 * 1024;
-export const YOUTUBE_LIMITS = { concurrency: 4, maxFileBytes: 256 * 1024 * 1024 };
+export const YOUTUBE_LIMITS = { concurrency: config.youtube.concurrency, maxFileBytes: 256 * 1024 * 1024 };
 // Shared by legacy routes, queued jobs, and player service instances.
 let activeExtractions = 0;
 
