@@ -12,6 +12,15 @@ import { getPublicPage } from '../../utils/http';
 const execFilePromise = util.promisify(execFile);
 const allowedFacebookHosts = ['facebook.com', 'fb.watch', 'fb.gg'] as const;
 
+export function normalizeFacebookInput(raw: string): string {
+  let value = raw.trim();
+  const markdown = value.match(/^\[[^\]]*\]\((https?:\/\/[^\s)]+)\)$/i);
+  if (markdown) value = markdown[1];
+  if (value.startsWith('<') && value.endsWith('>')) value = value.slice(1, -1).trim();
+  if (value.startsWith('`') && value.endsWith('`')) value = value.slice(1, -1).trim();
+  return value;
+}
+
 interface FDownMediaLink {
   quality?: string;
   label?: string;
@@ -204,6 +213,7 @@ export class FacebookService {
   }
 
   public async getVideoInfo(url: string): Promise<FacebookVideoInfo> {
+    url = normalizeFacebookInput(url || '');
     if (!url) {
       throw new AppError('URL Required', 400);
     }
@@ -221,7 +231,14 @@ export class FacebookService {
       throw new AppError('Invalid URL', 400);
     }
 
-    const resolvedUrl = await this.resolveShareUrl(url);
+    let resolvedUrl = url;
+    try {
+      resolvedUrl = await this.resolveShareUrl(url);
+    } catch (error) {
+      logger.warn('Could not resolve Facebook share URL; trying original URL', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
 
     try {
       return await this.getVideoInfoFromFDown(resolvedUrl);
