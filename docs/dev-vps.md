@@ -19,11 +19,11 @@ real values. PORT should be 1337. Put optional YouTube and Instagram cookie
 files in /opt/oohara/hararest-cookies/.
 
 The deployment creates or reuses the Docker network oohara-dev, builds
-compose.dev.yml, and checks Hararest at http://127.0.0.1:1338/health.
-Kotonehara dev containers on the same network can reach the API at
-http://hararest-dev:1337/. A reverse proxy on the VPS can reach it through
-127.0.0.1:1338.
+compose.dev.yml, and checks Hararest from inside the container. The host port
+1338 binds to the `TAILSCALE_IP` from the env file (and defaults to
+127.0.0.1 if that variable is unset). Kotonehara dev containers on the same
+network can reach the API at http://hararest-dev:1337/.
 
 The runner account needs Docker access and permission to read the environment
-file and cookie directory. The API binds to localhost, so expose it through a
-reverse proxy or Tailscale when access from outside the VPS is needed.
+file and cookie directory. Get the VPS address with `tailscale ip -4` and set
+`TAILSCALE_IP` to that value to expose this dev API over the tailnet.
