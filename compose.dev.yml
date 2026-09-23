@@ -8,7 +8,7 @@ services:
     environment:
       YTDLP_POT_PROVIDER_URL: http://bgutil-provider:4416
     ports:
-      - '127.0.0.1:1338:1337'
+      - '${TAILSCALE_IP:-127.0.0.1}:1338:1337'
     volumes:
       - /opt/oohara/hararest-cookies:/app/cookies:ro
     depends_on:
