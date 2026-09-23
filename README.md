@@ -66,8 +66,10 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 ## Skrip Tersedia
 
 Panduan CI/CD container, GitHub Secrets, dan migrasi cookies tersedia di
-[Deploy ke Heroku](docs/heroku.md). Push ke `main` akan deploy setelah semua
-pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
+[Deploy ke Heroku](docs/heroku.md).
+Deployment branch dev langsung ke Docker di VPS dijelaskan di
+[Dev deployment on the VPS](docs/dev-vps.md). Push ke `main` akan deploy setelah
+semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
 
 - `npm run dev` : Menjalankan server dalam mode pengembangan.
 - `npm run build` : Melakukan kompilasi kode TypeScript ke dalam folder `dist`.

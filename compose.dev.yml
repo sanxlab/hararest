@@ -1,0 +1,31 @@
+services:
+  hararest:
+    build: .
+    init: true
+    restart: unless-stopped
+    env_file:
+      - /opt/oohara/hararest-dev.env
+    environment:
+      YTDLP_POT_PROVIDER_URL: http://bgutil-provider:4416
+    ports:
+      - '127.0.0.1:1338:1337'
+    volumes:
+      - /opt/oohara/hararest-cookies:/app/cookies:ro
+    depends_on:
+      - bgutil-provider
+    networks:
+      oohara-dev:
+        aliases:
+          - hararest-dev
+
+  bgutil-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:latest
+    init: true
+    restart: unless-stopped
+    networks:
+      - oohara-dev
+
+networks:
+  oohara-dev:
+    external: true
+    name: oohara-dev

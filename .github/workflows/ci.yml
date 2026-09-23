@@ -116,3 +116,30 @@ jobs:
       - name: Log out of registry
         if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker logout registry.heroku.com
+
+  deploy-dev-to-vps:
+    name: Deploy dev stack to VPS
+    needs: [check, container]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: self-hosted
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check VPS runtime configuration
+        run: |
+          test -r /opt/oohara/hararest-dev.env
+          mkdir -p /opt/oohara/hararest-cookies
+          docker network create oohara-dev >/dev/null 2>&1 || docker network inspect oohara-dev >/dev/null
+          docker compose version
+      - name: Deploy Hararest dev
+        run: docker compose --project-name hararest-dev --file compose.dev.yml up --detach --build --remove-orphans
+      - name: Check Hararest dev health
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:1338/health > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose --project-name hararest-dev --file compose.dev.yml logs --tail 100
+          exit 1
