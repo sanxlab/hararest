@@ -38,7 +38,6 @@ import pinterestRouter from "./modules/pinterest/pinterest.route";
 import pixivRouter from "./modules/pixiv/pixiv.route";
 import braveRouter from "./modules/brave/brave.route";
 import wikipediaRouter from "./modules/wikipedia/wikipedia.route";
-import redditRouter from "./modules/reddit/reddit.route";
 import quoteRouter from "./modules/quote/quote.route";
 import nsfwRouter from "./modules/nsfw/nsfw.route";
 import { playerApiRouter, playerPageRouter } from './modules/player/player.route';
@@ -57,7 +56,6 @@ app.use("/api/pixiv", downloadLimiter, ssrfProtect(["pixiv.net", "www.pixiv.net"
 app.use("/api/ocr", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);
 app.use("/api/brave", braveRouter);
 app.use("/api/wikipedia", wikipediaRouter);
-app.use("/api/reddit", downloadLimiter, redditRouter);
 app.use('/api/quote', downloadLimiter, quoteRouter);
 app.use("/api/nsfw", downloadLimiter, nsfwRouter);
 app.use('/api/player', downloadLimiter, playerApiRouter);
