@@ -45,6 +45,37 @@ class ScraperSecurityTests(unittest.TestCase):
                 with self.assertRaises(instagram.SnapInstaError):
                     instagram.parse_page_config(f"k_url_search = '{endpoint}'")
 
+    def test_instagram_follows_locale_redirect(self):
+        scraper = MagicMock()
+        redirect = MagicMock(is_redirect=True, headers={"Location": "/en46"})
+        landing = MagicMock(is_redirect=False, headers={})
+        scraper.get.side_effect = [redirect, landing]
+        response, url = instagram.fetch_landing(scraper)
+        self.assertIs(response, landing)
+        self.assertEqual(url, "https://snapinsta.to/en46")
+        self.assertEqual(scraper.get.call_count, 2)
+        for call in scraper.get.call_args_list:
+            self.assertFalse(call.kwargs["allow_redirects"])
+
+    def test_instagram_rejects_external_redirects_and_loops(self):
+        for location in ("https://evil.example/en", "http://snapinsta.to/en",
+                         "https://snapinsta.to.evil.example/en",
+                         "https://user:pass@snapinsta.to/en",
+                         "https://snapinsta.to:8443/en", "/en2"):
+            with self.subTest(location=location):
+                scraper = MagicMock()
+                scraper.get.return_value = MagicMock(is_redirect=True, headers={"Location": location})
+                with self.assertRaises(instagram.SnapInstaError):
+                    instagram.fetch_landing(scraper)
+                self.assertLessEqual(scraper.get.call_count, 4)
+                scraper.post.assert_not_called()
+
+    def test_instagram_reports_cloudflare_challenge(self):
+        scraper = MagicMock()
+        scraper.get.return_value.headers = {"cf-mitigated": "challenge"}
+        with self.assertRaisesRegex(instagram.SnapInstaError, "Cloudflare"):
+            instagram.fetch_landing(scraper)
+
     def test_scrapers_reject_redirects_before_sending_any_post(self):
         for module, operation, expected_error in (
             (instagram, instagram.fetch_snapinsta_data, instagram.SnapInstaError),

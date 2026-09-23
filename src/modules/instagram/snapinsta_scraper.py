@@ -210,21 +210,47 @@ def extract_media_links(result_html: str) -> list[dict[str, str]]:
     return media_links
 
 
+def fetch_landing(scraper):
+    """Follow locale redirects only on the fixed SnapInsta HTTPS origin."""
+    target = BASE_PAGE_URL
+    for hop in range(4):
+        response = scraper.get(target, headers=DEFAULT_HEADERS, timeout=15, allow_redirects=False)
+        if response.headers.get("cf-mitigated") == "challenge":
+            raise SnapInstaError("SnapInsta landing page is blocked by a Cloudflare challenge.")
+        response.raise_for_status()
+        if not response.is_redirect:
+            return response, target
+        location = response.headers.get("Location")
+        if not isinstance(location, str) or not location:
+            raise SnapInstaError("SnapInsta landing redirect has no Location.")
+        redirected = urljoin(target, location)
+        try:
+            parsed = urlparse(redirected)
+            valid = (parsed.scheme == "https" and parsed.hostname == "snapinsta.to"
+                     and parsed.username is None and parsed.password is None
+                     and parsed.port in (None, 443))
+        except ValueError:
+            valid = False
+        if not valid:
+            raise SnapInstaError("SnapInsta landing redirect points outside the trusted origin.")
+        if hop == 3:
+            raise SnapInstaError("Too many SnapInsta landing redirects.")
+        target = redirected
+
+
 def fetch_snapinsta_data(instagram_url: str) -> dict[str, Any]:
     scraper = cloudscraper.create_scraper(
         browser={"browser": "chrome", "platform": "windows", "desktop": True}
     )
 
-    landing = scraper.get(BASE_PAGE_URL, headers=DEFAULT_HEADERS, timeout=30, allow_redirects=False)
-    landing.raise_for_status()
-    if landing.is_redirect:
-        raise SnapInstaError("SnapInsta returned an unexpected redirect.")
+    landing, landing_url = fetch_landing(scraper)
     page_config = parse_page_config(landing.text)
+    headers = {**DEFAULT_HEADERS, "Referer": landing_url}
 
     verify = scraper.post(
         USERVERIFY_URL,
         data={"url": instagram_url},
-        headers={**DEFAULT_HEADERS, "X-Requested-With": "XMLHttpRequest"},
+        headers={**headers, "X-Requested-With": "XMLHttpRequest"},
         timeout=30,
         allow_redirects=False,
     )
@@ -247,7 +273,7 @@ def fetch_snapinsta_data(instagram_url: str) -> dict[str, Any]:
     search = scraper.post(
         page_config.search_url,
         data=payload,
-        headers=DEFAULT_HEADERS,
+        headers=headers,
         timeout=45,
         allow_redirects=False,
     )
