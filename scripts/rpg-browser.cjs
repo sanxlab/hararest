@@ -63,8 +63,9 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     });
     app.use('/rpg', createRpgRouter(settings));
     server = createServer(app);
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-    const origin = 'http://127.0.0.1:' + server.address().port;
+    const host = process.env.RPG_E2E_HOST || '127.0.0.1';
+    await new Promise((resolve) => server.listen(0, host, resolve));
+    const origin = `http://${host.includes(':') ? `[${host}]` : host}:${server.address().port}`;
     const startBackend = async () => {
       await fs.rm(path.join(temp, 'ready.json'), { force: true });
       backend = spawn(binary, ['-test.run=^TestBrowserFixture$', '-test.timeout=5m'], {
@@ -109,6 +110,11 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     page.setDefaultTimeout(20000);
     await page.setViewport({ width: 1440, height: 1100 });
     await page.goto(origin + '/rpg/#ticket=' + ready.ticket);
+    if (host !== 'localhost' && host !== '127.0.0.1' && host !== '::1') {
+      assert.equal(await page.evaluate(() => window.isSecureContext), false);
+      assert.equal(await page.evaluate(() => typeof crypto.randomUUID), 'undefined');
+      console.log('PASS: real HTTP origin without secure-context browser APIs');
+    }
     await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
     assert.equal(new URL(page.url()).hash, '', 'login fragment removed');
     assert.equal(await page.$$eval('[data-hero]', (els) => els.length), 4);

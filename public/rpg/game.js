@@ -30,6 +30,11 @@
   let csrf = '',
     pending = null;
   const pendingKey = 'hara-rpg-pending-v1';
+  // getRandomValues also works on the HTTP origin used inside the tailnet.
+  const requestID = () =>
+    Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    ).join('');
   $('#login-retry').onclick = () => location.reload();
   async function request(path, method = 'GET', body) {
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -136,7 +141,7 @@
       storePending({
         path,
         method,
-        body: { ...body, request_id: crypto.randomUUID() },
+        body: { ...body, request_id: requestID() },
         owner: state.id,
       });
     busy = true;
