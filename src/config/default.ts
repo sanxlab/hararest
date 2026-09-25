@@ -27,6 +27,14 @@ const ConfigSchema = z.object({
         return false;
       }
     }, 'PLAYER_PUBLIC_URL must be an HTTP(S) origin without credentials, path, query, or fragment.'),
+  rpgUpstreamUrl: z.string().default('').refine(value => {
+    if (!value) return true;
+    try {
+      const url = new URL(value);
+      return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password && !url.search && !url.hash && url.pathname === '/';
+    } catch { return false; }
+  }, 'RPG_UPSTREAM_URL must be an HTTP(S) origin without credentials or path.'),
+  rpgGatewaySecret: z.string().default('').refine(value => !value || (value.length >= 32 && !/\s/.test(value)), 'RPG_GATEWAY_SECRET needs at least 32 characters without whitespace.'),
   youtube: z.object({
     concurrency: z.coerce.number().int().min(1).max(8).default(4),
     binPath: z.string().default('./bin/yt-dlp'),
@@ -59,6 +67,8 @@ export const config = ConfigSchema.parse({
   trustProxyHops: process.env.TRUST_PROXY_HOPS,
   nodeEnv: process.env.NODE_ENV,
   playerPublicUrl: process.env.PLAYER_PUBLIC_URL?.trim(),
+  rpgUpstreamUrl: process.env.RPG_UPSTREAM_URL?.trim(),
+  rpgGatewaySecret: process.env.RPG_GATEWAY_SECRET?.trim(),
   youtube: {
     concurrency: process.env.YTDLP_CONCURRENCY,
     binPath: process.env.YTDLP_PATH,

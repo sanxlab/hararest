@@ -11,7 +11,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json",
+    "test:rpg-browser": "npm run build && node scripts/rpg-browser.cjs"
   },
   "keywords": [],
   "author": "",

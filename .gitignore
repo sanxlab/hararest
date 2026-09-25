@@ -19,3 +19,6 @@ cookies
 /docs/integration-audit-*.md
 /docs/security-review-*.md
 scripts/*
+/docs/rpg/*
+
+!scripts/rpg-browser.cjs

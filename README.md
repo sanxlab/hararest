@@ -78,3 +78,7 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 - `npm run typecheck` : Memeriksa tipe kode aplikasi dan tes.
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
+
+## RPG Kotonehara
+
+Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](docs/rpg/integration.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.

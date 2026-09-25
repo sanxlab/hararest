@@ -14,6 +14,10 @@ const app = express();
 app.set('trust proxy', config.trustProxyHops);
 
 app.use(helmet());
+// RPG uses same-origin cookies and its own small JSON body limit.
+import { rpgRouter } from './modules/rpg/rpg.route';
+app.use('/rpg', rpgRouter);
+
 app.use(cors());
 app.use(express.json());
 

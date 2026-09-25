@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#193e34" />
+    <title>HARA — Gema Arunika · RPG</title>
+    <link rel="stylesheet" href="/rpg/style.css" />
+  </head>
+  <body>
+    <section id="login-screen" class="login-screen">
+      <p class="eyebrow">HARA · GEMA ARUNIKA</p>
+      <h1>Petualanganmu menunggu.</h1>
+      <p id="login-message" role="status">Menghubungkan akun…</p>
+      <button id="login-retry" class="button outline">Coba sambungkan lagi</button>
+      <p class="subtitle">Minta link pribadi dengan .rpg lanjut di WhatsApp.</p>
+    </section>
+    <div id="game-shell" hidden>
+      <div id="sync-note" class="sync-note" hidden>
+        <span>Aksi belum terkonfirmasi. Coba ulang untuk memastikan hasil yang sama.</span
+        ><button id="retry-pending" class="button outline">Coba ulang aksi</button>
+      </div>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Hara Gema Arunika"
+          ><span class="brand-mark">✳</span><span><b>HARA</b><small>GEMA ARUNIKA</small></span></a
+        >
+        <nav aria-label="Menu utama">
+          <button data-tab="battle" class="nav-button active">Petualangan</button
+          ><button data-tab="collection" class="nav-button">Karakter</button
+          ><button data-tab="gacha" class="nav-button">Pemanggilan</button>
+        </nav>
+        <div class="wallet">
+          <span title="Embun Bintang"><i>✦</i> <b id="shards">—</b></span
+          ><span title="Koin"><i>◈</i> <b id="coins">0</b></span
+          ><button class="avatar" id="help" aria-label="Panduan permainan">?</button>
+        </div>
+      </header>
+      <main>
+        <div class="preview-note">
+          <span class="status-dot"></span> HARA · EARLY ACCESS <span class="note-separator">/</span>
+          <span id="save-status">Progres tersimpan di akun RPG</span>
+        </div>
+        <section id="battle-view" class="view">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">BAB 01 · MENYALAKAN KEMBALI FAJAR</p>
+              <h1>Padang Embun<span>.</span></h1>
+              <p class="subtitle">Di antara reruntuhan, sebuah cahaya masih menunggu.</p>
+            </div>
+            <button class="button outline" id="world-button">⌘ &nbsp; Peta dunia</button>
+          </div>
+          <div class="adventure-layout">
+            <aside class="journey-panel">
+              <div class="panel-title"><span>JEJAK PERJALANAN</span><span>01 / 10</span></div>
+              <div class="region-art" aria-hidden="true">
+                <svg viewBox="0 0 240 125">
+                  <path fill="#d1dac2" d="M0 125V57L31 28 68 65 113 7 168 78 209 23 240 61V125Z" />
+                  <path fill="#a4b99d" d="M0 125V85L54 47 107 97 156 46 206 88 240 64V125Z" />
+                  <path
+                    fill="#708e72"
+                    d="M0 125V103L32 84 77 107 123 82 171 109 217 70 240 104V125Z"
+                  />
+                  <path
+                    d="M102 124l14-25 19-12-5-19 12-14"
+                    fill="none"
+                    stroke="#e8c787"
+                    stroke-width="4"
+                    stroke-dasharray="4 4"
+                  />
+                  <rect x="136" y="40" width="17" height="18" rx="2" fill="#506651" />
+                  <rect x="141" y="44" width="7" height="10" fill="#f7dc8b" /></svg
+                ><span>01 — The first light</span>
+              </div>
+              <div id="journey" class="journey"></div>
+              <div class="journey-footer">
+                <span>REKOMENDASI</span>
+                <p>Bangun tim yang saling melengkapi.<br />Bintang rendah tetap punya peran.</p>
+              </div>
+            </aside>
+            <div class="battle-column">
+              <div class="arena-card">
+                <div class="arena-heading">
+                  <div>
+                    <span class="live-dot"></span><b id="stage-name">Jalur Kunang</b
+                    ><span id="stage-level">Lv. 1</span>
+                  </div>
+                  <div class="arena-tools">
+                    <button id="speed-button" aria-label="Kecepatan animasi">1×</button
+                    ><button id="auto-button" aria-pressed="false">Auto <span>OFF</span></button>
+                  </div>
+                </div>
+                <div class="arena" id="arena">
+                  <svg
+                    id="battle-scene"
+                    viewBox="0 0 1000 430"
+                    role="group"
+                    aria-label="Arena pertarungan. Pilih target musuh."
+                  ></svg>
+                  <div class="scene-caption">
+                    <span>PADANG EMBUN</span><span id="weather">✧ &nbsp; Cahaya senja</span>
+                  </div>
+                  <div id="battle-overlay" class="battle-overlay" hidden></div>
+                </div>
+                <div class="turn-strip">
+                  <span class="turn-label" id="round-label">RONDE 01</span>
+                  <div id="turn-order" class="turn-order"></div>
+                  <span id="phase-label">Giliran timmu</span>
+                </div>
+              </div>
+              <div class="party-header">
+                <span>TIM EKSPEDISI <small>4 / 4</small></span
+                ><span id="party-hint">Pilih karakter yang belum bergerak</span>
+              </div>
+              <div id="party" class="party-grid"></div>
+              <div class="command-panel">
+                <div class="command-title">
+                  <span class="eyebrow" id="actor-caption">APA LANGKAHMU?</span
+                  ><b id="actor-name">Pilih aksi</b><small id="target-caption">Target: —</small>
+                </div>
+                <div class="commands">
+                  <button data-action="attack">
+                    <span class="command-icon">⚔</span><b>Serang</b><small>+1 energi</small></button
+                  ><button data-action="skill">
+                    <span class="command-icon">✧</span><b>Skill</b><small>2 energi</small></button
+                  ><button data-action="guard">
+                    <span class="command-icon">◈</span><b>Bertahan</b
+                    ><small>+2 energi</small></button
+                  ><button data-action="ultimate" class="ultimate">
+                    <span class="command-icon">✦</span><b>Ultimate</b><small>5 energi</small>
+                  </button>
+                </div>
+              </div>
+              <div class="battle-bottom">
+                <button class="text-button" id="retreat">↖ Mundur</button>
+                <p id="combat-log" role="status" aria-live="polite">
+                  Petualanganmu dimulai. Pilih musuh, lalu tentukan aksi.
+                </p>
+                <button class="text-button" id="log-button">Catatan ↗</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="collection-view" class="view" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">MEREKA YANG MENJAWAB PANGGILAN</p>
+              <h1>Teman seperjalanan<span>.</span></h1>
+              <p class="subtitle">
+                60 karakter. Lima tingkat bintang. Banyak cara menyelamatkan fajar.
+              </p>
+            </div>
+            <span id="collection-count" class="count-badge"></span>
+          </div>
+          <div class="collection-toolbar">
+            <div class="filters" id="rarity-filters">
+              <button data-rarity="0" class="selected">Semua</button
+              ><button data-rarity="1">★1</button><button data-rarity="2">★2</button
+              ><button data-rarity="3">★3</button><button data-rarity="4">★4</button
+              ><button data-rarity="5">★5</button>
+            </div>
+            <label class="search"
+              ><span>⌕</span
+              ><input
+                type="search"
+                id="character-search"
+                placeholder="Cari nama, role, elemen…"
+                aria-label="Cari karakter"
+            /></label>
+          </div>
+          <p class="collection-instruction">
+            Pilih kartu untuk melihat skill dan prompt desain. Karakter yang dimiliki bisa mengganti
+            anggota tim; selesaikan atau mundur dari battle aktif terlebih dahulu.
+          </p>
+          <div id="collection-grid" class="collection-grid"></div>
+        </section>
+        <section id="gacha-view" class="view" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">OBSERVATORIUM ARUNIKA</p>
+              <h1>Panggil sebuah harapan<span>.</span></h1>
+              <p class="subtitle">
+                Pemanggilan dengan Embun Bintang dari petualangan. Tanpa uang asli.
+              </p>
+            </div>
+            <button class="button outline" id="rates-button">Detail peluang ↗</button>
+          </div>
+          <div class="summon-layout">
+            <div class="summon-banner">
+              <div class="constellation" aria-hidden="true">✧</div>
+              <span class="banner-label">BANNER PERDANA · FAJAR YANG PULANG</span>
+              <div id="featured-art"></div>
+              <div class="featured-copy">
+                <span class="stars">★★★★★</span>
+                <h2 id="featured-name"></h2>
+                <p id="featured-subtitle"></p>
+                <span class="featured-tag">KARAKTER UNGGULAN</span>
+              </div>
+            </div>
+            <aside class="summon-panel">
+              <p class="eyebrow">PANGGILAN BINTANG</p>
+              <h2>Satu cahaya.<br />Satu kisah baru.</h2>
+              <p>Gunakan Embun Bintang dari petualangan untuk memanggil karakter.</p>
+              <div class="pity-row"><span>Jaminan ★5</span><b id="pity-five">0 / 80</b></div>
+              <div class="pity-track"><i id="pity-progress"></i></div>
+              <div class="pity-row small">
+                <span>Jaminan ★4 atau lebih</span><b id="pity-four">0 / 10</b>
+              </div>
+              <p id="featured-guarantee" class="guarantee-note"></p>
+              <button class="button primary" id="pull-ten">Panggil 10× <span>✦ 1.600</span></button
+              ><button class="button outline" id="pull-one">Panggil 1× <span>✦ 160</span></button
+              ><small class="summon-disclaimer"
+                >Saldo, pity, dan hasil tersimpan di akun yang sama dengan bot.</small
+              >
+            </aside>
+          </div>
+          <div id="summon-results" class="summon-results" aria-live="polite"></div>
+        </section>
+        <footer>
+          <span>HARA <i>✳</i> Gema Arunika</span
+          ><span>Versi awal · Battle dan koleksi tersimpan di akun.</span
+          ><button id="design-help" class="text-button">Panduan game ↗</button>
+        </footer>
+      </main>
+      <dialog id="modal">
+        <div class="modal-header">
+          <span id="modal-kicker">CATATAN PENJELAJAH</span
+          ><button id="close-modal" aria-label="Tutup dialog">×</button>
+        </div>
+        <div id="modal-body"></div>
+      </dialog>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </div>
+    <script src="/rpg/game.js"></script>
+  </body>
+</html>
