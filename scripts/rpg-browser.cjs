@@ -17,7 +17,7 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'hara-rpg-e2e-'));
   const binary = path.join(temp, 'rpg.test');
   const secret = 'browser-test-only-secret-'.repeat(2);
-  let backend, server, browser;
+  let backend, server, browser, page;
   let backendOutput = '';
   const settings = { upstream: '', secret };
   try {
@@ -103,9 +103,17 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
       headless: true,
       args: ['--no-sandbox', '--disable-dev-shm-usage'],
     });
-    const page = await browser.newPage();
+    page = await browser.newPage();
     const errors = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('pageerror', (error) => {
+      errors.push(error.message);
+      console.error('Browser error:', error.message);
+    });
+    page.on('response', async (response) => {
+      if (response.url().includes('/equipment/') && response.status() >= 400) {
+        console.error('Equipment API failure:', response.status(), await response.text());
+      }
+    });
     page.on('dialog', (dialog) => dialog.accept());
     page.setDefaultTimeout(20000);
     await page.setViewport({ width: 1440, height: 1100 });
@@ -172,6 +180,41 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     await page.waitForFunction(() => !document.querySelector('#battle-overlay').hidden);
     assert.equal((await profile()).profile.shards, 1620);
     console.log('PASS: battle rewards and map unlock persist; replay gives no second reward');
+
+    state = await profile();
+    assert.equal(state.profile.growth.char_001.level, 2);
+    assert.equal(state.profile.training_xp, 100);
+    await page.click('[data-tab="collection"]');
+    await page.click('[data-character="char_001"]');
+    await page.click('#open-equipment-shop');
+    await page.waitForFunction(() => !document.querySelector('[data-buy="blade_dawn"]').disabled);
+    await page.click('[data-buy="blade_dawn"]');
+    await page.waitForFunction(
+      async () =>
+        (await (await fetch('/rpg/api/profile')).json()).profile.inventory.blade_dawn === 1,
+    );
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('[data-buy="blade_dawn"]') ||
+        document.querySelector('[data-buy="blade_dawn"]').disabled,
+    );
+    assert.equal((await profile()).profile.coins, 0);
+    await page.click('#back-to-character');
+    await page.select('[data-gear="weapon"]', 'blade_dawn');
+    await page.waitForFunction(
+      async () =>
+        (await (await fetch('/rpg/api/profile')).json()).profile.loadouts.char_001?.weapon ===
+        'blade_dawn',
+    );
+    await page.waitForFunction(
+      () => document.querySelector('[data-gear="weapon"]').value === 'blade_dawn',
+    );
+    await page.reload();
+    await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
+    assert.equal((await profile()).profile.loadouts.char_001.weapon, 'blade_dawn');
+    console.log(
+      'PASS: first-clear XP, purchase, equip, and reload persist character growth and inventory',
+    );
 
     await page.click('[data-tab="gacha"]');
     dropDrawResponses = 3;
@@ -249,6 +292,41 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     assert.equal(await page.$$eval('[data-travel]', (els) => els.length), 99);
     await page.click('[data-travel="1"]');
     await page.waitForFunction(() => document.querySelector('#battle-overlay').hidden);
+    state = await profile();
+    assert.equal(state.battle.heroes[0].level, 2);
+    assert.equal(state.battle.heroes[0].attack, Math.round(42 * 1.0105) + 8);
+    await page.click('#auto-button');
+    await page.waitForFunction(() => !document.querySelector('#battle-overlay').hidden);
+    await page.click('[data-tab="collection"]');
+    await page.click('[data-rarity="0"]');
+    await page.click('[data-character="char_001"]');
+    await page.click('[data-train="1"]');
+    await page.waitForFunction(
+      async () =>
+        (await (await fetch('/rpg/api/profile')).json()).profile.growth.char_001.level === 4,
+    );
+    await page.waitForFunction(() =>
+      document.querySelector('.progression-panel h3').textContent.includes('Lv.4'),
+    );
+    assert.equal(
+      await page.evaluate(
+        () =>
+          document.querySelector('#modal').scrollWidth <=
+          document.querySelector('#modal').clientWidth,
+      ),
+      true,
+      'equipment modal mobile overflow',
+    );
+    await page.screenshot({ path: '/tmp/hara-rpg-progression-mobile.png', fullPage: true });
+    await page.click('#close-modal');
+    await page.click('[data-tab="battle"]');
+    await page.click('#next-battle');
+    await page.waitForFunction(
+      async () => (await (await fetch('/rpg/api/profile')).json()).battle.stage === 2,
+    );
+    console.log(
+      'PASS: equipment changes combat stats, mobile training debits coins/XP, and level persists',
+    );
     await page.screenshot({ path: '/tmp/hara-rpg-live-mobile.png', fullPage: true });
     await page.setViewport({ width: 1440, height: 1100 });
     await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
@@ -258,6 +336,10 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     console.log(
       'RPG browser integration passed against real Go + SQLite (WhatsApp delivery covered by handler tests).',
     );
+  } catch (error) {
+    if (page && !page.isClosed())
+      await page.screenshot({ path: '/tmp/hara-rpg-browser-failure.png', fullPage: true });
+    throw error;
   } finally {
     if (browser) await browser.close();
     if (backend && backend.exitCode === null) {

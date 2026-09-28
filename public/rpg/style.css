@@ -629,6 +629,13 @@ h1 span {
   border-radius: 6px;
   background: #eeeee2;
 }
+.skill-description {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #395343;
+}
 .command-title {
   display: flex;
   flex-direction: column;
@@ -1096,6 +1103,7 @@ footer i {
   color: #879177;
 }
 dialog {
+  scroll-padding-top: 76px;
   border: 1px solid #c7d1b7;
   border-radius: 9px;
   background: #f7f6ec;
@@ -1947,4 +1955,46 @@ dialog::backdrop {
   .login-screen h1 {
     font-size: 31px;
   }
+}
+.progression-panel {
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid #b7c3a3;
+  border-radius: 12px;
+  background: #e4e9d7;
+}
+.equipment-slots {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+.equipment-slots label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.equipment-slots select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #a6b494;
+  border-radius: 8px;
+  background: #f6f5e9;
+  color: #314b3b;
+  font: inherit;
+}
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.equipment-item {
+  padding: 16px;
+  border: 1px solid #b7c3a3;
+  border-radius: 10px;
+}
+.equipment-item .button {
+  width: 100%;
 }

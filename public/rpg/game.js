@@ -89,7 +89,8 @@
   const initial = await request('/profile');
   csrf = initial.csrf;
   const C = await request('/catalog');
-  if (C.version !== 'arunika-v1') throw new Error('Versi game berubah. Muat ulang halaman.');
+  if (!['arunika-v1', 'arunika-v2'].includes(C.version))
+    throw new Error('Versi game berubah. Muat ulang halaman.');
   const byId = new Map(C.characters.map((c) => [c.id, c]));
   const featured = byId.get(C.featured);
   const stages = C.stages;
@@ -193,6 +194,7 @@
     $('#modal-body').innerHTML = html;
     $('#modal-kicker').textContent = kicker;
     if (!$('#modal').open) $('#modal').showModal();
+    $('#modal').scrollTop = 0;
   }
   function whenIdle(fn) {
     return () => (busy ? toast('Tunggu aksi ini selesai.') : fn());
@@ -210,6 +212,8 @@
     return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
   }
   function characterParts(c) {
+    if (['char_001', 'char_002', 'char_004', 'char_023'].includes(c.id))
+      return `<image href="/rpg/assets/v1/${c.id}.webp" x="-5" y="-3" width="48" height="48"/>`;
     const role = c.role,
       color = colors[c.element] || '#a5b77a',
       dark = '#2b423c',
@@ -294,6 +298,8 @@
     return `<g transform="translate(${x} ${y}) scale(${scale})" shape-rendering="crispEdges"><path d="M25 45h9v63h-9z" fill="#5d6950"/><path d="M29 0L4 31H14L0 54H12L2 72H59L48 52H57L42 29H50Z" fill="${shade}"/><path d="M29 4L16 29H26L15 49H31L20 68H38L33 45H41L31 26H37Z" fill="#ffffff0b"/></g>`;
   }
   function background() {
+    if (stages[battle.stage].region === 0)
+      return '<image href="/rpg/assets/v1/padang-embun.webp" width="1000" height="430" preserveAspectRatio="xMidYMid slice"/>';
     let trees = '';
     for (let i = 0; i < 14; i++)
       trees += tree(
@@ -356,7 +362,7 @@
         const x = stages[battle.stage].boss ? 270 : 250 + i * 120,
           y = stages[battle.stage].boss ? 212 : 213 + i * 102;
         const scale = e.kind === 'boss' ? 3 : 2.65;
-        return `<g class="enemy-target" data-enemy="${i}" tabindex="${e.hp > 0 ? 0 : -1}" role="button" aria-label="${esc(e.name)}, HP ${Math.round(e.hp)} dari ${e.max}" opacity="${e.hp > 0 ? 1 : 0.18}"><ellipse cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 90 : 63}" ry="15" class="sprite-shadow"/><ellipse class="target-ring" cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 95 : 66}" ry="18" fill="none" stroke="#efe1a3" stroke-width="2" stroke-dasharray="8 5" opacity="${battle.target === i && e.hp > 0 ? 0.9 : 0}"/><g id="enemy-sprite-${i}" transform="translate(${x - (e.kind === 'boss' ? 100 : 55)} ${y - (e.kind === 'boss' ? 140 : 52)}) scale(${scale})" class="pixel-sprite"><g class="${e.kind === 'moth' ? 'idle-float' : ''}">${enemyParts(e.kind)}</g></g><rect x="${x - 70}" y="${y + 65}" width="140" height="36" rx="4" fill="#edf0dcd9"/><text x="${x}" y="${y + 80}" text-anchor="middle" fill="#2d4e3c" font-family="Arial,sans-serif" font-size="11">${esc(e.name)}</text><rect x="${x - 56}" y="${y + 86}" width="112" height="4" rx="2" fill="#b8c5a8"/><rect x="${x - 56}" y="${y + 86}" width="${112 * Math.max(0, e.hp / e.max)}" height="4" rx="2" fill="#b49664"/><text x="${x}" y="${y - 67}" text-anchor="middle" fill="#4c5e42" font-family="Arial,sans-serif" font-size="10">${e.hp > 0 ? (e.charged ? '✦ Bersiap menyerang kuat' : '⚔ Bersiap menyerang') : ''}</text></g>`;
+        return `<g class="enemy-target" data-enemy="${i}" tabindex="${e.hp > 0 ? 0 : -1}" role="button" aria-label="${esc(e.name)}, HP ${Math.round(e.hp)} dari ${e.max}" opacity="${e.hp > 0 ? 1 : 0.18}"><ellipse cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 90 : 63}" ry="15" class="sprite-shadow"/><ellipse class="target-ring" cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 95 : 66}" ry="18" fill="none" stroke="#efe1a3" stroke-width="2" stroke-dasharray="8 5" opacity="${battle.target === i && e.hp > 0 ? 0.9 : 0}"/><g id="enemy-sprite-${i}" transform="translate(${x - (e.kind === 'boss' ? 100 : 55)} ${y - (e.kind === 'boss' ? 140 : 52)}) scale(${scale})" class="pixel-sprite"><g class="${e.kind === 'moth' ? 'idle-float' : ''}">${e.id === 'enemy_001' ? '<image href="/rpg/assets/v1/enemy_001.webp" width="50" height="50" x="-4" y="-4"/>' : enemyParts(e.kind)}</g></g><rect x="${x - 70}" y="${y + 65}" width="140" height="36" rx="4" fill="#edf0dcd9"/><text x="${x}" y="${y + 80}" text-anchor="middle" fill="#2d4e3c" font-family="Arial,sans-serif" font-size="11">${esc(e.name)}</text><rect x="${x - 56}" y="${y + 86}" width="112" height="4" rx="2" fill="#b8c5a8"/><rect x="${x - 56}" y="${y + 86}" width="${112 * Math.max(0, e.hp / e.max)}" height="4" rx="2" fill="#b49664"/><text x="${x}" y="${y - 67}" text-anchor="middle" fill="#fff7dc" stroke="#294033" stroke-width="3" paint-order="stroke" stroke-linejoin="round" font-family="Arial,sans-serif" font-size="10">${e.hp > 0 ? (e.charged ? '✦ Bersiap menyerang kuat' : '⚔ Bersiap menyerang') : ''}</text></g>`;
       })
       .join('');
     const heroes = battle.heroes
@@ -414,7 +420,7 @@
     $('#party').innerHTML = battle.heroes
       .map(
         (h, i) =>
-          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroSVG(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${stage.level}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
+          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroSVG(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${h.level || stage.level}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}${h.shield ? ' · ◈ ' + h.shield : ''}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
       )
       .join('');
     $$('[data-hero]').forEach(
@@ -431,7 +437,10 @@
     const hero = battle.heroes[battle.active];
     $('#actor-name').textContent = hero.name;
     $('#actor-caption').textContent = hero.element.toUpperCase() + ' · ' + hero.role.toUpperCase();
-    $('#target-caption').textContent = 'Target: ' + (battle.enemies[battle.target]?.name || '—');
+    $('#target-caption').textContent =
+      'Target: ' +
+      (battle.enemies[battle.target]?.name || '—') +
+      enemyStatus(battle.enemies[battle.target]);
     $$('[data-action]').forEach((btn) => {
       const a = btn.dataset.action;
       btn.disabled =
@@ -445,13 +454,17 @@
       if (a === 'skill')
         btn.title =
           'Efek skill: ' +
-          (hero.role === 'Medic'
-            ? 'Pulihkan 38% HP maksimal rekan hidup dengan persentase HP terendah.'
-            : hero.role === 'Guardian'
-              ? 'Kurangi damage ke seluruh tim 50% sampai akhir fase musuh.'
-              : 'Serang satu target dengan kekuatan 1,85×.');
+          (battle.rules === 'arunika-v2'
+            ? byId.get(hero.id).skill.description
+            : hero.role === 'Medic'
+              ? 'Pulihkan 38% HP maksimal rekan hidup dengan persentase HP terendah.'
+              : hero.role === 'Guardian'
+                ? 'Kurangi damage ke seluruh tim 50% sampai akhir fase musuh.'
+                : 'Serang satu target dengan kekuatan 1,85×.');
     });
     $('#retreat').disabled = busy || !!pending || battle.done;
+    $('#skill-description').textContent =
+      hero.skill.name + ' · ' + $('[data-action="skill"]').title;
   }
   function renderJourney() {
     const region = stages[battle.stage].region;
@@ -512,7 +525,7 @@
         : 'Kembali ke perkemahan.';
     const desc = win
       ? battle.first_clear
-        ? `+${battle.reward_shards} Embun Bintang · +${battle.reward_coins} koin. Progres tersimpan.`
+        ? `+${battle.reward_shards} Embun Bintang · +${battle.reward_coins} koin · +${battle.reward_xp || 0} XP untuk tiap anggota tim · +${battle.reward_training_xp || 0} XP latihan.`
         : 'Latihan selesai. Hadiah pertama sudah pernah diambil.'
       : 'Tidak ada hadiah. Kamu bisa mencoba lagi atau menyusun tim baru.';
     $('#battle-overlay').innerHTML =
@@ -560,7 +573,7 @@
       ? list
           .map(
             (c) =>
-              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroSVG(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}</small></div></button>`,
+              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroSVG(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}${state.growth?.[c.id] ? ' · Lv.' + state.growth[c.id].level : ''}</small></div></button>`,
           )
           .join('')
       : '<p class="empty">Karakter tidak ditemukan.</p>';
@@ -568,13 +581,112 @@
       (btn) => (btn.onclick = () => characterDetail(btn.dataset.character)),
     );
   }
+  function enemyStatus(e) {
+    if (!e) return '';
+    const labels = [];
+    for (const [key, name] of Object.entries({
+      burn: 'Bara',
+      weaken: 'ATK↓',
+      expose: 'DEF↓',
+      slow: 'Lambat',
+      blind: 'Kabut',
+    })) {
+      if (e[key]) labels.push(`${name} ${e[key]}`);
+    }
+    if (e.mark) labels.push('Tanda');
+    if (e.shield) labels.push(`Perisai ${e.shield}`);
+    return labels.length ? ' · ' + labels.join(' · ') : '';
+  }
+  const slotNames = { weapon: 'Senjata', armor: 'Armor', charm: 'Jimat' };
+  const gearStats = (item) =>
+    [`HP +${item.hp}`, `ATK +${item.attack}`, `DEF +${item.defense}`].join(' · ');
+  function progressionPanel(c) {
+    const g = state.growth[c.id],
+      locked = busy || !!pending || (battle && !battle.done);
+    return `<section class="progression-panel"><h3>Latihan · Lv.${g.level} / ${state.level_cap}</h3><p>${g.xp} / 100 XP menuju level berikutnya. Cadangan: <b>${fmt(state.training_xp)} XP latihan</b> · ${fmt(state.coins)} koin.</p><p>100 XP latihan + 10 koin per level. Naikkan batas level dengan melanjutkan cerita. Karakter baru mengikuti level jalur yang sudah terbuka.</p>${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum latihan dan mengganti equipment.</p>' : ''}<div class="detail-team">${[1, 10].map((levels) => `<button class="button outline" data-train="${levels}" ${locked || g.level + levels > state.level_cap || state.training_xp < 100 * levels || state.coins < 10 * levels ? 'disabled' : ''}>Latih +${levels} level</button>`).join('')}</div><h3>Equipment</h3><div class="equipment-slots">${Object.entries(
+      slotNames,
+    )
+      .map(
+        ([slot, name]) =>
+          `<label>${name}<select data-gear="${slot}" ${locked ? 'disabled' : ''}><option value="">Tanpa ${name.toLowerCase()}</option>${C.equipment
+            .filter((item) => item.slot === slot && state.inventory[item.id] > 0)
+            .map(
+              (item) =>
+                `<option value="${item.id}" ${state.loadouts[c.id]?.[slot] === item.id ? 'selected' : ''}>${esc(item.name)} · ${gearStats(item)}</option>`,
+            )
+            .join('')}</select></label>`,
+      )
+      .join(
+        '',
+      )}</div><button class="button outline" id="open-equipment-shop">Kunjungi bengkel</button></section>`;
+  }
+  function bindProgression(id) {
+    $$('[data-train]').forEach(
+      (btn) =>
+        (btn.onclick = async () => {
+          if (busy || pending) return;
+          if (
+            await perform('/characters/train', {
+              character_id: id,
+              levels: +btn.dataset.train,
+              expected_revision: state.revision,
+            })
+          ) {
+            characterDetail(id);
+            toast('Latihan tersimpan. Level berlaku pada battle berikutnya.');
+          }
+        }),
+    );
+    $$('[data-gear]').forEach(
+      (select) =>
+        (select.onchange = async () => {
+          if (busy || pending) return;
+          await perform(
+            '/equipment/equip',
+            {
+              character_id: id,
+              item_id: select.value,
+              slot: select.dataset.gear,
+              expected_revision: state.revision,
+            },
+            'PUT',
+          );
+          characterDetail(id);
+        }),
+    );
+    if ($('#open-equipment-shop')) $('#open-equipment-shop').onclick = () => equipmentShop(id);
+  }
+  function equipmentShop(returnTo) {
+    const locked = busy || !!pending || (battle && !battle.done);
+    modal(
+      `<h2>Bengkel lentera.</h2><p>Saldo <b>${fmt(state.coins)} koin</b>. Setiap pembelian memberi satu salinan; satu salinan hanya bisa dipasang pada satu karakter. Equipment tidak diundi.</p>${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum berbelanja.</p>' : ''}<div class="equipment-grid">${(C.equipment || []).map((item) => `<article class="equipment-item"><span class="eyebrow">${slotNames[item.slot]}</span><h3>${esc(item.name)}</h3><p>${gearStats(item)}</p><p>Dimiliki: ${state.inventory?.[item.id] || 0}${state.unlocked < item.unlock ? ` · Terbuka setelah jalur ${item.unlock}` : ''}</p><button class="button outline" data-buy="${item.id}" ${locked || state.coins < item.price || state.unlocked < item.unlock || state.inventory?.[item.id] >= 60 ? 'disabled' : ''}>Beli · ${fmt(item.price)} koin</button></article>`).join('')}</div>${returnTo ? '<button class="button secondary" id="back-to-character">Kembali ke karakter</button>' : ''}`,
+      'BENGKEL EQUIPMENT',
+    );
+    $$('[data-buy]').forEach(
+      (btn) =>
+        (btn.onclick = async () => {
+          if (busy || pending) return;
+          if (
+            await perform('/equipment/buy', {
+              item_id: btn.dataset.buy,
+              expected_revision: state.revision,
+            })
+          ) {
+            equipmentShop(returnTo);
+            toast('Equipment tersimpan di inventori.');
+          }
+        }),
+    );
+    if ($('#back-to-character')) $('#back-to-character').onclick = () => characterDetail(returnTo);
+  }
   function characterDetail(id) {
     const c = byId.get(id),
       owned = state.collection[id] > 0;
     modal(
-      `<div class="character-detail-top">${heroSVG(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Versi awal memakai skill berdasarkan role: Medic memulihkan, Guardian melindungi tim, role lain menyerang kuat. Elemen aktif; kit unik dan pasif di bawah masih rancangan.</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>Pasif · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p><h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
+      `<div class="character-detail-top">${heroSVG(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Skill aktif berikut berlaku pada battle baru. Battle lama memakai aturan sebelumnya sampai selesai. Pasif di bagian rancangan belum aktif.</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>Rancangan pasif · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p>${owned && C.version === 'arunika-v2' ? progressionPanel(c) : ''}<h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
       'ARSIP KARAKTER',
     );
+    bindProgression(id);
     $$('[data-replace]').forEach(
       (btn) =>
         (btn.onclick = async () => {
@@ -667,7 +779,7 @@
   }
   function help() {
     modal(
-      `<h2>Perjalanan ${esc(state.name)}.</h2><p>Progres terhubung dengan akun WhatsApp. Battle, saldo, hasil gacha, dan pity otomatis tersimpan di akunmu.</p><ol><li>Pilih musuh dan anggota tim yang belum bergerak.</li><li>Serang +1 energi, skill −2, bertahan +2, Ultimate memerlukan 5. Guardian mengurangi damage tim; Medic memulihkan.</li><li>Keunggulan elemen: Api → Angin → Tanah → Air → Api; Cahaya dan Bayangan saling unggul.</li><li>Tutup browser kapan saja. Buka .rpg lanjut untuk kembali ke battle tersimpan.</li><li>Hadiah cerita pertama hanya sekali. Latihan ulang tidak memberi hadiah tambahan.</li></ol><p>Versi awal: level tim mengikuti jalur yang sudah terbuka; leveling terpisah, equipment, dan kit unik belum aktif. Sprite masih sketsa role/archetype.</p><p>Saldo awal 1.600 Embun Bintang diberikan sekali. Jalur biasa memberi 20 Embun; boss wilayah 200. Gacha bisa dilakukan dari web atau .rpg gacha 1 / 10.</p><div class="account-actions"><button class="button outline" id="history-button">Riwayat gacha</button><button class="button outline" id="logout-button">Keluar akun</button></div>`,
+      `<h2>Perjalanan ${esc(state.name)}.</h2><p>Progres terhubung dengan akun WhatsApp. Battle, saldo, hasil gacha, dan pity otomatis tersimpan di akunmu.</p><ol><li>Pilih musuh dan anggota tim yang belum bergerak.</li><li>Serang +1 energi, skill −2, bertahan +2, Ultimate memerlukan 5. Guardian mengurangi damage tim; Medic memulihkan.</li><li>Keunggulan elemen: Api → Angin → Tanah → Air → Api; Cahaya dan Bayangan saling unggul.</li><li>Tutup browser kapan saja. Buka .rpg lanjut untuk kembali ke battle tersimpan.</li><li>Hadiah cerita pertama hanya sekali. Latihan ulang tidak memberi hadiah tambahan.</li></ol><p>Karakter mendapat 100 XP pada kemenangan cerita pertama. XP latihan dan koin dapat dipakai untuk latihan di tab Karakter. Equipment dibeli dengan koin dan dipasang pada tiga slot. Skill aktif unik berlaku pada battle baru; pasif masih rancangan. Sebagian sprite masih memakai sketsa.</p><p>Saldo awal 1.600 Embun Bintang diberikan sekali. Jalur biasa memberi 20 Embun; boss wilayah 200. Gacha bisa dilakukan dari web atau .rpg gacha 1 / 10.</p><div class="account-actions"><button class="button outline" id="history-button">Riwayat gacha</button><button class="button outline" id="logout-button">Keluar akun</button></div>`,
       'PANDUAN PENJAGA',
     );
     $('#history-button').onclick = async () => {

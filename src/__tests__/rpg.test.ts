@@ -92,6 +92,10 @@ it('serves the live client with a restrictive script policy and no cache', async
   expect(script.status).toBe(200);
   expect(script.text).not.toContain('localStorage');
   expect(script.text).not.toContain('Math.random');
+  const art = await supertest(app).get('/rpg/assets/v1/char_001.webp');
+  expect(art.status).toBe(200);
+  expect(art.headers['cache-control']).toBe('public, max-age=31536000, immutable');
+  expect(art.headers['content-type']).toContain('image/webp');
 });
 it('reports a stopped upstream as retryable without leaking connection details', async () => {
   const res = await supertest(

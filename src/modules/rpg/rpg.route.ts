@@ -8,9 +8,9 @@ const routes = new Map([
   ['GET', /^\/(profile|catalog|gacha\/history)$/],
   [
     'POST',
-    /^\/(session\/(exchange|logout)|battles|gacha\/pulls|battles\/[a-f0-9]{64}\/(actions|retreat))$/,
+    /^\/(session\/(exchange|logout)|characters\/train|equipment\/buy|battles|gacha\/pulls|battles\/[a-f0-9]{64}\/(actions|retreat))$/,
   ],
-  ['PUT', /^\/party$/],
+  ['PUT', /^\/(party|equipment\/equip)$/],
 ]);
 
 export function createRpgRouter(settings: GatewayConfig): Router {
@@ -127,6 +127,11 @@ export function createRpgRouter(settings: GatewayConfig): Router {
       fallthrough: true,
       etag: false,
       maxAge: 0,
+      setHeaders(res, filePath) {
+        if (filePath.startsWith(path.join(assets, 'assets', 'v1') + path.sep)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
     }),
   );
   return router;

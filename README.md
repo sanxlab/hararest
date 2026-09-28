@@ -81,8 +81,10 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 
 ## RPG Kotonehara
 
-Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](docs/rpg/integration.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.
+Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](https://github.com/MapIHS/kotonehara/blob/dev/docs/rpg.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.
 
 Untuk dev lewat Tailscale, set `RPG_PUBLIC_URL=http://100.89.85.96:1338` di env **Kotonehara**. Di env Hararest, gunakan `TAILSCALE_IP=100.89.85.96`, `RPG_UPSTREAM_URL=http://kotonehara-dev:8089`, dan `RPG_GATEWAY_SECRET` yang sama dengan bot. Pemain membuka `/rpg/` lewat port Hararest1338 dari perangkat yang terhubung ke tailnet; port8089 hanya untuk API internal bot. Alamat publik di luar tailnet tetap memakai HTTPS.
 
 Tes browser pada HTTP Tailscale: `RPG_E2E_HOST=IP-TAILSCALE-MESIN-INI npm run test:rpg-browser`. Tes memakai database sementara dan tidak menyentuh akun bot.
+
+Pembaruan `arunika-v2` menambahkan level permanen, latihan XP/koin, bengkel dengan tiga slot equipment, dan 60 skill aktif. Buka tab Karakter lalu pilih kartu untuk latihan dan perlengkapan. Battle lama tetap memakai aturan awal sampai selesai. Enam aset gambar pertama berada di `public/rpg/assets/v1`; path versi ini immutable agar gambar tidak diunduh ulang setiap aksi. Detail generasi dan prompt ada di [catatan aset](public/rpg/assets/README.md).
