@@ -89,7 +89,7 @@
   const initial = await request('/profile');
   csrf = initial.csrf;
   const C = await request('/catalog');
-  if (!['arunika-v1', 'arunika-v2'].includes(C.version))
+  if (!['arunika-v1', 'arunika-v2', 'arunika-v3'].includes(C.version))
     throw new Error('Versi game berubah. Muat ulang halaman.');
   const byId = new Map(C.characters.map((c) => [c.id, c]));
   const featured = byId.get(C.featured);
@@ -420,7 +420,7 @@
     $('#party').innerHTML = battle.heroes
       .map(
         (h, i) =>
-          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroSVG(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${h.level || stage.level}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}${h.shield ? ' · ◈ ' + h.shield : ''}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
+          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroSVG(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${h.level || stage.level}${h.awakening ? ` · A${h.awakening}` : ''}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}${h.shield ? ' · ◈ ' + h.shield : ''}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
       )
       .join('');
     $$('[data-hero]').forEach(
@@ -454,7 +454,7 @@
       if (a === 'skill')
         btn.title =
           'Efek skill: ' +
-          (battle.rules === 'arunika-v2'
+          (battle.rules !== 'arunika-v1'
             ? byId.get(hero.id).skill.description
             : hero.role === 'Medic'
               ? 'Pulihkan 38% HP maksimal rekan hidup dengan persentase HP terendah.'
@@ -573,7 +573,7 @@
       ? list
           .map(
             (c) =>
-              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroSVG(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}${state.growth?.[c.id] ? ' · Lv.' + state.growth[c.id].level : ''}</small></div></button>`,
+              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroSVG(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}${state.growth?.[c.id] ? ' · Lv.' + state.growth[c.id].level + (state.awakening?.[c.id] ? ' · A' + state.awakening[c.id] : '') : ''}</small></div></button>`,
           )
           .join('')
       : '<p class="empty">Karakter tidak ditemukan.</p>';
@@ -598,12 +598,36 @@
     return labels.length ? ' · ' + labels.join(' · ') : '';
   }
   const slotNames = { weapon: 'Senjata', armor: 'Armor', charm: 'Jimat' };
-  const gearStats = (item) =>
-    [`HP +${item.hp}`, `ATK +${item.attack}`, `DEF +${item.defense}`].join(' · ');
+  const gearStats = (item) => {
+    const rank = state.enhancements?.[item.id] || 0;
+    const stat = (n) =>
+      Math.round((n * (100 + (C.progression?.enhancement_percent || 0) * rank)) / 100);
+    return [`HP +${stat(item.hp)}`, `ATK +${stat(item.attack)}`, `DEF +${stat(item.defense)}`].join(
+      ' · ',
+    );
+  };
+  function awakeningPanel(c, locked) {
+    if (C.version !== 'arunika-v3') return '';
+    const r = C.progression,
+      rank = state.awakening?.[c.id] || 0,
+      next = rank + 1;
+    const coins = r.awakening_coins * next,
+      dust = r.awakening_dust * c.rarity * next;
+    return `<section class="awakening-panel"><h3>Awakening · A${rank} / ${r.awakening_max}</h3><p>Bonus HP, ATK, DEF dasar: <b>+${rank * r.awakening_percent}%</b>. Tiap tahap menambah ${r.awakening_percent}%. Bonus equipment dihitung terpisah.</p><p>Debu Bintang: <b>${fmt(state.dust)}</b> · didapat dari duplikat gacha. Karakter dan jumlah salinan tetap dimiliki.</p><button class="button outline" id="awaken-character" ${locked || rank >= r.awakening_max || state.coins < coins || state.dust < dust ? 'disabled' : ''}>${rank >= r.awakening_max ? 'Awakening maksimum' : `Awakening A${next} · ${fmt(coins)} koin + ${fmt(dust)} debu`}</button></section>`;
+  }
+  function enhancementButton(item, locked) {
+    if (C.version !== 'arunika-v3') return '';
+    const r = C.progression,
+      rank = state.enhancements?.[item.id] || 0,
+      next = rank + 1;
+    const coins = item.price * next,
+      dust = r.enhancement_dust * next;
+    return `<p>Upgrade +${rank} / ${r.enhancement_max} · bonus stat equipment ${rank * r.enhancement_percent}%</p><button class="button outline" data-enhance="${item.id}" ${locked || !state.inventory?.[item.id] || rank >= r.enhancement_max || state.coins < coins || state.dust < dust ? 'disabled' : ''}>${rank >= r.enhancement_max ? 'Upgrade maksimum' : `Upgrade +${next} · ${fmt(coins)} koin + ${fmt(dust)} debu`}</button>`;
+  }
   function progressionPanel(c) {
     const g = state.growth[c.id],
       locked = busy || !!pending || (battle && !battle.done);
-    return `<section class="progression-panel"><h3>Latihan · Lv.${g.level} / ${state.level_cap}</h3><p>${g.xp} / 100 XP menuju level berikutnya. Cadangan: <b>${fmt(state.training_xp)} XP latihan</b> · ${fmt(state.coins)} koin.</p><p>100 XP latihan + 10 koin per level. Naikkan batas level dengan melanjutkan cerita. Karakter baru mengikuti level jalur yang sudah terbuka.</p>${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum latihan dan mengganti equipment.</p>' : ''}<div class="detail-team">${[1, 10].map((levels) => `<button class="button outline" data-train="${levels}" ${locked || g.level + levels > state.level_cap || state.training_xp < 100 * levels || state.coins < 10 * levels ? 'disabled' : ''}>Latih +${levels} level</button>`).join('')}</div><h3>Equipment</h3><div class="equipment-slots">${Object.entries(
+    return `<section class="progression-panel"><h3>Latihan · Lv.${g.level} / ${state.level_cap}</h3><p>${g.xp} / 100 XP menuju level berikutnya. Cadangan: <b>${fmt(state.training_xp)} XP latihan</b> · ${fmt(state.coins)} koin.</p><p>100 XP latihan + 10 koin per level. Naikkan batas level dengan melanjutkan cerita. Karakter baru mengikuti level jalur yang sudah terbuka.</p>${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum latihan dan mengganti equipment.</p>' : ''}<div class="detail-team">${[1, 10].map((levels) => `<button class="button outline" data-train="${levels}" ${locked || g.level + levels > state.level_cap || state.training_xp < 100 * levels || state.coins < 10 * levels ? 'disabled' : ''}>Latih +${levels} level</button>`).join('')}</div>${awakeningPanel(c, locked)}<h3>Equipment</h3><div class="equipment-slots">${Object.entries(
       slotNames,
     )
       .map(
@@ -612,7 +636,7 @@
             .filter((item) => item.slot === slot && state.inventory[item.id] > 0)
             .map(
               (item) =>
-                `<option value="${item.id}" ${state.loadouts[c.id]?.[slot] === item.id ? 'selected' : ''}>${esc(item.name)} · ${gearStats(item)}</option>`,
+                `<option value="${item.id}" ${state.loadouts[c.id]?.[slot] === item.id ? 'selected' : ''}>${esc(item.name)} +${state.enhancements?.[item.id] || 0} · ${gearStats(item)}</option>`,
             )
             .join('')}</select></label>`,
       )
@@ -621,6 +645,19 @@
       )}</div><button class="button outline" id="open-equipment-shop">Kunjungi bengkel</button></section>`;
   }
   function bindProgression(id) {
+    if ($('#awaken-character'))
+      $('#awaken-character').onclick = async () => {
+        if (busy || pending) return;
+        if (
+          await perform('/characters/awaken', {
+            character_id: id,
+            expected_revision: state.revision,
+          })
+        ) {
+          characterDetail(id);
+          toast('Awakening tersimpan. Bonus berlaku pada battle baru.');
+        }
+      };
     $$('[data-train]').forEach(
       (btn) =>
         (btn.onclick = async () => {
@@ -659,7 +696,7 @@
   function equipmentShop(returnTo) {
     const locked = busy || !!pending || (battle && !battle.done);
     modal(
-      `<h2>Bengkel lentera.</h2><p>Saldo <b>${fmt(state.coins)} koin</b>. Setiap pembelian memberi satu salinan; satu salinan hanya bisa dipasang pada satu karakter. Equipment tidak diundi.</p>${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum berbelanja.</p>' : ''}<div class="equipment-grid">${(C.equipment || []).map((item) => `<article class="equipment-item"><span class="eyebrow">${slotNames[item.slot]}</span><h3>${esc(item.name)}</h3><p>${gearStats(item)}</p><p>Dimiliki: ${state.inventory?.[item.id] || 0}${state.unlocked < item.unlock ? ` · Terbuka setelah jalur ${item.unlock}` : ''}</p><button class="button outline" data-buy="${item.id}" ${locked || state.coins < item.price || state.unlocked < item.unlock || state.inventory?.[item.id] >= 60 ? 'disabled' : ''}>Beli · ${fmt(item.price)} koin</button></article>`).join('')}</div>${returnTo ? '<button class="button secondary" id="back-to-character">Kembali ke karakter</button>' : ''}`,
+      `<h2>Bengkel lentera.</h2><p>Saldo <b>${fmt(state.coins)} koin</b>. Setiap pembelian memberi satu salinan; satu salinan hanya bisa dipasang pada satu karakter. Equipment tidak diundi.</p>${C.version === 'arunika-v3' ? `<p>Debu Bintang: <b>${fmt(state.dust)}</b>. Upgrade menambah ${C.progression.enhancement_percent}% stat dasar per tahap dan berlaku untuk <b>semua salinan jenis equipment yang sama</b>, termasuk pembelian berikutnya. Maksimum +${C.progression.enhancement_max}; tidak ada peluang gagal.</p>` : ''}${locked ? '<p class="concept-note">Selesaikan atau mundur dari battle sebelum berbelanja.</p>' : ''}<div class="equipment-grid">${(C.equipment || []).map((item) => `<article class="equipment-item"><span class="eyebrow">${slotNames[item.slot]}</span><h3>${esc(item.name)}</h3><p>${gearStats(item)}</p><p>Dimiliki: ${state.inventory?.[item.id] || 0}${state.unlocked < item.unlock ? ` · Terbuka setelah jalur ${item.unlock}` : ''}</p><button class="button outline" data-buy="${item.id}" ${locked || state.coins < item.price || state.unlocked < item.unlock || state.inventory?.[item.id] >= 60 ? 'disabled' : ''}>Beli · ${fmt(item.price)} koin</button>${enhancementButton(item, locked)}</article>`).join('')}</div>${returnTo ? '<button class="button secondary" id="back-to-character">Kembali ke karakter</button>' : ''}`,
       'BENGKEL EQUIPMENT',
     );
     $$('[data-buy]').forEach(
@@ -677,13 +714,28 @@
           }
         }),
     );
+    $$('[data-enhance]').forEach(
+      (btn) =>
+        (btn.onclick = async () => {
+          if (busy || pending) return;
+          if (
+            await perform('/equipment/enhance', {
+              item_id: btn.dataset.enhance,
+              expected_revision: state.revision,
+            })
+          ) {
+            equipmentShop(returnTo);
+            toast('Upgrade tersimpan untuk semua salinan equipment ini.');
+          }
+        }),
+    );
     if ($('#back-to-character')) $('#back-to-character').onclick = () => characterDetail(returnTo);
   }
   function characterDetail(id) {
     const c = byId.get(id),
       owned = state.collection[id] > 0;
     modal(
-      `<div class="character-detail-top">${heroSVG(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Skill aktif berikut berlaku pada battle baru. Battle lama memakai aturan sebelumnya sampai selesai. Pasif di bagian rancangan belum aktif.</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>Rancangan pasif · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p>${owned && C.version === 'arunika-v2' ? progressionPanel(c) : ''}<h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
+      `<div class="character-detail-top">${heroSVG(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Skill aktif berikut berlaku pada battle baru. Battle lama memakai aturan sebelumnya sampai selesai. ${C.version === 'arunika-v3' ? 'Passive otomatis aktif pada battle baru; tidak memerlukan awakening.' : 'Pasif di bagian rancangan belum aktif.'}</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>${C.version === 'arunika-v3' ? 'Passive' : 'Rancangan pasif'} · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p>${owned && C.version !== 'arunika-v1' ? progressionPanel(c) : ''}<h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
       'ARSIP KARAKTER',
     );
     bindProgression(id);

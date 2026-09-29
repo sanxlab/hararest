@@ -8,7 +8,7 @@ const routes = new Map([
   ['GET', /^\/(profile|catalog|gacha\/history)$/],
   [
     'POST',
-    /^\/(session\/(exchange|logout)|characters\/train|equipment\/buy|battles|gacha\/pulls|battles\/[a-f0-9]{64}\/(actions|retreat))$/,
+    /^\/(session\/(exchange|logout)|characters\/(train|awaken)|equipment\/(buy|enhance)|battles|gacha\/pulls|battles\/[a-f0-9]{64}\/(actions|retreat))$/,
   ],
   ['PUT', /^\/(party|equipment\/equip)$/],
 ]);

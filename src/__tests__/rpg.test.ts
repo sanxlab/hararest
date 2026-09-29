@@ -105,3 +105,29 @@ it('reports a stopped upstream as retryable without leaking connection details',
   expect(res.body.error.code).toBe('upstream_unavailable');
   expect(res.text).not.toContain('127.0.0.1');
 });
+
+it.each(['/characters/awaken', '/equipment/enhance'])(
+  'forwards advancement with session and CSRF: %s',
+  async (path) => {
+    const body = {
+      request_id: 'upgrade-request',
+      expected_revision: 4,
+      character_id: 'char_001',
+      item_id: 'blade_dawn',
+    };
+    const res = await supertest(testApp())
+      .post('/rpg/api' + path)
+      .set('Origin', 'http://100.89.85.96:1338')
+      .set('X-CSRF-Token', 'csrf-token')
+      .set('Cookie', `hara_rpg_local=${'c'.repeat(64)}`)
+      .send(body);
+    expect(res.status).toBe(200);
+    expect(seen).toMatchObject({
+      path: '/rpg/api' + path,
+      csrf: 'csrf-token',
+      body,
+      cookie: `hara_rpg_local=${'c'.repeat(64)}`,
+    });
+    expect(res.headers['cache-control']).toBe('no-store');
+  },
+);

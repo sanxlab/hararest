@@ -331,7 +331,83 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     await page.setViewport({ width: 1440, height: 1100 });
     await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
     await page.screenshot({ path: '/tmp/hara-rpg-live-desktop.png', fullPage: true });
+    // A second isolated player has a test-only wallet to exercise advancement
+    // without altering first-clear/gacha balances validated above.
+    await stopBackend();
+    const upgradeReady = await startBackend();
+    await page.setViewport({ width: 390, height: 844 });
+    await page.goto('about:blank');
+    await page.goto(origin + '/rpg/#ticket=' + upgradeReady.upgrade_ticket);
+    await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
+    await page.click('#retreat');
+    await page.waitForFunction(() => !document.querySelector('#battle-overlay').hidden);
+    await page.click('[data-tab="collection"]');
+    await page.click('[data-character="char_001"]');
+    assert.equal(await page.$eval('#awaken-character', (el) => el.disabled), false);
+    await page.click('#awaken-character');
+    await page.waitForFunction(() =>
+      document.querySelector('.awakening-panel h3').textContent.includes('A1'),
+    );
+    state = await profile();
+    assert.equal(state.profile.awakening.char_001, 1);
+    assert.equal(state.profile.coins, 400);
+    assert.equal(state.profile.dust, 480);
+    await page.$eval('.awakening-panel', (el) => el.scrollIntoView({ block: 'center' }));
+    await page.screenshot({ path: '/tmp/hara-rpg-awakening-mobile.png', fullPage: false });
+    await page.click('#open-equipment-shop');
+    await page.click('[data-buy="blade_dawn"]');
+    await page.waitForFunction(
+      () => !document.querySelector('[data-enhance="blade_dawn"]').disabled,
+    );
+    await page.click('[data-enhance="blade_dawn"]');
+    await page.waitForFunction(() =>
+      document.querySelector('[data-enhance="blade_dawn"]').textContent.includes('+2'),
+    );
+    state = await profile();
+    assert.equal(state.profile.enhancements.blade_dawn, 1);
+    assert.equal(state.profile.coins, 340);
+    assert.equal(state.profile.dust, 475);
+    assert.equal(
+      await page.evaluate(
+        () =>
+          document.querySelector('#modal').scrollWidth <=
+          document.querySelector('#modal').clientWidth,
+      ),
+      true,
+      'upgrade shop mobile overflow',
+    );
+    await page.screenshot({ path: '/tmp/hara-rpg-enhancement-mobile.png', fullPage: false });
+    await page.click('#back-to-character');
+    await page.select('[data-gear="weapon"]', 'blade_dawn');
+    await page.waitForFunction(
+      async () =>
+        (await (await fetch('/rpg/api/profile')).json()).profile.loadouts.char_001?.weapon ===
+        'blade_dawn',
+    );
+    await stopBackend();
+    await startBackend();
+    await page.reload();
+    await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
+    state = await profile();
+    assert.equal(state.profile.awakening.char_001, 1);
+    assert.equal(state.profile.enhancements.blade_dawn, 1);
+    await page.click('#retry-battle');
+    await page.waitForFunction(() => document.querySelector('#battle-overlay').hidden);
+    state = await profile();
+    assert.equal(state.battle.rules, 'arunika-v3');
+    assert.equal(state.battle.heroes[0].attack, 53);
+    assert.equal(state.battle.heroes[0].max, 231);
+    await page.click('[data-tab="collection"]');
+    await page.click('[data-character="char_001"]');
+    assert.equal(
+      await page.$eval('#awaken-character', (el) => el.disabled),
+      true,
+      'battle locks advancement',
+    );
     assert.deepEqual(errors, []);
+    console.log(
+      'PASS: mobile awakening/enhancement spend exact costs, survive restart, change battle stats, and lock during battle',
+    );
     console.log('PASS: mobile layouts, collection60, ten regions, and next-stage navigation');
     console.log(
       'RPG browser integration passed against real Go + SQLite (WhatsApp delivery covered by handler tests).',
