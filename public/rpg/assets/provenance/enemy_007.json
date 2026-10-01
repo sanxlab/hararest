@@ -1,0 +1,12 @@
+{
+  "id": "enemy_007",
+  "generator": "built-in image_gen",
+  "source_file": "exec-206522b7-6fca-44fe-8a98-c39b7f27044e.png",
+  "source_sha256": "000595b98c2474c375f6f42608e603dd5f460f41d92b6b2aaf006ad6dee1c6d0",
+  "sha256": "d2924631ac6b99de9ff780472f5cc3e8177e4c37dd5da0cbcd12678b9d19a11a",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1023940,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kambing Batuembun. Visual design (Indonesian): Kambing kecil bertanduk batu berongga penuh tetes air. Original enemy species, archetype beast, element Tanah (Air means water), levels 60-69. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

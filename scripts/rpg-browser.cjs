@@ -110,6 +110,9 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
       console.error('Browser error:', error.message);
     });
     page.on('response', async (response) => {
+      if (response.url().includes('/rpg/assets/') && response.status() >= 400) {
+        errors.push(`Asset ${response.status()}: ${new URL(response.url()).pathname}`);
+      }
       if (response.url().includes('/equipment/') && response.status() >= 400) {
         console.error('Equipment API failure:', response.status(), await response.text());
       }
@@ -124,6 +127,46 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
       console.log('PASS: real HTTP origin without secure-context browser APIs');
     }
     await page.waitForFunction(() => !document.querySelector('#game-shell').hidden);
+    const catalogArt = await page.evaluate(async () => {
+      const [catalog, art] = await Promise.all([
+        fetch('/rpg/api/catalog').then((response) => response.json()),
+        fetch('/rpg/assets/index.json').then((response) => response.json()),
+      ]);
+      return { catalog, art };
+    });
+    for (const group of ['characters', 'enemies', 'regions']) {
+      const images = catalogArt.art[group === 'regions' ? 'arenas' : group];
+      for (const item of catalogArt.catalog[group]) {
+        assert(images[item.id], `Missing artwork for ${group}/${item.id}`);
+      }
+    }
+    const assetURLs = ['characters', 'enemies', 'arenas'].flatMap((kind) =>
+      Object.values(catalogArt.art[kind]),
+    );
+    const assetChecks = await page.evaluate(async (urls) => {
+      const results = [];
+      let next = 0;
+      await Promise.all(
+        Array.from({ length: 4 }, async () => {
+          while (next < urls.length) {
+            const url = urls[next++];
+            const response = await fetch(url, { method: 'HEAD' });
+            results.push({
+              url,
+              status: response.status,
+              type: response.headers.get('content-type'),
+            });
+          }
+        }),
+      );
+      return results;
+    }, assetURLs);
+    assert.equal(assetChecks.length, 170);
+    for (const asset of assetChecks) {
+      assert.equal(asset.status, 200, asset.url);
+      assert.match(asset.type, /image\/webp/, asset.url);
+    }
+    console.log('PASS: all 170 character, enemy and arena images are served as WebP');
     assert.equal(new URL(page.url()).hash, '', 'login fragment removed');
     assert.equal(await page.$$eval('[data-hero]', (els) => els.length), 4);
     const profile = () => page.evaluate(async () => (await fetch('/rpg/api/profile')).json());
@@ -285,9 +328,31 @@ const botDir = process.env.KOTONEHARA_DIR || path.resolve(__dirname, '../../koto
     assert.equal(await page.$$eval('[data-character]', (els) => els.length), 60);
     await page.click('[data-rarity="5"]');
     assert.equal(await page.$$eval('[data-character]', (els) => els.length), 12);
+    await page.$$eval('[data-character] img', async (images) => {
+      await Promise.all(
+        images.map((img) => {
+          img.loading = 'eager';
+          return img.decode();
+        }),
+      );
+    });
+    await page.screenshot({ path: '/tmp/hara-rpg-collection-mobile.png', fullPage: true });
     await page.click('[data-tab="battle"]');
     await page.click('#world-button');
     assert.equal(await page.$$eval('[data-region]', (els) => els.length), 10);
+    assert.equal(
+      await page.$$eval('.world-art', (els) => new Set(els.map((el) => el.src)).size),
+      10,
+    );
+    await page.$$eval('.world-art', async (images) => {
+      await Promise.all(
+        images.map((img) => {
+          img.loading = 'eager';
+          return img.decode();
+        }),
+      );
+    });
+    await page.screenshot({ path: '/tmp/hara-rpg-world-mobile.png', fullPage: true });
     await page.click('[data-region="0"]');
     assert.equal(await page.$$eval('[data-travel]', (els) => els.length), 99);
     await page.click('[data-travel="1"]');

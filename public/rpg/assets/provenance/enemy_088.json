@@ -1,0 +1,12 @@
+{
+  "id": "enemy_088",
+  "generator": "built-in image_gen",
+  "source_file": "exec-4fe79545-ef60-4a3b-b407-b518fd56de50.png",
+  "source_sha256": "cc53834611475c4cb186a8f439bf76925c5961afe1c2d21b7261054232b313f1",
+  "sha256": "28637eed42c4c414aa6d3bbcd27981a911a400c94e0d221417acc397487ec9bf",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1113016,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Burung Suratbara. Visual design (Indonesian): Burung kertas merah dengan tepi hangus dan paruh segel lilin. Original enemy species, archetype avian, element Api (Air means water), levels 870-879. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+}

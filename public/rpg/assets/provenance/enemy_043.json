@@ -1,0 +1,12 @@
+{
+  "id": "enemy_043",
+  "generator": "built-in image_gen",
+  "source_file": "exec-b582b8f9-6c9a-42b8-94d7-a0dca42c4720.png",
+  "source_sha256": "8f7e0de37b04fc28ba25079addd4d98786110d96a7722848d89dcf031dcd1b90",
+  "sha256": "7a1a5af13b12ba0fb4fc5d9a084fe5a89574514e55d042a9b4355faae4be547a",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 951316,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kumbang Arangurat. Visual design (Indonesian): Kumbang hitam dengan urat merah berdenyut di cangkang. Original enemy species, archetype insect, element Api (Air means water), levels 420-429. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+}

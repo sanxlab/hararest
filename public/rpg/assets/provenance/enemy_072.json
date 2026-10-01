@@ -1,0 +1,12 @@
+{
+  "id": "enemy_072",
+  "generator": "built-in image_gen",
+  "source_file": "exec-480903c6-1e57-4141-87dc-9b9b964ed383.png",
+  "source_sha256": "672f08b914a498304e964fea0c395e2d48077950a2a9be288361874716e66e70",
+  "sha256": "27428083e17fd88775355d571f60c92374b3032b6888f3c20022ce860268fe5d",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1046604,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ubur Hujanlangit. Visual design (Indonesian): Ubur awan sian dengan tentakel tetes air panjang. Original enemy species, archetype jellyfish, element Air (Air means water), levels 710-719. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

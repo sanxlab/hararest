@@ -1,0 +1,12 @@
+{
+  "id": "char_043",
+  "generator": "built-in image_gen",
+  "source_file": "exec-529e2c2e-8a10-431f-a63d-983d78fd9906.png",
+  "source_sha256": "62e2d28a6c58370a07577a24046c30ef4de7ebfa244ba51245b01d100bcde4d0",
+  "sha256": "2454a3d2168b51e440f9acd6ecc52f4a77466d1fc4a28d220a1243c73d8af178",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 784442,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Elu Hujanlayar. Visual design (Indonesian): Pedang lunas biru, mantel layar putih, rambut pendek dengan penjepit tetes. Adult fantasy Vanguard, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

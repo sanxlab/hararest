@@ -1,0 +1,12 @@
+{
+  "id": "enemy_098",
+  "generator": "built-in image_gen",
+  "source_file": "exec-bda633df-7b21-40bd-8788-634365475623.png",
+  "source_sha256": "4f4a21f9501b5bf08bf3df8c6c7ac4e6b49d8fb43aa7d05b42f8be169c50de9b",
+  "sha256": "e45400f87fdb5548f80f6ab0a4fa5da8ce705a218b62850b70dfb963c66e93d5",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1372990,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rantai Baraawal. Visual design (Indonesian): Ular rantai emas membara dengan kepala pemantik putih. Original enemy species, archetype construct_serpent, element Api (Air means water), levels 970-979. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

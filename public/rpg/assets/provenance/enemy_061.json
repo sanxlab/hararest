@@ -1,0 +1,12 @@
+{
+  "id": "enemy_061",
+  "generator": "built-in image_gen",
+  "source_file": "exec-0ccbbe54-6844-4a05-aaa8-692579e87054.png",
+  "source_sha256": "5f58fb66eb9401809d29ce1dc5bf5546c8feda4f8a92ef2dccb1d13d93ee2809",
+  "sha256": "31c1be2052f66df87c2cdd85828fe08cf47e10db780a248829ea2509131868f2",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 846744,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tikus Pitasurat. Visual design (Indonesian): Tikus kelabu berekor pita surat hijau dengan telinga amplop. Original enemy species, archetype beast, element Angin (Air means water), levels 600-609. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+}

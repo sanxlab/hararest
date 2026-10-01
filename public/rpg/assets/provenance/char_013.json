@@ -1,0 +1,12 @@
+{
+  "id": "char_013",
+  "generator": "built-in image_gen",
+  "source_file": "exec-aad93362-767f-4dc2-9643-094e224c16b5.png",
+  "source_sha256": "feae63c65b027b65c64fdc1e028eb477211e38ebdf42c2cda4c29b2f296cb888",
+  "sha256": "b5b6a39c4ca0830c9f69006670adba5be37791e81470b8dc8d98563d19742958",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 789856,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jalu Pasanglayar. Visual design (Indonesian): Pedang dayung, rompi biru bertepi hijau, rambut berikat layar kecil. Adult fantasy Vanguard, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "char_044",
+  "generator": "built-in image_gen",
+  "source_file": "exec-10118a72-7567-4cc6-8029-ea42d4993313.png",
+  "source_sha256": "abedc25b2f6bbdcb901952125dbfb363f1c0e8a9581bb6793fa2990283f876bf",
+  "sha256": "7a1f5122e4e5b29bebb9712b93c8dde5bb94383fbb782166995fa36f8c6a7914",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1283730,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Raisa Anyamlangit. Visual design (Indonesian): Perisai layang-layang besar, zirah tali hijau, dua kepang seperti simpul tambat. Adult fantasy Guardian, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

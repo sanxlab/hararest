@@ -1,0 +1,12 @@
+{
+  "id": "enemy_017",
+  "generator": "built-in image_gen",
+  "source_file": "exec-8dbb1d00-8a58-46d8-9f4a-70505f25291f.png",
+  "source_sha256": "2c5166e35d654d16f1f4241a884e006576f61c127d4745666cf75a69341137ee",
+  "sha256": "c4b867913e546c8f4ea013b28d7d8547e880fcfa3842220658881abcb6fd9ab1",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1107868,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ular Anyamakar. Visual design (Indonesian): Ular dari tiga akar terpilin dengan kepala batu cokelat. Original enemy species, archetype serpent, element Tanah (Air means water), levels 160-169. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

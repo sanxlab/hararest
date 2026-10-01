@@ -1,0 +1,12 @@
+{
+  "id": "enemy_034",
+  "generator": "built-in image_gen",
+  "source_file": "exec-b89430be-2112-4723-a554-76d6c5ecf150.png",
+  "source_sha256": "1be256ff54f5e949aee1d4f4f49bf55c413ceace186b3b8ddfefee4723dc6da6",
+  "sha256": "c54667c91dd6440f19811b9e6049cb69579f73c01264b19fb61c5b34a15b3422",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 869988,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kalajengking Fatamorgana. Visual design (Indonesian): Kalajengking ungu transparan dengan capit tampak bergeser satu petak. Original enemy species, archetype arachnid, element Bayangan (Air means water), levels 330-339. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+}

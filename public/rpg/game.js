@@ -11,14 +11,6 @@
     );
   const fmt = (value) => Number(value).toLocaleString('id-ID');
   const stars = (n) => '★'.repeat(n);
-  const colors = {
-    Api: '#c97954',
-    Air: '#7cbbbe',
-    Angin: '#a2b981',
-    Tanah: '#b59d6d',
-    Cahaya: '#dac778',
-    Bayangan: '#ab8eaf',
-  };
   const roleIcons = {
     Vanguard: '⚔',
     Guardian: '◈',
@@ -88,7 +80,18 @@
   }
   const initial = await request('/profile');
   csrf = initial.csrf;
-  const C = await request('/catalog');
+  const [C, art] = await Promise.all([
+    request('/catalog'),
+    fetch('/rpg/assets/index.json', { cache: 'no-store' }).then(async (response) => {
+      if (!response.ok) throw new Error('Daftar gambar game belum tersedia. Muat ulang halaman.');
+      return response.json();
+    }),
+  ]);
+  function artPath(kind, id) {
+    const value = art[kind]?.[id];
+    if (!value) throw new Error('Gambar katalog belum lengkap: ' + id);
+    return esc(value);
+  }
   if (!['arunika-v1', 'arunika-v2', 'arunika-v3'].includes(C.version))
     throw new Error('Versi game berubah. Muat ulang halaman.');
   const byId = new Map(C.characters.map((c) => [c.id, c]));
@@ -208,118 +211,15 @@
     if (tab === 'collection') renderCollection();
     if (tab === 'gacha') renderGacha();
   }
-  function rect(x, y, w, h, fill) {
-    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
-  }
   function characterParts(c) {
-    if (['char_001', 'char_002', 'char_004', 'char_023'].includes(c.id))
-      return `<image href="/rpg/assets/v1/${c.id}.webp" x="-5" y="-3" width="48" height="48"/>`;
-    const role = c.role,
-      color = colors[c.element] || '#a5b77a',
-      dark = '#2b423c',
-      skin = '#eac398',
-      hair = ['#59604b', '#774e42', '#c6bc91', '#39584a', '#d7d1ac'][c.rarity - 1];
-    let s =
-      rect(11, 31, 6, 9, dark) +
-      rect(21, 31, 6, 9, dark) +
-      rect(9, 38, 8, 3, '#526056') +
-      rect(21, 38, 9, 3, '#526056');
-    if (['Arcanist', 'Medic'].includes(role)) s += `<path d="M12 17H26L30 36H7Z" fill="${color}"/>`;
-    else
-      s += rect(9, 19, 20, 14, dark) + rect(11, 18, 16, 13, color) + rect(10, 29, 18, 3, '#e2c89a');
-    s +=
-      rect(11, 5, 17, 13, hair) +
-      rect(9, 8, 20, 8, hair) +
-      rect(12, 10, 14, 10, skin) +
-      rect(14, 10, 13, 4, skin) +
-      rect(12, 6, 16, 6, hair) +
-      rect(12, 11, 3, 6, hair) +
-      rect(18, 14, 2, 2, dark) +
-      rect(25, 14, 2, 2, dark) +
-      rect(21, 18, 4, 2, '#b99078');
-    s +=
-      rect(7, 20, 5, 8, color) +
-      rect(5, 26, 5, 5, skin) +
-      rect(26, 20, 5, 8, color) +
-      rect(28, 27, 4, 4, skin);
-    if (role === 'Vanguard')
-      s +=
-        rect(2, 10, 3, 19, '#e7eadb') +
-        rect(3, 7, 2, 4, '#f4efd6') +
-        rect(0, 28, 8, 3, '#b99f58') +
-        rect(3, 30, 3, 5, '#6a6951') +
-        rect(13, 20, 5, 10, '#d18e6b');
-    if (role === 'Guardian')
-      s +=
-        `<path d="M1 20H13V33L7 38 1 32Z" fill="#2f5548"/>` +
-        rect(3, 22, 8, 10, '#b2bd9d') +
-        rect(6, 22, 2, 13, '#e5d599') +
-        rect(9, 4, 22, 6, '#a2b39d') +
-        rect(16, 0, 8, 6, '#d2b778');
-    if (role === 'Arcanist')
-      s +=
-        `<path d="M8 9L17 0 25 7 31 11Z" fill="${color}"/>` +
-        rect(5, 10, 29, 4, '#38554b') +
-        rect(1, 13, 3, 27, '#796957') +
-        rect(0, 10, 7, 6, '#e4c96f') +
-        rect(1, 11, 3, 3, '#fff1af');
-    if (role === 'Medic')
-      s +=
-        rect(11, 7, 17, 4, '#e6e9d7') +
-        rect(17, 5, 3, 7, '#c6d89e') +
-        rect(15, 7, 7, 3, '#c6d89e') +
-        rect(1, 14, 3, 27, '#8a8c61') +
-        rect(0, 10, 7, 5, '#b0cc98') +
-        rect(2, 8, 3, 9, '#e8e4a7') +
-        rect(16, 22, 8, 12, '#ede8d5');
-    if (role === 'Ranger')
-      s +=
-        `<path d="M7 17L9 5 22 2 32 15 29 21 26 8H13L12 20Z" fill="#698360"/><path d="M2 14Q-7 25 2 38L5 25Z" fill="#ae9064"/>` +
-        rect(1, 16, 1, 20, '#efe2ad');
-    if (role === 'Trickster')
-      s +=
-        rect(10, 18, 20, 5, '#c89177') +
-        rect(27, 22, 9, 3, '#c89177') +
-        rect(1, 25, 4, 10, '#d6e3d5') +
-        rect(0, 33, 6, 2, '#9d8250');
-    return s;
+    return `<image href="${artPath('characters', c.id)}" x="-5" y="-3" width="48" height="48"/>`;
   }
-  function heroSVG(c) {
-    return `<svg viewBox="-5 -3 48 48" aria-hidden="true" class="pixel-sprite">${characterParts(c)}</svg>`;
-  }
-  function enemyParts(kind) {
-    if (kind === 'moth')
-      return `<path fill="#4a514d" d="M18 16L4 1 0 20 14 28 20 23 26 28 42 17 38 0 23 15Z"/><path fill="#b4bd8d" d="M16 16L6 6 5 19 16 23 18 20 27 22 36 15 35 5 25 17Z"/>${rect(17, 11, 8, 17, '#5a6955')}${rect(19, 13, 5, 5, '#e3cd80')}${rect(19, 9, 1, 4, '#e5d9b4')}${rect(24, 8, 1, 5, '#e5d9b4')}`;
-    if (kind === 'boss')
-      return `<path fill="#647b5e" d="M16 24L24 12 38 13 51 22 53 44 47 47 48 58 41 59 38 44 25 45 22 60 15 60 16 43 10 37Z"/><path fill="#354f41" d="M26 18L37 18 42 28 40 40 27 42 19 32Z"/><path fill="#a3b884" d="M20 24L28 15 40 19 42 25 37 28 27 28Z"/><path fill="#bfb779" d="M26 16L21 9 11 8 9 1 13 1 15 5 22 5 22 0 26 0 26 9 30 15 37 14 43 9 43 1 47 1 47 6 53 4 56 0 59 3 55 9 46 13 41 19Z"/>${rect(26, 23, 4, 4, '#ead282')}${rect(36, 23, 4, 4, '#ead282')}${rect(29, 31, 8, 9, '#ceb96c')}${rect(31, 30, 3, 12, '#efdb9c')}${rect(13, 32, 5, 5, '#98a975')}${rect(43, 36, 7, 6, '#a5b47d')}`;
-    return `<path d="M4 23L7 14 13 8 21 7 25 3 31 9 38 15 40 25 34 31H9Z" fill="#3b6856"/><path d="M7 23L10 16 16 11 26 10 34 17 36 26 30 29H13Z" fill="#85b894"/>${rect(13, 14, 7, 3, '#bce0ac')}${rect(13, 20, 3, 4, '#253e39')}${rect(28, 20, 3, 4, '#253e39')}${rect(19, 25, 7, 2, '#588b76')}${rect(6, 29, 7, 3, '#65896b')}${rect(31, 29, 8, 3, '#65896b')}`;
-  }
-  function tree(x, y, scale, shade) {
-    return `<g transform="translate(${x} ${y}) scale(${scale})" shape-rendering="crispEdges"><path d="M25 45h9v63h-9z" fill="#5d6950"/><path d="M29 0L4 31H14L0 54H12L2 72H59L48 52H57L42 29H50Z" fill="${shade}"/><path d="M29 4L16 29H26L15 49H31L20 68H38L33 45H41L31 26H37Z" fill="#ffffff0b"/></g>`;
+  function heroArt(c) {
+    return `<img src="${artPath('characters', c.id)}" alt="" width="128" height="128" class="pixel-sprite" loading="lazy" decoding="async"/>`;
   }
   function background() {
-    if (stages[battle.stage].region === 0)
-      return '<image href="/rpg/assets/v1/padang-embun.webp" width="1000" height="430" preserveAspectRatio="xMidYMid slice"/>';
-    let trees = '';
-    for (let i = 0; i < 14; i++)
-      trees += tree(
-        i * 82 - 35,
-        50 + (i % 3) * 13,
-        0.8 + (i % 4) * 0.1,
-        i % 2 ? '#799277' : '#8ea184',
-      );
-    let grass = '';
-    for (let i = 0; i < 170; i++) {
-      const x = (i * 137) % 1000,
-        y = 260 + ((i * 53) % 150);
-      grass += rect(x, y, 3 + (i % 3) * 3, 2, i % 3 ? '#63856a60' : '#bdc59580');
-    }
-    return `<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#dde1b9"/><stop offset="1" stop-color="#b7cba8"/></linearGradient><linearGradient id="ground" x2="0" y2="1"><stop stop-color="#8eaa7d"/><stop offset="1" stop-color="#587d61"/></linearGradient><radialGradient id="sun"><stop stop-color="#fff4b4" stop-opacity=".8"/><stop offset="1" stop-color="#fff4b4" stop-opacity="0"/></radialGradient></defs>
-      <rect width="1000" height="430" fill="url(#sky)"/><circle cx="615" cy="75" r="130" fill="url(#sun)"/><circle cx="615" cy="75" r="30" fill="#f5e5ad"/><path d="M0 160L130 77 270 152 388 48 570 152 700 64 892 144 1000 112V260H0Z" fill="#abbca0"/><path d="M0 165L150 124 220 170 375 112 507 168 632 125 850 186 1000 158V277H0Z" fill="#95ae91"/>${trees}
-      <path d="M0 240Q250 215 510 248T1000 229V430H0Z" fill="url(#ground)"/><path d="M0 322Q178 277 334 320T655 312 1000 322L1000 376Q700 338 440 370T0 368Z" fill="#a4b28a"/><path d="M0 350Q220 308 432 350T800 341L1000 356" fill="none" stroke="#b8be9290" stroke-width="9"/>${grass}
-      <g shape-rendering="crispEdges" opacity=".9"><path d="M448 101H465V215H445ZM535 107H553V217H533ZM455 94H546V112H455Z" fill="#6e8469"/><path d="M460 110H532V124H460Z" fill="#8b9d78"/>${rect(446, 141, 21, 5, '#b7ba8d')}${rect(533, 165, 22, 5, '#b7ba8d')}${rect(478, 103, 14, 14, '#405d4d')}${rect(482, 107, 6, 7, '#dfca76')}${rect(493, 211, 35, 9, '#718366')}${rect(435, 217, 128, 7, '#768c6d')}</g>
-      ${tree(-42, 18, 2.7, '#385d48')}${tree(912, -8, 3, '#2f5845')}<path d="M0 422V385L45 405 81 382 118 406 175 388 204 421ZM1000 422V386L955 408 911 380 883 408 829 399 800 430Z" fill="#345d46"/>
-      ${[110, 204, 390, 570, 645, 781, 895].map((x, i) => `<circle cx="${x}" cy="${175 + (i % 3) * 42}" r="3" fill="#f6e7a2" opacity=".8"/>`).join('')}`;
+    const region = C.regions[stages[battle.stage].region];
+    return `<image href="${artPath('arenas', region.id)}" width="1000" height="430" preserveAspectRatio="xMidYMid slice"/>`;
   }
   const heroPositions = [
     [688, 156],
@@ -361,8 +261,8 @@
       .map((e, i) => {
         const x = stages[battle.stage].boss ? 270 : 250 + i * 120,
           y = stages[battle.stage].boss ? 212 : 213 + i * 102;
-        const scale = e.kind === 'boss' ? 3 : 2.65;
-        return `<g class="enemy-target" data-enemy="${i}" tabindex="${e.hp > 0 ? 0 : -1}" role="button" aria-label="${esc(e.name)}, HP ${Math.round(e.hp)} dari ${e.max}" opacity="${e.hp > 0 ? 1 : 0.18}"><ellipse cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 90 : 63}" ry="15" class="sprite-shadow"/><ellipse class="target-ring" cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 95 : 66}" ry="18" fill="none" stroke="#efe1a3" stroke-width="2" stroke-dasharray="8 5" opacity="${battle.target === i && e.hp > 0 ? 0.9 : 0}"/><g id="enemy-sprite-${i}" transform="translate(${x - (e.kind === 'boss' ? 100 : 55)} ${y - (e.kind === 'boss' ? 140 : 52)}) scale(${scale})" class="pixel-sprite"><g class="${e.kind === 'moth' ? 'idle-float' : ''}">${e.id === 'enemy_001' ? '<image href="/rpg/assets/v1/enemy_001.webp" width="50" height="50" x="-4" y="-4"/>' : enemyParts(e.kind)}</g></g><rect x="${x - 70}" y="${y + 65}" width="140" height="36" rx="4" fill="#edf0dcd9"/><text x="${x}" y="${y + 80}" text-anchor="middle" fill="#2d4e3c" font-family="Arial,sans-serif" font-size="11">${esc(e.name)}</text><rect x="${x - 56}" y="${y + 86}" width="112" height="4" rx="2" fill="#b8c5a8"/><rect x="${x - 56}" y="${y + 86}" width="${112 * Math.max(0, e.hp / e.max)}" height="4" rx="2" fill="#b49664"/><text x="${x}" y="${y - 67}" text-anchor="middle" fill="#fff7dc" stroke="#294033" stroke-width="3" paint-order="stroke" stroke-linejoin="round" font-family="Arial,sans-serif" font-size="10">${e.hp > 0 ? (e.charged ? '✦ Bersiap menyerang kuat' : '⚔ Bersiap menyerang') : ''}</text></g>`;
+        const size = e.kind === 'boss' ? 190 : 128;
+        return `<g class="enemy-target" data-enemy="${i}" tabindex="${e.hp > 0 ? 0 : -1}" role="button" aria-label="${esc(e.name)}, HP ${Math.round(e.hp)} dari ${e.max}" opacity="${e.hp > 0 ? 1 : 0.18}"><ellipse cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 90 : 63}" ry="15" class="sprite-shadow"/><ellipse class="target-ring" cx="${x}" cy="${y + 36}" rx="${e.kind === 'boss' ? 95 : 66}" ry="18" fill="none" stroke="#efe1a3" stroke-width="2" stroke-dasharray="8 5" opacity="${battle.target === i && e.hp > 0 ? 0.9 : 0}"/><g id="enemy-sprite-${i}" transform="translate(${x - size / 2} ${y + 36 - size})" class="pixel-sprite"><g class="${e.kind === 'moth' ? 'idle-float' : ''}"><image href="${artPath('enemies', e.id)}" width="${size}" height="${size}"/></g></g><rect x="${x - 70}" y="${y + 65}" width="140" height="36" rx="4" fill="#edf0dcd9"/><text x="${x}" y="${y + 80}" text-anchor="middle" fill="#2d4e3c" font-family="Arial,sans-serif" font-size="11">${esc(e.name)}</text><rect x="${x - 56}" y="${y + 86}" width="112" height="4" rx="2" fill="#b8c5a8"/><rect x="${x - 56}" y="${y + 86}" width="${112 * Math.max(0, e.hp / e.max)}" height="4" rx="2" fill="#b49664"/><text x="${x}" y="${y - 67}" text-anchor="middle" fill="#fff7dc" stroke="#294033" stroke-width="3" paint-order="stroke" stroke-linejoin="round" font-family="Arial,sans-serif" font-size="10">${e.hp > 0 ? (e.charged ? '✦ Bersiap menyerang kuat' : '⚔ Bersiap menyerang') : ''}</text></g>`;
       })
       .join('');
     const heroes = battle.heroes
@@ -400,6 +300,7 @@
     $('.panel-title span:last-child').textContent =
       String(stage.region + 1).padStart(2, '0') + ' / 10';
     $('.region-art>span').textContent = region.name;
+    $('#region-artwork').src = art.arenas[region.id];
     $('#combat-log').textContent = battle.logs[0] || 'Pilih aksi.';
     $('#stage-name').textContent = stage.name;
     $('#stage-level').textContent = `Lv. ${stage.level}${stage.boss ? ' · BOSS' : ''}`;
@@ -420,7 +321,7 @@
     $('#party').innerHTML = battle.heroes
       .map(
         (h, i) =>
-          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroSVG(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${h.level || stage.level}${h.awakening ? ` · A${h.awakening}` : ''}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}${h.shield ? ' · ◈ ' + h.shield : ''}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
+          `<button class="hero-card ${i === battle.active ? 'active' : ''} ${h.acted ? 'acted' : ''} ${h.hp <= 0 ? 'down' : ''}" data-hero="${i}" ${busy || h.acted || h.hp <= 0 || battle.done ? 'disabled' : ''} aria-label="${esc(h.name)}, ${h.hp}/${h.max} HP, ${h.energy} energi"><span class="role-tag">${h.role}</span><span class="portrait">${heroArt(h)}</span><span><b>${esc(h.name)}</b><span class="hero-meta"><span class="stars">${stars(h.rarity)}</span><span>Lv.${h.level || stage.level}${h.awakening ? ` · A${h.awakening}` : ''}</span></span><span class="hp-track"><i style="width:${(h.hp / h.max) * 100}%"></i></span><span class="hp-number">${Math.round(h.hp)} / ${h.max}${h.shield ? ' · ◈ ' + h.shield : ''}</span><span class="energy">${Array.from({ length: 5 }, (_, n) => `<span class="${n < h.energy ? 'charged' : ''}">◆</span>`).join('')}</span></span></button>`,
       )
       .join('');
     $$('[data-hero]').forEach(
@@ -573,7 +474,7 @@
       ? list
           .map(
             (c) =>
-              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroSVG(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}${state.growth?.[c.id] ? ' · Lv.' + state.growth[c.id].level + (state.awakening?.[c.id] ? ' · A' + state.awakening[c.id] : '') : ''}</small></div></button>`,
+              `<button class="collection-card ${state.collection[c.id] ? '' : 'unowned'}" data-character="${c.id}" style="--rarity:var(--r${c.rarity})"><div class="collection-art">${heroArt(c)}</div><span class="owned-label">${state.party.includes(c.id) ? 'DALAM TIM' : state.collection[c.id] ? 'DIMILIKI ×' + state.collection[c.id] : 'BELUM DIMILIKI'}</span><div class="collection-copy"><span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${c.element} · ${c.role}${state.growth?.[c.id] ? ' · Lv.' + state.growth[c.id].level + (state.awakening?.[c.id] ? ' · A' + state.awakening[c.id] : '') : ''}</small></div></button>`,
           )
           .join('')
       : '<p class="empty">Karakter tidak ditemukan.</p>';
@@ -735,7 +636,7 @@
     const c = byId.get(id),
       owned = state.collection[id] > 0;
     modal(
-      `<div class="character-detail-top">${heroSVG(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Skill aktif berikut berlaku pada battle baru. Battle lama memakai aturan sebelumnya sampai selesai. ${C.version === 'arunika-v3' ? 'Passive otomatis aktif pada battle baru; tidak memerlukan awakening.' : 'Pasif di bagian rancangan belum aktif.'}</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>${C.version === 'arunika-v3' ? 'Passive' : 'Rancangan pasif'} · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p>${owned && C.version !== 'arunika-v1' ? progressionPanel(c) : ''}<h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
+      `<div class="character-detail-top">${heroArt(c)}<div><span class="stars">${stars(c.rarity)}</span><h2>${esc(c.name)}</h2><p>${c.element} · ${c.role}<br>${esc(c.personality)}</p></div></div><p class="concept-note">Skill aktif berikut berlaku pada battle baru. Battle lama memakai aturan sebelumnya sampai selesai. ${C.version === 'arunika-v3' ? 'Passive otomatis aktif pada battle baru; tidak memerlukan awakening.' : 'Pasif di bagian rancangan belum aktif.'}</p><h3>${esc(c.skill.name)}</h3><p>${esc(c.skill.description)}</p><p><b>${C.version === 'arunika-v3' ? 'Passive' : 'Rancangan pasif'} · ${esc(c.passive.name)}</b><br>${esc(c.passive.description)}</p>${owned && C.version !== 'arunika-v1' ? progressionPanel(c) : ''}<h3>Arah desain</h3><p>${esc(c.visual)}</p><details><summary>Prompt sprite</summary><pre>${esc(c.art.sprite_prompt)}</pre></details><h3>${owned ? 'Atur tim' : 'Belum bergabung'}</h3>${owned ? `<p>Empat karakter berbeda. Selesaikan atau mundur dari battle aktif sebelum mengganti anggota.</p><div class="detail-team">${state.party.map((other, i) => `<button class="button outline" data-replace="${i}" ${state.party.includes(id) ? 'disabled' : ''}>${i + 1} · ${esc(byId.get(other).name)}</button>`).join('')}</div>` : '<p>Karakter ini tersedia dalam pemanggilan.</p>'}`,
       'ARSIP KARAKTER',
     );
     bindProgression(id);
@@ -763,7 +664,7 @@
     );
   }
   function renderGacha() {
-    $('#featured-art').innerHTML = heroSVG(featured);
+    $('#featured-art').innerHTML = heroArt(featured);
     $('#featured-name').textContent = featured.name;
     $('#featured-subtitle').textContent =
       featured.element + ' · ' + featured.role + ' — ' + featured.passive.name;
@@ -781,7 +682,7 @@
     $('#summon-results').innerHTML = results
       .map(
         ({ character: c, duplicate }, i) =>
-          `<article class="summon-result" style="--rarity:var(--r${c.rarity});animation-delay:${i * 0.045}s">${heroSVG(c)}<span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${duplicate ? 'Duplikat · +' + [0, 5, 10, 20, 40, 80][c.rarity] + ' Debu Gema' : 'Baru dalam koleksi'}</small></article>`,
+          `<article class="summon-result" style="--rarity:var(--r${c.rarity});animation-delay:${i * 0.045}s">${heroArt(c)}<span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${duplicate ? 'Duplikat · +' + [0, 5, 10, 20, 40, 80][c.rarity] + ' Debu Gema' : 'Baru dalam koleksi'}</small></article>`,
       )
       .join('');
   }
@@ -794,7 +695,7 @@
   }
   function showWorld() {
     modal(
-      `<h2>Sepuluh wilayah. Satu fajar.</h2><p>Level 1–999. Selesaikan jalur secara berurutan untuk membuka lokasi berikutnya.</p><div class="world-grid">${C.regions.map((r, i) => `<button class="world-tile" data-region="${i}"><span>${String(i + 1).padStart(2, '0')} · ${r.min_level - 1 <= state.unlocked ? 'TERBUKA' : 'TERKUNCI'}</span><b>${esc(r.name)}</b><small>LEVEL ${r.min_level}–${r.max_level}</small></button>`).join('')}</div>`,
+      `<h2>Sepuluh wilayah. Satu fajar.</h2><p>Level 1–999. Selesaikan jalur secara berurutan untuk membuka lokasi berikutnya.</p><div class="world-grid">${C.regions.map((r, i) => `<button class="world-tile" data-region="${i}"><img class="world-art" src="${artPath('arenas', r.id)}" width="240" height="100" loading="lazy" decoding="async" alt=""/><span>${String(i + 1).padStart(2, '0')} · ${r.min_level - 1 <= state.unlocked ? 'TERBUKA' : 'TERKUNCI'}</span><b>${esc(r.name)}</b><small>LEVEL ${r.min_level}–${r.max_level}</small></button>`).join('')}</div>`,
       'ATLAS ARUNIKA',
     );
     $$('[data-region]').forEach(

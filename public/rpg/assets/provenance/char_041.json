@@ -1,0 +1,12 @@
+{
+  "id": "char_041",
+  "generator": "built-in image_gen",
+  "source_file": "exec-836cdfe3-2ad2-4398-a636-effe7bf70762.png",
+  "source_sha256": "de56d5ce588721f6e2ea7eb47102c0b2a1b417ecb1dda58dfec8d9e2ad34cd29",
+  "sha256": "edae32010d3d38d3261add1749225359873e59cbb8eb09fa3c7df5466863c613",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1040778,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Lani Pitaemas. Visual design (Indonesian): Pita cahaya melingkar tangan, mantel perawat gading, rambut hitam diikat kotak. Adult fantasy Medic, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+}

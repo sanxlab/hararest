@@ -260,6 +260,10 @@ h1 span {
   color: #8c9584;
   letter-spacing: 0;
 }
+.pixel-sprite {
+  object-fit: contain;
+}
+
 .region-art {
   height: 135px;
   position: relative;
@@ -268,7 +272,7 @@ h1 span {
   border: 1px solid #d5dac8;
   background: #e3e7d5;
 }
-.region-art svg {
+.region-art img {
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -555,7 +559,7 @@ h1 span {
   border-radius: 3px;
   overflow: hidden;
 }
-.hero-card .portrait svg {
+.hero-card .portrait img {
   width: 100%;
   height: 100%;
   transform: scale(1.15);
@@ -877,7 +881,7 @@ footer i {
   place-items: center;
   background: radial-gradient(ellipse at 50% 100%, #c7d4b9, transparent 65%), #e9ecdf;
 }
-.collection-art svg {
+.collection-art img {
   height: 115px;
   width: 100px;
   filter: drop-shadow(0 7px 0 #526c4617);
@@ -962,7 +966,7 @@ footer i {
   bottom: 35px;
   filter: drop-shadow(0 17px 10px #0a211780);
 }
-#featured-art svg {
+#featured-art img {
   height: 100%;
   width: 100%;
   image-rendering: pixelated;
@@ -1082,7 +1086,7 @@ footer i {
   border-radius: 4px;
   animation: arrive 0.4s both;
 }
-.summon-result svg {
+.summon-result img {
   width: 75px;
   height: 95px;
   display: block;
@@ -1235,7 +1239,7 @@ dialog::backdrop {
   gap: 24px;
   align-items: center;
 }
-.character-detail-top > svg {
+.character-detail-top > img {
   height: 165px;
   min-width: 120px;
   background: #e6ecda;
@@ -1761,7 +1765,7 @@ dialog::backdrop {
   .collection-art {
     height: 105px;
   }
-  .collection-art svg {
+  .collection-art img {
     height: 87px;
     width: 75px;
   }
@@ -1821,7 +1825,7 @@ dialog::backdrop {
   .summon-result {
     padding: 12px;
   }
-  .summon-result svg {
+  .summon-result img {
     height: 80px;
   }
   .summon-result b {
@@ -1866,7 +1870,7 @@ dialog::backdrop {
   .character-detail-top {
     gap: 15px;
   }
-  .character-detail-top > svg {
+  .character-detail-top > img {
     height: 130px;
     min-width: 80px;
     width: 85px;
@@ -1997,4 +2001,14 @@ dialog::backdrop {
 }
 .equipment-item .button {
   width: 100%;
+}
+
+.world-tile .world-art {
+  display: block;
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  image-rendering: pixelated;
 }

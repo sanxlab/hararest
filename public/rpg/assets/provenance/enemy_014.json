@@ -1,0 +1,12 @@
+{
+  "id": "enemy_014",
+  "generator": "built-in image_gen",
+  "source_file": "exec-490155f9-f0f7-4458-9af0-3a56bd2d0581.png",
+  "source_sha256": "9bde0a18f076e6e5a8954742bbb899cd6d4732f8f3aa1600c024d30d759b8fc9",
+  "sha256": "06a339bd3e6ef903ec173428853e24fd8e68941b16cca268d0027e56f3d7caa4",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1018530,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Katak Ronggadaun. Visual design (Indonesian): Katak daun berongga dengan kantong leher seperti balon mint. Original enemy species, archetype amphibian, element Angin (Air means water), levels 130-139. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

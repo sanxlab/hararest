@@ -1,0 +1,12 @@
+{
+  "id": "char_051",
+  "generator": "built-in image_gen",
+  "source_file": "exec-de4af43a-7810-4784-a8c5-36b0c1901de7.png",
+  "source_sha256": "c79a112205d2a208d7d41760bb396cf377e1427584fd32b34f8a72cd67058c5c",
+  "sha256": "064f21c3bd4892b60455f01c5b21e79bb81ff807f972d960136ff2487b531d95",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1078504,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Vasa Sisaalam. Visual design (Indonesian): Busur cabang bayangan, tudung marun, anak panah dengan bulu hitam bermata perak. Adult fantasy Ranger, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+}

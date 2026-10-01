@@ -1,0 +1,12 @@
+{
+  "id": "enemy_051",
+  "generator": "built-in image_gen",
+  "source_file": "exec-59e72028-42a8-4aba-ae9e-771a12052a7e.png",
+  "source_sha256": "3a5ebe88de33f2f26f4d29d7595aab52ea91d0a2bf05ba339f744495d4e03bf7",
+  "sha256": "831a5a228c048a42f2395eed68a4b8a90bd2aedc5799d6e1856f215bbc5b2e7a",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 760154,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Cicak Arang. Visual design (Indonesian): Cicak hitam dengan kaki jingga dan ekor berbentuk bara persegi. Original enemy species, archetype reptile, element Api (Air means water), levels 500-509. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

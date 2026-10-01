@@ -1,0 +1,12 @@
+{
+  "id": "enemy_002",
+  "generator": "built-in image_gen",
+  "source_file": "exec-67de78fa-0199-4f45-86a5-2932097eabc5.png",
+  "source_sha256": "a0763387e647c6d246675f01ab0e2126b8d354782a95867fcee1e7822dca836c",
+  "sha256": "55a1b1587782881b07b2cdf6158548eb550242634a463083fec438d6ebe5807e",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 617798,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kutu Sumbu. Visual design (Indonesian): Kumbang merah kecil dengan sumbu padam sebagai tanduk. Original enemy species, archetype insect, element Api (Air means water), levels 10-19. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

@@ -1,15 +1,25 @@
-# Aset Arunika — paket pertama
+# Aset Arunika
 
-Dibuat menggunakan tool bawaan `image_gen`, kemudian dikonversi dari PNG ke WebP **lossless**, tanpa resize atau pengubahan gambar. Alpha transparan dipertahankan. Aset dipakai langsung oleh `public/rpg/game.js`; karakter dan musuh lain masih memakai sketsa SVG. Jangan menimpa berkas dalam `v1`: gambar disajikan dengan cache immutable; buat direktori versi baru jika menggantinya.
+Dibuat menggunakan tool bawaan `image_gen`, satu pemanggilan per aset, kemudian dikonversi dari PNG ke WebP **lossless**, tanpa resize atau pengubahan gambar. Alpha transparan dipertahankan. Katalog mencakup **60 karakter, 100 spesies musuh untuk level 1–999, dan 10 arena wilayah**. Aset dipakai langsung oleh koleksi, gacha, detail karakter, battle, dan peta pada `public/rpg/game.js`.
 
-| Aset | Berkas |
-| --- | --- |
+[manifest.json](manifest.json) menyimpan nama, ID, wilayah, path, status, dan prompt tiap aset. [index.json](index.json) adalah pemetaan ringkas yang dibaca game. Enam gambar awal berada di `v1`; 164 gambar tambahan berada di `v2`. Catatan `provenance/<id>.json` menyimpan prompt, nama PNG asli, dimensi, alpha, dan SHA-256 hasil impor. PNG asli tetap disimpan di folder keluaran tool, di luar repository.
+
+Jangan menimpa berkas dalam direktori versi: gambar disajikan dengan cache immutable. Buat versi baru bila menggantinya, lalu ubah index dan manifest. Index selalu memakai `no-store`. Kartu di luar layar menggunakan lazy loading.
+
+Jalankan `node scripts/rpg-art-audit.cjs` dari root Hararest untuk memeriksa jumlah, keunikan ID/path, kecocokan index, berkas, alpha, dan hash. `--finalize` memperbarui status menjadi `generated` hanya setelah seluruh pemeriksaan lulus. Impor keluaran baru melalui `node scripts/rpg-art-import.cjs <id> <path-png>`; importer menolak menimpa gambar yang sudah ada.
+
+## Arsip prompt enam aset awal
+
+Prompt asli paket `v1` dipertahankan di bawah ini. Prompt generasi paket `v2` tersedia lengkap per ID di manifest.
+
+| Aset               | Berkas                                       |
+| ------------------ | -------------------------------------------- |
 | Arena Padang Embun | [v1/padang-embun.webp](v1/padang-embun.webp) |
-| Ranu Pendar | [v1/char_001.webp](v1/char_001.webp) |
-| Nira Gelagah | [v1/char_002.webp](v1/char_002.webp) |
-| Luma Kincir | [v1/char_004.webp](v1/char_004.webp) |
-| Wanu Telagakaca | [v1/char_023.webp](v1/char_023.webp) |
-| Gumpal Embun | [v1/enemy_001.webp](v1/enemy_001.webp) |
+| Ranu Pendar        | [v1/char_001.webp](v1/char_001.webp)         |
+| Nira Gelagah       | [v1/char_002.webp](v1/char_002.webp)         |
+| Luma Kincir        | [v1/char_004.webp](v1/char_004.webp)         |
+| Wanu Telagakaca    | [v1/char_023.webp](v1/char_023.webp)         |
+| Gumpal Embun       | [v1/enemy_001.webp](v1/enemy_001.webp)       |
 
 ## Prompt latar
 

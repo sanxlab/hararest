@@ -1,0 +1,12 @@
+{
+  "id": "char_030",
+  "generator": "built-in image_gen",
+  "source_file": "exec-028aee68-7b35-4fac-a8d7-7058c20e9849.png",
+  "source_sha256": "3e15b7fed82c14ed162c1b2e5bdfd5d71a2773de55289ac63f47615ff4c7d62e",
+  "sha256": "1d8f5d5c6628c86188db6030e6ee42aaa1b31f76102f9981f20da32ba3ddda77",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1020316,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Deka Pakuakar. Visual design (Indonesian): Sepatu cakar akar, rompi cokelat berpaku aman, gasing batu di sabuk. Adult fantasy Trickster, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+}

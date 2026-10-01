@@ -1,0 +1,12 @@
+{
+  "id": "enemy_097",
+  "generator": "built-in image_gen",
+  "source_file": "exec-6a744dce-9c69-431b-83c9-07d31171e09f.png",
+  "source_sha256": "2b782ebf631d17b6b4220237ca4b995adf15af7c529fe6d65aa7cc07f41c4158",
+  "sha256": "3523199b7f4174fdae810d3e7a7f0c1d6f999dccc32a0130653a807cdd9b309e",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1300240,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Golem Kacaasal. Visual design (Indonesian): Golem gading bertulang kaca amber dengan serpih dada tak lengkap. Original enemy species, archetype construct, element Cahaya (Air means water), levels 960-969. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

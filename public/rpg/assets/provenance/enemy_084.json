@@ -1,0 +1,12 @@
+{
+  "id": "enemy_084",
+  "generator": "built-in image_gen",
+  "source_file": "exec-944a32d2-483c-4725-b1af-abe10593a59c.png",
+  "source_sha256": "6a4c9a4024d859d349a5cf7f79172e1d4f4bfa71e9aa7c1024a328a8d0affef7",
+  "sha256": "2f4d3961d7cc62fe80dd3d0bf8fc2bbffcdcb10046105a6147a657504336ff71",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1117376,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gagak Pitaambang. Visual design (Indonesian): Gagak abu bersayap pita hijau dan paruh palang gerbang. Original enemy species, archetype avian, element Angin (Air means water), levels 830-839. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+}

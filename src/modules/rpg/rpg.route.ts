@@ -128,7 +128,7 @@ export function createRpgRouter(settings: GatewayConfig): Router {
       etag: false,
       maxAge: 0,
       setHeaders(res, filePath) {
-        if (filePath.startsWith(path.join(assets, 'assets', 'v1') + path.sep)) {
+        if (/^v[1-9]\d*[/\\]/.test(path.relative(path.join(assets, 'assets'), filePath))) {
           res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
         }
       },
