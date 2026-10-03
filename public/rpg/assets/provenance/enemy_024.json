@@ -1,0 +1,12 @@
+{
+  "id": "enemy_024",
+  "generator": "built-in image_gen",
+  "source_file": "exec-1f85ab71-14b1-4bfa-a676-bcd7d8b26f45.png",
+  "source_sha256": "6d9b35ffe1f971458331301e346c4bd5ac2bc2720e7cf5ea2757911f186402fd",
+  "sha256": "3bf9c99645a068879ede16e82da633e149afe72fb880d9bbbe5919a1a8d320e8",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 828218,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Bintang Aranglaut. Visual design (Indonesian): Bintang laut hitam berujung jingga dengan lubang uap di tengah. Original enemy species, archetype echinoderm, element Api (Air means water), levels 230-239. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

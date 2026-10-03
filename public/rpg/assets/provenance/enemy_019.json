@@ -1,0 +1,12 @@
+{
+  "id": "enemy_019",
+  "generator": "built-in image_gen",
+  "source_file": "exec-8dc7f1c8-1e4a-4efe-adbb-7c947789d64b.png",
+  "source_sha256": "d0b64d4b0643db7aff2df54d4c5976c1e897b5b977fbb1e549e2b81832a8cae3",
+  "sha256": "8e589e537c78b6c6a2abf1d2875d232ecc87d20270b40269e72713bf3fb9c969",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1025966,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tawon Getahpanas. Visual design (Indonesian): Tawon resin amber dengan sengat merah membara dan sayap gelap. Original enemy species, archetype insect, element Api (Air means water), levels 180-189. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "char_014",
+  "generator": "built-in image_gen",
+  "source_file": "exec-e802cebf-da45-4bb0-a980-f25232507b6b.png",
+  "source_sha256": "4454b4b915163cade24700e4eb81863eb3ee8f4554670922142b8e9dcbe6face",
+  "sha256": "1ea2bb213a1f81ebf97c6e0ac3df654026d073af98f2038a598befa155b99e7a",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1201326,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Mira Karangpijak. Visual design (Indonesian): Perisai karang persegi, pelindung bahu pasir, sabuk kerang batu. Adult fantasy Guardian, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

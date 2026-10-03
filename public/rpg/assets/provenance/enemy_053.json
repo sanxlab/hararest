@@ -1,0 +1,12 @@
+{
+  "id": "enemy_053",
+  "generator": "built-in image_gen",
+  "source_file": "exec-06ac65fd-1df1-4a0c-a75b-cf386ed9c6fa.png",
+  "source_sha256": "0303b914c7df02d863f702f1b53025f8c84eff4fbf09c690fcc5e6c055f5b69c",
+  "sha256": "357b543b3335b861a77476a0f73cd2d7a6c967444a4c45902ce4904d4203266f",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1017704,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Uap. Visual design (Indonesian): Burung biru kelabu berparuh katup dan ekor gumpal uap. Original enemy species, archetype avian, element Air (Air means water), levels 520-529. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

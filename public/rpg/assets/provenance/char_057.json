@@ -1,0 +1,12 @@
+{
+  "id": "char_057",
+  "generator": "built-in image_gen",
+  "source_file": "exec-8e03ebe1-d6fa-488f-b325-c53930148806.png",
+  "source_sha256": "d75ad90ee32948f913469f281642448dda13fb50d899c79e9b5b6066648bd3f6",
+  "sha256": "2c75edc201dce32e3ed3112f612c88f58b4decbecadf8945ebfc44b152fc84c3",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 931816,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Nalu Baraasal. Visual design (Indonesian): Busur sumbu bercabang emas merah, ponco putih berjelaga, tabung panah tembaga. Adult fantasy Ranger, element Bayangan (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

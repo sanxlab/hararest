@@ -1,0 +1,12 @@
+{
+  "id": "char_050",
+  "generator": "built-in image_gen",
+  "source_file": "exec-4a9ecbf5-eb07-4f3d-8515-d98b8fe23c32.png",
+  "source_sha256": "aa18772291eb076d009d884122e9683524ed38e64764472ea0ee3a522ae06bc2",
+  "sha256": "06ec9071718c92bcc594826304fdd08a848c1ec6a33c8a8a092f5cc4e716a5f5",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1085942,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Neri Senjakaca. Visual design (Indonesian): Perisai dua jendela amber, zirah putih kusam, rambut pendek berujung emas. Adult fantasy Guardian, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+}

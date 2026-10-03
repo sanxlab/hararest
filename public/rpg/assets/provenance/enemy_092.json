@@ -1,0 +1,12 @@
+{
+  "id": "enemy_092",
+  "generator": "built-in image_gen",
+  "source_file": "exec-a921f79a-c397-4eba-947c-8fbcf19f2bec.png",
+  "source_sha256": "2e646be0af9400c4b99fc4e19b4f5846c46e4ef4b5a134aa8d7e3aefdea7c856",
+  "sha256": "65c1036ef5c618ce6d3cc58c5ead9678c84d3877ad433a818391084b177d68be",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 999498,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tikus Sumbuasal. Visual design (Indonesian): Tikus tembaga dengan ekor sumbu putih dan telinga berbentuk kelopak api. Original enemy species, archetype beast, element Api (Air means water), levels 910-919. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

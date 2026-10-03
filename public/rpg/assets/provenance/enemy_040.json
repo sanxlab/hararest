@@ -1,0 +1,12 @@
+{
+  "id": "enemy_040",
+  "generator": "built-in image_gen",
+  "source_file": "exec-4460d50d-f677-4300-857c-a6eba745a720.png",
+  "source_sha256": "0b007c8682f5df74c0381c288adef1737f2d8d0daa7a260b0b7580fc7f126878",
+  "sha256": "7583643e9168b6dc3864301ca0c8ecedde84556abd1f400000f78c09735d2500",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 875552,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Menara Kaca Berjalan. Visual design (Indonesian): Menara prisma bertumpu tiga kaki kaca, jendela retak seperti alis. Original enemy species, archetype giant_construct, element Cahaya (Air means water), levels 390-399. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+}

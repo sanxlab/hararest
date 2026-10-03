@@ -1,0 +1,12 @@
+{
+  "id": "char_009",
+  "generator": "built-in image_gen",
+  "source_file": "exec-f2158d79-6497-45b2-8d20-d31965567c64.png",
+  "source_sha256": "07612c8de0f9e36208f998e991723bbcf8fe59fc58d418813b8a60e6ae0510c4",
+  "sha256": "639169d61b77fb3dc61d48b64aae11c7c9175303701283aa5372b667f9e9c462",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 991280,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Omi Pijartanah. Visual design (Indonesian): Ketapel akar ganda, sepatu cendawan oker, kantong kerikil berpola cincin pohon. Adult fantasy Ranger, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

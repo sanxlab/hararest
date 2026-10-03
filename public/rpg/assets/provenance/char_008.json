@@ -1,0 +1,12 @@
+{
+  "id": "char_008",
+  "generator": "built-in image_gen",
+  "source_file": "exec-0a1cdf58-3ca0-4cb4-95a2-393605727ee9.png",
+  "source_sha256": "451b68e7e9d2d2d62736d57620ba37f36431690b6027105aa6108a2e28ee673e",
+  "sha256": "6d71cb8ad742507af31bb3c2e2777505549769c56ec06bf63aab4b9a2b10a1e9",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1157576,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Sela Sulur. Visual design (Indonesian): Perisai daun layang hijau, tudung beranting tipis, lonceng kayu tanpa bandul. Adult fantasy Guardian, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

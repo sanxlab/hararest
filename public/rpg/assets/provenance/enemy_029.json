@@ -1,0 +1,12 @@
+{
+  "id": "enemy_029",
+  "generator": "built-in image_gen",
+  "source_file": "exec-ea60fc19-e9a0-4de0-b707-6354d77663d9.png",
+  "source_sha256": "ff9b4ad02719dc8a0fb476f6cc3c20ef4c0c1d2fdf68f3d7580a3968fb09f765",
+  "sha256": "f61ef068cf254e6d1f882190d18bb3bf7216340261e8802f27715c91c8a4c059",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1374590,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Penyu Mutiara Retak. Visual design (Indonesian): Penyu besar bercangkang mutiara pecah dengan garis cahaya amber. Original enemy species, archetype reptile, element Cahaya (Air means water), levels 280-289. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

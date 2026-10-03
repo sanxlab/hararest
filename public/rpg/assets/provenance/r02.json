@@ -1,0 +1,12 @@
+{
+  "id": "r02",
+  "generator": "built-in image_gen",
+  "source_file": "exec-eb1e0516-ecf4-4dc0-a22a-f8d5985a2de5.png",
+  "source_sha256": "eb71dfc2eb44af33d315d1ae2139a0678f428a18174989cefc52324d8cb48d02",
+  "sha256": "1d2f8bca1b5274b4b1f943281b08e98ab2c8c089659d00ad918abaf5d77f9238",
+  "width": 1536,
+  "height": 1024,
+  "alpha": false,
+  "bytes": 2387582,
+  "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Hutan Lentera. Environment description in Indonesian: Akar hutan mengikat pulau-pulau kecil. Lentera tumbuh di rongga pohon, tetapi cahaya yang padam meninggalkan gema penunjuk jalan palsu. Palette anchors: #172F38, #477765, #B7C98C, #F0AA61. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+}

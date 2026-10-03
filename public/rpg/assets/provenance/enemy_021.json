@@ -1,0 +1,12 @@
+{
+  "id": "enemy_021",
+  "generator": "built-in image_gen",
+  "source_file": "exec-e2d704f6-3423-42d9-b157-3bb0191bcc53.png",
+  "source_sha256": "0a57f539fa6710eaaf9a5d50d6a4a866471082b01447995efaab4e06085853ed",
+  "sha256": "7cf3f8eef29e36926b1292c412ef68c8657c2f1ecce8bb9cf434d8e947c97e3c",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 939362,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ubur Buihbiru. Visual design (Indonesian): Ubur-ubur transparan kotak dengan tentakel berupa rantai gelembung. Original enemy species, archetype jellyfish, element Air (Air means water), levels 200-209. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

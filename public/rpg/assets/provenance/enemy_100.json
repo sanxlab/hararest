@@ -1,0 +1,12 @@
+{
+  "id": "enemy_100",
+  "generator": "built-in image_gen",
+  "source_file": "exec-582f4234-9f2c-404a-a591-c8bfb7b24fdb.png",
+  "source_sha256": "c838b6d59c8aa4f6723539ee0964253f04aff7f2bf6ff5258801ee2594f8f5b5",
+  "sha256": "3c02580af3784fabc792c9135f05f82f2c55bcd37198015b9ace110d54994914",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1217764,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gema Lentera Pertama. Visual design (Indonesian): Lentera raksasa retak dengan empat sayap kaca dan ruang kosong di tengah. Original enemy species, archetype dawn_echo, element Cahaya (Air means water), levels 990-999. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

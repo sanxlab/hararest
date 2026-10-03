@@ -1,0 +1,1536 @@
+{
+  "version": 2,
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "id": "char_001",
+      "kind": "character",
+      "name": "Ranu Pendar",
+      "region": "r01",
+      "path": "/rpg/assets/v1/char_001.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ranu Pendar. Visual design (Indonesian): Mantel rumput pendek, kepang tembaga, tombak bersumbu merah dengan satu mata lentera retak. Adult fantasy Vanguard, element Api (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_002",
+      "kind": "character",
+      "name": "Nira Gelagah",
+      "region": "r01",
+      "path": "/rpg/assets/v1/char_002.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Nira Gelagah. Visual design (Indonesian): Perisai bundar anyaman gelagah, jas hujan biru pucat, botol embun di pinggang. Adult fantasy Guardian, element Air (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_003",
+      "kind": "character",
+      "name": "Senau Biji",
+      "region": "r01",
+      "path": "/rpg/assets/v2/char_003.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Senau Biji. Visual design (Indonesian): Busur ranting berbentuk sabit, syal hijau terbang, kantong benih kuning di bahu. Adult fantasy Ranger, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_004",
+      "kind": "character",
+      "name": "Luma Kincir",
+      "region": "r01",
+      "path": "/rpg/assets/v1/char_004.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Luma Kincir. Visual design (Indonesian): Topi kincir empat bilah, tongkat penumbuk batu, rok petak tanah liat. Adult fantasy Arcanist, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_005",
+      "kind": "character",
+      "name": "Tavi Embun",
+      "region": "r01",
+      "path": "/rpg/assets/v2/char_005.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tavi Embun. Visual design (Indonesian): Celemek putih kuning, rambut serupa tunas, lentera tabung berisi tetes bercahaya. Adult fantasy Medic, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_006",
+      "kind": "character",
+      "name": "Kiri Serut",
+      "region": "r01",
+      "path": "/rpg/assets/v2/char_006.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kiri Serut. Visual design (Indonesian): Topeng setengah kayu, mantel ungu asimetris, pisau ukir dengan pita hitam. Adult fantasy Trickster, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "char_007",
+      "kind": "character",
+      "name": "Eru Nadiakar",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_007.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Eru Nadiakar. Visual design (Indonesian): Kapak akar berujung tetes biru, lengan dibalut lumut, rambut putih pendek. Adult fantasy Vanguard, element Air (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_008",
+      "kind": "character",
+      "name": "Sela Sulur",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_008.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Sela Sulur. Visual design (Indonesian): Perisai daun layang hijau, tudung beranting tipis, lonceng kayu tanpa bandul. Adult fantasy Guardian, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_009",
+      "kind": "character",
+      "name": "Omi Pijartanah",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_009.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Omi Pijartanah. Visual design (Indonesian): Ketapel akar ganda, sepatu cendawan oker, kantong kerikil berpola cincin pohon. Adult fantasy Ranger, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_010",
+      "kind": "character",
+      "name": "Vena Ronggacahya",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_010.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Vena Ronggacahya. Visual design (Indonesian): Tongkat rongga pohon berisi kunang-kunang, jubah krem berserat, mata emas. Adult fantasy Arcanist, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_011",
+      "kind": "character",
+      "name": "Daru Malamdaun",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_011.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Daru Malamdaun. Visual design (Indonesian): Selendang daun ungu, tas obat hitam, penutup mata berbentuk kupu malam. Adult fantasy Medic, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_012",
+      "kind": "character",
+      "name": "Kesa Aranglumut",
+      "region": "r02",
+      "path": "/rpg/assets/v2/char_012.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kesa Aranglumut. Visual design (Indonesian): Jaket lumut jingga, sarung tangan bara dingin, yoyo biji berlubang. Adult fantasy Trickster, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "char_013",
+      "kind": "character",
+      "name": "Jalu Pasanglayar",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_013.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jalu Pasanglayar. Visual design (Indonesian): Pedang dayung, rompi biru bertepi hijau, rambut berikat layar kecil. Adult fantasy Vanguard, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_014",
+      "kind": "character",
+      "name": "Mira Karangpijak",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_014.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Mira Karangpijak. Visual design (Indonesian): Perisai karang persegi, pelindung bahu pasir, sabuk kerang batu. Adult fantasy Guardian, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_015",
+      "kind": "character",
+      "name": "Suri Mutiara",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_015.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Suri Mutiara. Visual design (Indonesian): Busur cangkang krem, rambut biru berkepang mutiara, mantel jala bercahaya. Adult fantasy Ranger, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_016",
+      "kind": "character",
+      "name": "Nelu Palung",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_016.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Nelu Palung. Visual design (Indonesian): Tongkat jangkar mini hitam, jubah tinta berumbai, kacamata bundar ungu. Adult fantasy Arcanist, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_017",
+      "kind": "character",
+      "name": "Rava Tungkukerang",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_017.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rava Tungkukerang. Visual design (Indonesian): Panci kerang di punggung, sarung tangan merah, rambut seperti dua gulung asap. Adult fantasy Medic, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_018",
+      "kind": "character",
+      "name": "Piko Buih",
+      "region": "r03",
+      "path": "/rpg/assets/v2/char_018.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Piko Buih. Visual design (Indonesian): Sepatu sirip pendek, jaket gelembung sian, belati kerang transparan. Adult fantasy Trickster, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "char_019",
+      "kind": "character",
+      "name": "Arsa Kacapalu",
+      "region": "r04",
+      "path": "/rpg/assets/v2/char_019.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Arsa Kacapalu. Visual design (Indonesian): Palu kaca buram berinti batu, mantel pasir, bekas retak emas pada sarung tangan. Adult fantasy Vanguard, element Tanah (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_020",
+      "kind": "character",
+      "name": "Nima Sinarpayung",
+      "region": "r04",
+      "path": "/rpg/assets/v2/char_020.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Nima Sinarpayung. Visual design (Indonesian): Perisai payung cermin kusam, turban putih, mata tertutup pita amber. Adult fantasy Guardian, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_021",
+      "kind": "character",
+      "name": "Tero Bayangpasir",
+      "region": "r04",
+      "path": "/rpg/assets/v2/char_021.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tero Bayangpasir. Visual design (Indonesian): Busur prisma hitam, kain ungu panjang, satu lensa mata berbentuk belah ketupat. Adult fantasy Ranger, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_022",
+      "kind": "character",
+      "name": "Liri Baraindeks",
+      "region": "r04",
+      "path": "/rpg/assets/v2/char_022.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Liri Baraindeks. Visual design (Indonesian): Buku lempeng kaca, sarung jari tembaga, jilbab merah dengan simpul kotak. Adult fantasy Arcanist, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_023",
+      "kind": "character",
+      "name": "Wanu Telagakaca",
+      "region": "r04",
+      "path": "/rpg/assets/v1/char_023.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Wanu Telagakaca. Visual design (Indonesian): Tongkat kendi turkuois, mantel berlapis kain basah, kalung tetes kaca. Adult fantasy Medic, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_024",
+      "kind": "character",
+      "name": "Zeli Debupita",
+      "region": "r04",
+      "path": "/rpg/assets/v2/char_024.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Zeli Debupita. Visual design (Indonesian): Pita angin putih di kedua lengan, pisau kipas, kacamata debu kuning. Adult fantasy Trickster, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "char_025",
+      "kind": "character",
+      "name": "Banu Kilatsumbu",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_025.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Banu Kilatsumbu. Visual design (Indonesian): Tombak paku petir dengan kaca kuning, jaket hijau, rambut zigzag putih. Adult fantasy Vanguard, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_026",
+      "kind": "character",
+      "name": "Rumi Teduhhitam",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_026.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rumi Teduhhitam. Visual design (Indonesian): Perisai daun logam hitam, tudung violet, sarung kaki akar tinggi. Adult fantasy Guardian, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_027",
+      "kind": "character",
+      "name": "Sano Merahdahan",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_027.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Sano Merahdahan. Visual design (Indonesian): Busur tembaga bercabang tiga, mantel merah pendek, anak panah dengan penutup resin. Adult fantasy Ranger, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_028",
+      "kind": "character",
+      "name": "Ila Hujanurat",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_028.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ila Hujanurat. Visual design (Indonesian): Tongkat penampung hujan, jubah sian bercorak urat daun, anting tetes besi. Adult fantasy Arcanist, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_029",
+      "kind": "character",
+      "name": "Meli Anginsulam",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_029.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Meli Anginsulam. Visual design (Indonesian): Jarum obat berbentuk bulu, syal mint, tas kain penuh daun melingkar. Adult fantasy Medic, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_030",
+      "kind": "character",
+      "name": "Deka Pakuakar",
+      "region": "r05",
+      "path": "/rpg/assets/v2/char_030.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Deka Pakuakar. Visual design (Indonesian): Sepatu cakar akar, rompi cokelat berpaku aman, gasing batu di sabuk. Adult fantasy Trickster, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "char_031",
+      "kind": "character",
+      "name": "Oran Jelaga",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_031.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Oran Jelaga. Visual design (Indonesian): Pedang cerobong berongga, mantel hitam arang, pelindung wajah satu sisi ungu. Adult fantasy Vanguard, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_032",
+      "kind": "character",
+      "name": "Tala Besitungku",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_032.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tala Besitungku. Visual design (Indonesian): Perisai pintu tungku merah, kepang pendek abu-abu, apron baja bercorak bunga. Adult fantasy Guardian, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_033",
+      "kind": "character",
+      "name": "Viko Uapbidik",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_033.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Viko Uapbidik. Visual design (Indonesian): Senapan panah pompa air, tabung biru di punggung, kacamata uap bundar. Adult fantasy Ranger, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_034",
+      "kind": "character",
+      "name": "Rena Angincerobong",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_034.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rena Angincerobong. Visual design (Indonesian): Tongkat kipas besi, jubah abu dengan sisi hijau, rambut panjang melayang vertikal. Adult fantasy Arcanist, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_035",
+      "kind": "character",
+      "name": "Umi Batuhangat",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_035.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Umi Batuhangat. Visual design (Indonesian): Tas batu pijat oranye, tunik cokelat krem, tongkat berkepala geode. Adult fantasy Medic, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_036",
+      "kind": "character",
+      "name": "Jera Pijarpaku",
+      "region": "r06",
+      "path": "/rpg/assets/v2/char_036.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jera Pijarpaku. Visual design (Indonesian): Sepasang belati paku emas, kacamata satu lensa putih, jubah pendek bersudut. Adult fantasy Trickster, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "char_037",
+      "kind": "character",
+      "name": "Sera Loncengbara",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_037.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Sera Loncengbara. Visual design (Indonesian): Pedang bandul merah, seragam penjaga biru gelap, telinga dilindungi kain emas. Adult fantasy Vanguard, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_038",
+      "kind": "character",
+      "name": "Navo Kanal",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_038.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Navo Kanal. Visual design (Indonesian): Perisai pintu kanal biru, jubah pekerja saluran, lentera botol bulat di bahu. Adult fantasy Guardian, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_039",
+      "kind": "character",
+      "name": "Iru Anginpos",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_039.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Iru Anginpos. Visual design (Indonesian): Busur antena tipis, tas surat hijau kelabu, mantel bersayap kertas. Adult fantasy Ranger, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_040",
+      "kind": "character",
+      "name": "Wesa Batuaksara",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_040.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Wesa Batuaksara. Visual design (Indonesian): Lempeng mantra berhuruf timbul, jubah abu berbentuk bata, tongkat kapur. Adult fantasy Arcanist, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_041",
+      "kind": "character",
+      "name": "Lani Pitaemas",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_041.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Lani Pitaemas. Visual design (Indonesian): Pita cahaya melingkar tangan, mantel perawat gading, rambut hitam diikat kotak. Adult fantasy Medic, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_042",
+      "kind": "character",
+      "name": "Toma Bayangjam",
+      "region": "r07",
+      "path": "/rpg/assets/v2/char_042.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Toma Bayangjam. Visual design (Indonesian): Topi jarum jam miring, jas ungu gelap, belati berbentuk kunci lonceng. Adult fantasy Trickster, element Bayangan (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "char_043",
+      "kind": "character",
+      "name": "Elu Hujanlayar",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_043.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Elu Hujanlayar. Visual design (Indonesian): Pedang lunas biru, mantel layar putih, rambut pendek dengan penjepit tetes. Adult fantasy Vanguard, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_044",
+      "kind": "character",
+      "name": "Raisa Anyamlangit",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_044.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Raisa Anyamlangit. Visual design (Indonesian): Perisai layang-layang besar, zirah tali hijau, dua kepang seperti simpul tambat. Adult fantasy Guardian, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_045",
+      "kind": "character",
+      "name": "Moru Batuapung",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_045.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Moru Batuapung. Visual design (Indonesian): Busur dua batu melayang, ponco oker pendek, kantong pemberat berlabel. Adult fantasy Ranger, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_046",
+      "kind": "character",
+      "name": "Yali Halo",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_046.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Yali Halo. Visual design (Indonesian): Tongkat lingkar awan putih, mantel emas tembus cahaya, rambut biru pucat bersudut. Adult fantasy Arcanist, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_047",
+      "kind": "character",
+      "name": "Pena Malamlayar",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_047.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pena Malamlayar. Visual design (Indonesian): Payung hitam berbintik bintang, tas obat violet, sepatu dengan pengait tali. Adult fantasy Medic, element Bayangan (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_048",
+      "kind": "character",
+      "name": "Kavo Baraudara",
+      "region": "r08",
+      "path": "/rpg/assets/v2/char_048.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kavo Baraudara. Visual design (Indonesian): Belati baling-baling merah, jaket pilot tembaga, ekor syal berbentuk api. Adult fantasy Trickster, element Api (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "char_049",
+      "kind": "character",
+      "name": "Danu Ambang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_049.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Danu Ambang. Visual design (Indonesian): Pedang palang gerbang batu, mantel cokelat violet, gelang pemberat kembar. Adult fantasy Vanguard, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_050",
+      "kind": "character",
+      "name": "Neri Senjakaca",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_050.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Neri Senjakaca. Visual design (Indonesian): Perisai dua jendela amber, zirah putih kusam, rambut pendek berujung emas. Adult fantasy Guardian, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_051",
+      "kind": "character",
+      "name": "Vasa Sisaalam",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_051.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Vasa Sisaalam. Visual design (Indonesian): Busur cabang bayangan, tudung marun, anak panah dengan bulu hitam bermata perak. Adult fantasy Ranger, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_052",
+      "kind": "character",
+      "name": "Reko Tungkusenja",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_052.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Reko Tungkusenja. Visual design (Indonesian): Tongkat tungku lonjong, selendang jingga arang, buku dengan tepi hangus. Adult fantasy Arcanist, element Bayangan (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_053",
+      "kind": "character",
+      "name": "Mava Airkenang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_053.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Mava Airkenang. Visual design (Indonesian): Kendi berkaca ungu biru, jubah panjang berpola sungai, rambut diikat simpul tetes. Adult fantasy Medic, element Api (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_054",
+      "kind": "character",
+      "name": "Telu Anginbalik",
+      "region": "r09",
+      "path": "/rpg/assets/v2/char_054.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Telu Anginbalik. Visual design (Indonesian): Kipas dua arah hijau kelabu, masker kain senja, sepatu dengan pita menghadap terbalik. Adult fantasy Trickster, element Air (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "char_055",
+      "kind": "character",
+      "name": "Aru Sumberpijar",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_055.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Aru Sumberpijar. Visual design (Indonesian): Pedang lentera retak berinti fajar, jubah putih emas sederhana, rambut hitam bertali amber. Adult fantasy Vanguard, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "char_056",
+      "kind": "character",
+      "name": "Sova Ruanghening",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_056.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Sova Ruanghening. Visual design (Indonesian): Perisai sabit kosong berbingkai ungu, zirah malam, jubah dengan lapisan putih. Adult fantasy Guardian, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "char_057",
+      "kind": "character",
+      "name": "Nalu Baraasal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_057.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Nalu Baraasal. Visual design (Indonesian): Busur sumbu bercabang emas merah, ponco putih berjelaga, tabung panah tembaga. Adult fantasy Ranger, element Bayangan (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "char_058",
+      "kind": "character",
+      "name": "Ivara Tirtacakra",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_058.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ivara Tirtacakra. Visual design (Indonesian): Cakra air biru melingkari tongkat, jubah gading, rambut berpilin seperti arus. Adult fantasy Arcanist, element Api (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "char_059",
+      "kind": "character",
+      "name": "Tesa Napasawal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_059.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tesa Napasawal. Visual design (Indonesian): Tongkat seruling hijau pucat, mantel sayap kain, rambut putih dengan satu helai hitam. Adult fantasy Medic, element Air (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "char_060",
+      "kind": "character",
+      "name": "Kinu Retakasal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/char_060.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kinu Retakasal. Visual design (Indonesian): Belati batu fajar berpasangan, jaket tanah putih, topeng retak digantung di pinggang. Adult fantasy Trickster, element Angin (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_001",
+      "kind": "enemy",
+      "name": "Gumpal Embun",
+      "region": "r01",
+      "path": "/rpg/assets/v1/enemy_001.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gumpal Embun. Visual design (Indonesian): Gumpal air bundar dengan daun sebagai alis dan satu biji di dalam tubuh. Original enemy species, archetype slime, element Air (Air means water), levels 1-9. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_002",
+      "kind": "enemy",
+      "name": "Kutu Sumbu",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_002.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kutu Sumbu. Visual design (Indonesian): Kumbang merah kecil dengan sumbu padam sebagai tanduk. Original enemy species, archetype insect, element Api (Air means water), levels 10-19. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_003",
+      "kind": "enemy",
+      "name": "Pipit Gelagah",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_003.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Gelagah. Visual design (Indonesian): Burung rumput berparuh pipa, ekor panjang berbentuk pita hijau. Original enemy species, archetype avian, element Angin (Air means water), levels 20-29. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_004",
+      "kind": "enemy",
+      "name": "Kepiting Pematang",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_004.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kepiting Pematang. Visual design (Indonesian): Kepiting tanah berkaki akar dengan rumah gundukan sawah. Original enemy species, archetype crustacean, element Tanah (Air means water), levels 30-39. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_005",
+      "kind": "enemy",
+      "name": "Kunang Retak",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_005.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kunang Retak. Visual design (Indonesian): Kunang-kunang bersayap pecahan kaca amber, inti lentera miring. Original enemy species, archetype insect, element Cahaya (Air means water), levels 40-49. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_006",
+      "kind": "enemy",
+      "name": "Musang Bayangrumput",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_006.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Musang Bayangrumput. Visual design (Indonesian): Musang ungu pipih dengan ekor menyerupai bayangan ilalang. Original enemy species, archetype beast, element Bayangan (Air means water), levels 50-59. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_007",
+      "kind": "enemy",
+      "name": "Kambing Batuembun",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_007.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kambing Batuembun. Visual design (Indonesian): Kambing kecil bertanduk batu berongga penuh tetes air. Original enemy species, archetype beast, element Tanah (Air means water), levels 60-69. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_008",
+      "kind": "enemy",
+      "name": "Belut Awanrendah",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_008.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Belut Awanrendah. Visual design (Indonesian): Belut sian berenang pada kabut setinggi tanah, sirip transparan kotak. Original enemy species, archetype serpent, element Air (Air means water), levels 70-79. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_009",
+      "kind": "enemy",
+      "name": "Penjaga Jerami",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_009.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Penjaga Jerami. Visual design (Indonesian): Boneka jerami berkepala keranjang, lengan kincir, mata daun hijau. Original enemy species, archetype construct, element Angin (Air means water), levels 80-89. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_010",
+      "kind": "enemy",
+      "name": "Rusa Lentera Patah",
+      "region": "r01",
+      "path": "/rpg/assets/v2/enemy_010.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rusa Lentera Patah. Visual design (Indonesian): Rusa bertanduk dua rangka lentera retak dan surai rumput emas. Original enemy species, archetype lantern_beast, element Cahaya (Air means water), levels 90-99. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+    },
+    {
+      "id": "enemy_011",
+      "kind": "enemy",
+      "name": "Siput Lumutbunyi",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_011.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Siput Lumutbunyi. Visual design (Indonesian): Siput hijau dengan cangkang bergalur seperti corong kayu. Original enemy species, archetype mollusk, element Air (Air means water), levels 100-109. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_012",
+      "kind": "enemy",
+      "name": "Ranting Berjalan",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_012.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ranting Berjalan. Visual design (Indonesian): Cabang berkaki tiga membawa satu daun berbentuk telapak. Original enemy species, archetype plant, element Tanah (Air means water), levels 110-119. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_013",
+      "kind": "enemy",
+      "name": "Ngengat Sumbubiru",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_013.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ngengat Sumbubiru. Visual design (Indonesian): Ngengat gelap dengan api biru kecil di antena dan sayap jerami. Original enemy species, archetype insect, element Api (Air means water), levels 120-129. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_014",
+      "kind": "enemy",
+      "name": "Katak Ronggadaun",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_014.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Katak Ronggadaun. Visual design (Indonesian): Katak daun berongga dengan kantong leher seperti balon mint. Original enemy species, archetype amphibian, element Angin (Air means water), levels 130-139. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_015",
+      "kind": "enemy",
+      "name": "Jamur Payungmalam",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_015.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jamur Payungmalam. Visual design (Indonesian): Jamur ungu bertutup miring dengan titik hitam seperti lubang. Original enemy species, archetype fungus, element Bayangan (Air means water), levels 140-149. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_016",
+      "kind": "enemy",
+      "name": "Kijang Kunang",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_016.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kijang Kunang. Visual design (Indonesian): Kijang hijau mungil membawa tiga kunang pada tanduk bercabang. Original enemy species, archetype beast, element Cahaya (Air means water), levels 150-159. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_017",
+      "kind": "enemy",
+      "name": "Ular Anyamakar",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_017.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ular Anyamakar. Visual design (Indonesian): Ular dari tiga akar terpilin dengan kepala batu cokelat. Original enemy species, archetype serpent, element Tanah (Air means water), levels 160-169. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_018",
+      "kind": "enemy",
+      "name": "Kera Lentera Kosong",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_018.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kera Lentera Kosong. Visual design (Indonesian): Kera kurus dengan perut lentera kosong dan tangan daun lebar. Original enemy species, archetype beast, element Bayangan (Air means water), levels 170-179. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_019",
+      "kind": "enemy",
+      "name": "Tawon Getahpanas",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_019.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tawon Getahpanas. Visual design (Indonesian): Tawon resin amber dengan sengat merah membara dan sayap gelap. Original enemy species, archetype insect, element Api (Air means water), levels 180-189. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_020",
+      "kind": "enemy",
+      "name": "Pohon Seribu Sumbu",
+      "region": "r02",
+      "path": "/rpg/assets/v2/enemy_020.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pohon Seribu Sumbu. Visual design (Indonesian): Pohon berjalan dengan banyak lentera kecil; satu rongga dada gelap. Original enemy species, archetype ancient_plant, element Cahaya (Air means water), levels 190-199. Not a human hero. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+    },
+    {
+      "id": "enemy_021",
+      "kind": "enemy",
+      "name": "Ubur Buihbiru",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_021.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ubur Buihbiru. Visual design (Indonesian): Ubur-ubur transparan kotak dengan tentakel berupa rantai gelembung. Original enemy species, archetype jellyfish, element Air (Air means water), levels 200-209. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_022",
+      "kind": "enemy",
+      "name": "Kerang Matahari",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_022.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kerang Matahari. Visual design (Indonesian): Kerang gading bersinar dari celah berbentuk mata, kaki pasir pendek. Original enemy species, archetype mollusk, element Cahaya (Air means water), levels 210-219. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_023",
+      "kind": "enemy",
+      "name": "Ikan Layarkarang",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_023.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ikan Layarkarang. Visual design (Indonesian): Ikan bersirip layar segitiga hijau dengan sisik koral biru. Original enemy species, archetype fish, element Angin (Air means water), levels 220-229. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_024",
+      "kind": "enemy",
+      "name": "Bintang Aranglaut",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_024.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Bintang Aranglaut. Visual design (Indonesian): Bintang laut hitam berujung jingga dengan lubang uap di tengah. Original enemy species, archetype echinoderm, element Api (Air means water), levels 230-239. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_025",
+      "kind": "enemy",
+      "name": "Kepiting Dermagaruntuh",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_025.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kepiting Dermagaruntuh. Visual design (Indonesian): Kepiting biru membawa papan dermaga dan paku batu sebagai cangkang. Original enemy species, archetype crustacean, element Tanah (Air means water), levels 240-249. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_026",
+      "kind": "enemy",
+      "name": "Cumi Tintabisu",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_026.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Cumi Tintabisu. Visual design (Indonesian): Cumi ungu dengan mantel seperti botol tinta dan satu mata pucat. Original enemy species, archetype cephalopod, element Bayangan (Air means water), levels 250-259. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_027",
+      "kind": "enemy",
+      "name": "Pari Kolamlangit",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_027.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pari Kolamlangit. Visual design (Indonesian): Pari bertepi transparan dengan pola pulau pada punggung. Original enemy species, archetype fish, element Air (Air means water), levels 260-269. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_028",
+      "kind": "enemy",
+      "name": "Bangau Karangtajam",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_028.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Bangau Karangtajam. Visual design (Indonesian): Bangau kelabu berkaki karang merah dan paruh seperti jangkar tipis. Original enemy species, archetype avian, element Angin (Air means water), levels 270-279. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_029",
+      "kind": "enemy",
+      "name": "Penyu Mutiara Retak",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_029.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Penyu Mutiara Retak. Visual design (Indonesian): Penyu besar bercangkang mutiara pecah dengan garis cahaya amber. Original enemy species, archetype reptile, element Cahaya (Air means water), levels 280-289. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_030",
+      "kind": "enemy",
+      "name": "Naga Palung Terapung",
+      "region": "r03",
+      "path": "/rpg/assets/v2/enemy_030.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Naga Palung Terapung. Visual design (Indonesian): Ular laut biru panjang dengan karang melayang di sekitar leher. Original enemy species, archetype sky_serpent, element Air (Air means water), levels 290-299. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+    },
+    {
+      "id": "enemy_031",
+      "kind": "enemy",
+      "name": "Kumbang Butirkaca",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_031.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kumbang Butirkaca. Visual design (Indonesian): Kumbang pasir dengan punggung prisma buram berfaset besar. Original enemy species, archetype insect, element Tanah (Air means water), levels 300-309. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_032",
+      "kind": "enemy",
+      "name": "Kadal Cerminkecil",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_032.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kadal Cerminkecil. Visual design (Indonesian): Kadal krem berkepala cermin segitiga dan ekor kaca pendek. Original enemy species, archetype reptile, element Cahaya (Air means water), levels 310-319. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_033",
+      "kind": "enemy",
+      "name": "Ulat Sumbukering",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_033.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ulat Sumbukering. Visual design (Indonesian): Ulat jingga bersegmen sumbu hangus dengan duri kain merah. Original enemy species, archetype insect, element Api (Air means water), levels 320-329. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_034",
+      "kind": "enemy",
+      "name": "Kalajengking Fatamorgana",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_034.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kalajengking Fatamorgana. Visual design (Indonesian): Kalajengking ungu transparan dengan capit tampak bergeser satu petak. Original enemy species, archetype arachnid, element Bayangan (Air means water), levels 330-339. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_035",
+      "kind": "enemy",
+      "name": "Rubah Debukaca",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_035.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rubah Debukaca. Visual design (Indonesian): Rubah pucat berekor kipas pasir dengan telinga prisma hijau. Original enemy species, archetype beast, element Angin (Air means water), levels 340-349. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_036",
+      "kind": "enemy",
+      "name": "Kendi Merayap",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_036.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kendi Merayap. Visual design (Indonesian): Kendi turkuois berkaki empat dari pecahan gagang, air mengintip retakan. Original enemy species, archetype construct, element Air (Air means water), levels 350-359. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_037",
+      "kind": "enemy",
+      "name": "Unta Prismapunggung",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_037.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Unta Prismapunggung. Visual design (Indonesian): Unta batu dengan dua punuk prisma amber dan mata cekung. Original enemy species, archetype beast, element Tanah (Air means water), levels 360-369. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_038",
+      "kind": "enemy",
+      "name": "Elang Siangpalsu",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_038.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Elang Siangpalsu. Visual design (Indonesian): Elang cermin kusam dengan sayap berlapis jendela emas. Original enemy species, archetype avian, element Cahaya (Air means water), levels 370-379. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_039",
+      "kind": "enemy",
+      "name": "Prajurit Pasirbalik",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_039.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Prajurit Pasirbalik. Visual design (Indonesian): Zirah pasir kosong dengan jam pasir terbalik sebagai dada. Original enemy species, archetype construct, element Bayangan (Air means water), levels 380-389. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_040",
+      "kind": "enemy",
+      "name": "Menara Kaca Berjalan",
+      "region": "r04",
+      "path": "/rpg/assets/v2/enemy_040.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Menara Kaca Berjalan. Visual design (Indonesian): Menara prisma bertumpu tiga kaki kaca, jendela retak seperti alis. Original enemy species, archetype giant_construct, element Cahaya (Air means water), levels 390-399. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+    },
+    {
+      "id": "enemy_041",
+      "kind": "enemy",
+      "name": "Ulat Kabeldaun",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_041.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ulat Kabeldaun. Visual design (Indonesian): Ulat hijau dengan ruas daun tembaga dan antena lilitan kabel. Original enemy species, archetype insect, element Angin (Air means water), levels 400-409. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_042",
+      "kind": "enemy",
+      "name": "Katak Tampungbadai",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_042.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Katak Tampungbadai. Visual design (Indonesian): Katak biru dengan kantong hujan di punggung dan garis kilat putih. Original enemy species, archetype amphibian, element Air (Air means water), levels 410-419. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_043",
+      "kind": "enemy",
+      "name": "Kumbang Arangurat",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_043.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kumbang Arangurat. Visual design (Indonesian): Kumbang hitam dengan urat merah berdenyut di cangkang. Original enemy species, archetype insect, element Api (Air means water), levels 420-429. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_044",
+      "kind": "enemy",
+      "name": "Pakis Jarumtanah",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_044.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pakis Jarumtanah. Visual design (Indonesian): Pakis berjalan dengan pelepah seperti jarum besi dan akar cokelat. Original enemy species, archetype plant, element Tanah (Air means water), levels 430-439. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_045",
+      "kind": "enemy",
+      "name": "Kelelawar Kilatputih",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_045.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kelelawar Kilatputih. Visual design (Indonesian): Kelelawar putih berujung sayap amber dan telinga seperti garpu petir. Original enemy species, archetype flying_beast, element Cahaya (Air means water), levels 440-449. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_046",
+      "kind": "enemy",
+      "name": "Macan Teduhlogam",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_046.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Macan Teduhlogam. Visual design (Indonesian): Macan arang berbelang celah ungu, cakar tembaga gelap. Original enemy species, archetype beast, element Bayangan (Air means water), levels 450-459. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_047",
+      "kind": "enemy",
+      "name": "Kera Gunturhijau",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_047.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kera Gunturhijau. Visual design (Indonesian): Kera hijau dengan tangan balon awan dan ekor kawat spiral. Original enemy species, archetype beast, element Angin (Air means water), levels 460-469. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_048",
+      "kind": "enemy",
+      "name": "Anggrek Penampung",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_048.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Anggrek Penampung. Visual design (Indonesian): Anggrek sian berbentuk corong, tetes air besar menggantung di akar. Original enemy species, archetype plant, element Air (Air means water), levels 470-479. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_049",
+      "kind": "enemy",
+      "name": "Rangkong Pakuemas",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_049.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rangkong Pakuemas. Visual design (Indonesian): Rangkong berparuh paku amber, sayap hitam dengan garis putih. Original enemy species, archetype avian, element Cahaya (Air means water), levels 480-489. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_050",
+      "kind": "enemy",
+      "name": "Banteng Mahkota Badai",
+      "region": "r05",
+      "path": "/rpg/assets/v2/enemy_050.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Banteng Mahkota Badai. Visual design (Indonesian): Banteng hijau gelap dengan tanduk bercabang tembaga dan cincin awan. Original enemy species, archetype storm_beast, element Angin (Air means water), levels 490-499. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+    },
+    {
+      "id": "enemy_051",
+      "kind": "enemy",
+      "name": "Cicak Arang",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_051.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Cicak Arang. Visual design (Indonesian): Cicak hitam dengan kaki jingga dan ekor berbentuk bara persegi. Original enemy species, archetype reptile, element Api (Air means water), levels 500-509. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_052",
+      "kind": "enemy",
+      "name": "Siput Batuapung",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_052.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Siput Batuapung. Visual design (Indonesian): Siput berkulit cokelat dengan cangkang batu berlubang merah. Original enemy species, archetype mollusk, element Tanah (Air means water), levels 510-519. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_053",
+      "kind": "enemy",
+      "name": "Pipit Uap",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_053.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Uap. Visual design (Indonesian): Burung biru kelabu berparuh katup dan ekor gumpal uap. Original enemy species, archetype avian, element Air (Air means water), levels 520-529. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_054",
+      "kind": "enemy",
+      "name": "Kepiting Cerobong",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_054.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kepiting Cerobong. Visual design (Indonesian): Kepiting besi bercangkang cerobong miring dengan capit kipas. Original enemy species, archetype crustacean, element Angin (Air means water), levels 530-539. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_055",
+      "kind": "enemy",
+      "name": "Anjing Jelagasenyap",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_055.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Anjing Jelagasenyap. Visual design (Indonesian): Anjing jelaga bertelinga segitiga, hanya jejak kaki berwarna ungu. Original enemy species, archetype beast, element Bayangan (Air means water), levels 540-549. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_056",
+      "kind": "enemy",
+      "name": "Laba-laba Pijarkawat",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_056.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Laba-laba Pijarkawat. Visual design (Indonesian): Laba-laba emas dengan kaki kawat pijar dan perut lentera kecil. Original enemy species, archetype arachnid, element Cahaya (Air means water), levels 550-559. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_057",
+      "kind": "enemy",
+      "name": "Golem Palungbara",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_057.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Golem Palungbara. Visual design (Indonesian): Golem batu hitam dengan perut tungku terbuka dan lengan sekop. Original enemy species, archetype construct, element Api (Air means water), levels 560-569. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_058",
+      "kind": "enemy",
+      "name": "Ular Rantai Tambat",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_058.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ular Rantai Tambat. Visual design (Indonesian): Ular rantai batu dengan kepala jangkar dan ekor pasak lebar. Original enemy species, archetype construct_serpent, element Tanah (Air means water), levels 570-579. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_059",
+      "kind": "enemy",
+      "name": "Elang Abuputar",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_059.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Elang Abuputar. Visual design (Indonesian): Elang abu dengan sayap kipas dan lingkar asap di punggung. Original enemy species, archetype avian, element Angin (Air means water), levels 580-589. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_060",
+      "kind": "enemy",
+      "name": "Kura Tungku Purba",
+      "region": "r06",
+      "path": "/rpg/assets/v2/enemy_060.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kura Tungku Purba. Visual design (Indonesian): Kura raksasa bercangkang gunung tungku, satu pintu bara retak di dada. Original enemy species, archetype ancient_beast, element Api (Air means water), levels 590-599. Not a human hero. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+    },
+    {
+      "id": "enemy_061",
+      "kind": "enemy",
+      "name": "Tikus Pitasurat",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_061.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tikus Pitasurat. Visual design (Indonesian): Tikus kelabu berekor pita surat hijau dengan telinga amplop. Original enemy species, archetype beast, element Angin (Air means water), levels 600-609. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_062",
+      "kind": "enemy",
+      "name": "Genangan Kanal",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_062.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Genangan Kanal. Visual design (Indonesian): Genangan biru berbentuk wajah terbalik dengan tutup kanal mengapung. Original enemy species, archetype slime, element Air (Air means water), levels 610-619. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_063",
+      "kind": "enemy",
+      "name": "Merpati Loncengkecil",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_063.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Merpati Loncengkecil. Visual design (Indonesian): Merpati gading berdada lonceng kaca tanpa bandul. Original enemy species, archetype avian, element Cahaya (Air means water), levels 620-629. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_064",
+      "kind": "enemy",
+      "name": "Boneka Kapurjalan",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_064.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Boneka Kapurjalan. Visual design (Indonesian): Boneka kapur putih beruas bata dengan coretan alis cokelat. Original enemy species, archetype construct, element Tanah (Air means water), levels 630-639. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_065",
+      "kind": "enemy",
+      "name": "Kucing Bayangjendela",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_065.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kucing Bayangjendela. Visual design (Indonesian): Kucing hitam pipih dengan mata berupa dua jendela ungu. Original enemy species, archetype beast, element Bayangan (Air means water), levels 640-649. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_066",
+      "kind": "enemy",
+      "name": "Ngengat Lampumerah",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_066.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ngengat Lampumerah. Visual design (Indonesian): Ngengat merah berbadan bohlam retak, sayap seperti poster lusuh. Original enemy species, archetype insect, element Api (Air means water), levels 650-659. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_067",
+      "kind": "enemy",
+      "name": "Patroli Kuncikosong",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_067.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Patroli Kuncikosong. Visual design (Indonesian): Zirah penjaga tanpa kepala dengan kunci batu besar di dada. Original enemy species, archetype construct, element Tanah (Air means water), levels 660-669. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_068",
+      "kind": "enemy",
+      "name": "Gurita Tintakanal",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_068.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gurita Tintakanal. Visual design (Indonesian): Gurita kanal biru tua memakai tutup saluran sebagai topi. Original enemy species, archetype cephalopod, element Air (Air means water), levels 670-679. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_069",
+      "kind": "enemy",
+      "name": "Gema Pemain Biola",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_069.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gema Pemain Biola. Visual design (Indonesian): Siluet ungu dengan biola tanpa senar, tubuh tersusun pita debu. Original enemy species, archetype echo, element Bayangan (Air means water), levels 680-689. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_070",
+      "kind": "enemy",
+      "name": "Lonceng Tanpa Suara",
+      "region": "r07",
+      "path": "/rpg/assets/v2/enemy_070.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Lonceng Tanpa Suara. Visual design (Indonesian): Lonceng putih raksasa berkaki jarum jam dan retakan berbentuk mata. Original enemy species, archetype giant_construct, element Cahaya (Air means water), levels 690-699. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+    },
+    {
+      "id": "enemy_071",
+      "kind": "enemy",
+      "name": "Domba Awanrendah",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_071.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Domba Awanrendah. Visual design (Indonesian): Domba awan putih dengan kaki simpul tali dan tanduk hijau kecil. Original enemy species, archetype beast, element Angin (Air means water), levels 700-709. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_072",
+      "kind": "enemy",
+      "name": "Ubur Hujanlangit",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_072.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ubur Hujanlangit. Visual design (Indonesian): Ubur awan sian dengan tentakel tetes air panjang. Original enemy species, archetype jellyfish, element Air (Air means water), levels 710-719. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_073",
+      "kind": "enemy",
+      "name": "Kumbang Tambatbatu",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_073.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kumbang Tambatbatu. Visual design (Indonesian): Kumbang oker bercangkang pemberat batu dan kaki pengait. Original enemy species, archetype insect, element Tanah (Air means water), levels 720-729. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_074",
+      "kind": "enemy",
+      "name": "Ikan Pijarterbang",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_074.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ikan Pijarterbang. Visual design (Indonesian): Ikan gading bercahaya dengan sirip layar emas dan ekor pita. Original enemy species, archetype fish, element Cahaya (Air means water), levels 730-739. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_075",
+      "kind": "enemy",
+      "name": "Layang Malambermata",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_075.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Layang Malambermata. Visual design (Indonesian): Layang-layang violet bermata tunggal dengan ekor simpul bayangan. Original enemy species, archetype construct, element Bayangan (Air means water), levels 740-749. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_076",
+      "kind": "enemy",
+      "name": "Pipit Baraembus",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_076.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Baraembus. Visual design (Indonesian): Pipit tembaga dengan dada bara dan sayap asap pendek. Original enemy species, archetype avian, element Api (Air means water), levels 750-759. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_077",
+      "kind": "enemy",
+      "name": "Pari Awanlipat",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_077.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pari Awanlipat. Visual design (Indonesian): Pari kain awan berlipat dengan tepian mint dan mata simpul tali. Original enemy species, archetype sky_fish, element Angin (Air means water), levels 760-769. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_078",
+      "kind": "enemy",
+      "name": "Paus Hujankecil",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_078.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Paus Hujankecil. Visual design (Indonesian): Paus biru berukuran perahu dengan punggung penampung hujan putih. Original enemy species, archetype sky_beast, element Air (Air means water), levels 770-779. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_079",
+      "kind": "enemy",
+      "name": "Rajawali Halopecah",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_079.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rajawali Halopecah. Visual design (Indonesian): Rajawali putih bertanduk halo patah dan sayap berpetak emas. Original enemy species, archetype avian, element Cahaya (Air means water), levels 780-789. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_080",
+      "kind": "enemy",
+      "name": "Naga Simpul Langit",
+      "region": "r08",
+      "path": "/rpg/assets/v2/enemy_080.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Naga Simpul Langit. Visual design (Indonesian): Naga panjang dari tali awan hijau, tanduk jangkar putih, dada lentera. Original enemy species, archetype sky_serpent, element Angin (Air means water), levels 790-799. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+    },
+    {
+      "id": "enemy_081",
+      "kind": "enemy",
+      "name": "Siput Jamkaca",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_081.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Siput Jamkaca. Visual design (Indonesian): Siput cokelat dengan cangkang jam pasir violet dan mata jarum. Original enemy species, archetype mollusk, element Tanah (Air means water), levels 800-809. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_082",
+      "kind": "enemy",
+      "name": "Ngengat Senjamerah",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_082.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ngengat Senjamerah. Visual design (Indonesian): Ngengat marun dengan sayap setengah matahari jingga. Original enemy species, archetype insect, element Api (Air means water), levels 810-819. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_083",
+      "kind": "enemy",
+      "name": "Ikan Sungai Kenang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_083.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ikan Sungai Kenang. Visual design (Indonesian): Ikan biru pucat dengan potongan pemandangan abstrak di sisiknya. Original enemy species, archetype fish, element Air (Air means water), levels 820-829. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_084",
+      "kind": "enemy",
+      "name": "Gagak Pitaambang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_084.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gagak Pitaambang. Visual design (Indonesian): Gagak abu bersayap pita hijau dan paruh palang gerbang. Original enemy species, archetype avian, element Angin (Air means water), levels 830-839. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_085",
+      "kind": "enemy",
+      "name": "Rusa Jendelaemas",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_085.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rusa Jendelaemas. Visual design (Indonesian): Rusa krem dengan tanduk kusen jendela dan dada kaca amber. Original enemy species, archetype beast, element Cahaya (Air means water), levels 840-849. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_086",
+      "kind": "enemy",
+      "name": "Anjing Sisaalam",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_086.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Anjing Sisaalam. Visual design (Indonesian): Anjing ungu dengan garis luar terputus dan dua ekor seperti tinta. Original enemy species, archetype echo_beast, element Bayangan (Air means water), levels 850-859. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_087",
+      "kind": "enemy",
+      "name": "Prajurit Batupalang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_087.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Prajurit Batupalang. Visual design (Indonesian): Prajurit gerbang berkepala batu penyangga dan lengan palang kembar. Original enemy species, archetype construct, element Tanah (Air means water), levels 860-869. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_088",
+      "kind": "enemy",
+      "name": "Burung Suratbara",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_088.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Burung Suratbara. Visual design (Indonesian): Burung kertas merah dengan tepi hangus dan paruh segel lilin. Original enemy species, archetype avian, element Api (Air means water), levels 870-879. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_089",
+      "kind": "enemy",
+      "name": "Penimbang Cahaya",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_089.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Penimbang Cahaya. Visual design (Indonesian): Timbangan berjalan berkaki tiga, mangkuk emas berisi serpih cahaya. Original enemy species, archetype construct, element Cahaya (Air means water), levels 880-889. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_090",
+      "kind": "enemy",
+      "name": "Penjaga Dua Ambang",
+      "region": "r09",
+      "path": "/rpg/assets/v2/enemy_090.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Penjaga Dua Ambang. Visual design (Indonesian): Makhluk gerbang berkepala dua lengkung ungu, celah tubuh berwarna senja. Original enemy species, archetype gate_construct, element Bayangan (Air means water), levels 890-899. Not a human hero. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+    },
+    {
+      "id": "enemy_091",
+      "kind": "enemy",
+      "name": "Serpih Pagi Hidup",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_091.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Serpih Pagi Hidup. Visual design (Indonesian): Pecahan lentera amber melayang dengan kaki cahaya persegi. Original enemy species, archetype shard, element Cahaya (Air means water), levels 900-909. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_092",
+      "kind": "enemy",
+      "name": "Tikus Sumbuasal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_092.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tikus Sumbuasal. Visual design (Indonesian): Tikus tembaga dengan ekor sumbu putih dan telinga berbentuk kelopak api. Original enemy species, archetype beast, element Api (Air means water), levels 910-919. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_093",
+      "kind": "enemy",
+      "name": "Kadal Lantaiputih",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_093.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kadal Lantaiputih. Visual design (Indonesian): Kadal batu gading bercorak ubin emas dan ekor pahat. Original enemy species, archetype reptile, element Tanah (Air means water), levels 920-929. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_094",
+      "kind": "enemy",
+      "name": "Ikan Cakraair",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_094.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ikan Cakraair. Visual design (Indonesian): Ikan biru berputar di dalam cincin air dengan sirip berbentuk tetes. Original enemy species, archetype sky_fish, element Air (Air means water), levels 930-939. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_095",
+      "kind": "enemy",
+      "name": "Pipit Napasawal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_095.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Napasawal. Visual design (Indonesian): Pipit putih dengan dada seruling hijau dan bulu garis angin. Original enemy species, archetype avian, element Angin (Air means water), levels 940-949. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_096",
+      "kind": "enemy",
+      "name": "Jubah Takhtakosong",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_096.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jubah Takhtakosong. Visual design (Indonesian): Jubah violet mengambang dengan mahkota berlubang dan tangan tanpa tubuh. Original enemy species, archetype echo, element Bayangan (Air means water), levels 950-959. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_097",
+      "kind": "enemy",
+      "name": "Golem Kacaasal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_097.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Golem Kacaasal. Visual design (Indonesian): Golem gading bertulang kaca amber dengan serpih dada tak lengkap. Original enemy species, archetype construct, element Cahaya (Air means water), levels 960-969. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_098",
+      "kind": "enemy",
+      "name": "Rantai Baraawal",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_098.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rantai Baraawal. Visual design (Indonesian): Ular rantai emas membara dengan kepala pemantik putih. Original enemy species, archetype construct_serpent, element Api (Air means water), levels 970-979. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_099",
+      "kind": "enemy",
+      "name": "Rusa Cakrawala",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_099.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rusa Cakrawala. Visual design (Indonesian): Rusa putih berkaki awan, tanduk melingkar tanpa ujung dengan pita mint. Original enemy species, archetype lantern_beast, element Angin (Air means water), levels 980-989. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "enemy_100",
+      "kind": "enemy",
+      "name": "Gema Lentera Pertama",
+      "region": "r10",
+      "path": "/rpg/assets/v2/enemy_100.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Gema Lentera Pertama. Visual design (Indonesian): Lentera raksasa retak dengan empat sayap kaca dan ruang kosong di tengah. Original enemy species, archetype dawn_echo, element Cahaya (Air means water), levels 990-999. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+    },
+    {
+      "id": "r01",
+      "kind": "arena",
+      "name": "Padang Embun",
+      "region": "r01",
+      "path": "/rpg/assets/v1/padang-embun.webp",
+      "status": "existing",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Padang Embun. Environment description in Indonesian: Pulau padang rumput terendah menampung embun dari pulau di atasnya. Warganya merawat lentera fajar retak dengan sumbu anyaman gelagah. Palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r02",
+      "kind": "arena",
+      "name": "Hutan Lentera",
+      "region": "r02",
+      "path": "/rpg/assets/v2/r02.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Hutan Lentera. Environment description in Indonesian: Akar hutan mengikat pulau-pulau kecil. Lentera tumbuh di rongga pohon, tetapi cahaya yang padam meninggalkan gema penunjuk jalan palsu. Palette anchors: #172F38, #477765, #B7C98C, #F0AA61. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r03",
+      "kind": "arena",
+      "name": "Karang Biru",
+      "region": "r03",
+      "path": "/rpg/assets/v2/r03.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Karang Biru. Environment description in Indonesian: Laut dangkal menggantung di cekungan karang terapung. Penyelam mengumpulkan serpih lentera sebelum arus menjatuhkannya ke langit bawah. Palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r04",
+      "kind": "arena",
+      "name": "Gurun Kaca",
+      "region": "r04",
+      "path": "/rpg/assets/v2/r04.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Gurun Kaca. Environment description in Indonesian: Pasir membeku menjadi kaca saat fajar pecah. Karavan mengikuti bayangan menara untuk menghindari pantulan matahari yang tak pernah terbit. Palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r05",
+      "kind": "arena",
+      "name": "Rimba Petir",
+      "region": "r05",
+      "path": "/rpg/assets/v2/r05.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Rimba Petir. Environment description in Indonesian: Dahan logam menyimpan badai di atas akar terapung. Penjaga rimba menyalurkan petir ke lentera yang kehilangan bara pertamanya. Palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r06",
+      "kind": "arena",
+      "name": "Puncak Bara",
+      "region": "r06",
+      "path": "/rpg/assets/v2/r06.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Puncak Bara. Environment description in Indonesian: Gunung berongga mengapung karena udara panas dari tungku tua. Setiap erupsi mengangkat pecahan pulau sekaligus mengancam rantai tambatnya. Palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r07",
+      "kind": "arena",
+      "name": "Kota Senyap",
+      "region": "r07",
+      "path": "/rpg/assets/v2/r07.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Kota Senyap. Environment description in Indonesian: Kota menutup lonceng setelah gema fajar meniru suara penduduknya. Pesan dipertukarkan melalui pita cahaya di jembatan yang sunyi. Palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r08",
+      "kind": "arena",
+      "name": "Kepulauan Awan",
+      "region": "r08",
+      "path": "/rpg/assets/v2/r08.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Kepulauan Awan. Environment description in Indonesian: Pulau-pulau tipis berpindah mengikuti arus awan. Pelaut langit mencatat peta pada kain karena jarak daratan berubah setiap malam. Palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r09",
+      "kind": "arena",
+      "name": "Gerbang Senja",
+      "region": "r09",
+      "path": "/rpg/assets/v2/r09.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Gerbang Senja. Environment description in Indonesian: Dua gerbang mengapit jurang tempat siang dan malam tersangkut. Penjaganya menimbang kenangan agar lentera tidak membakar masa lalu. Palette anchors: #342B4E, #855978, #CB857B, #EACA93. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    },
+    {
+      "id": "r10",
+      "kind": "arena",
+      "name": "Takhta Fajar",
+      "region": "r10",
+      "path": "/rpg/assets/v2/r10.webp",
+      "status": "generated",
+      "prompt": "Use case: stylized-concept. Generate ONE landscape pixel-art battle arena background for original JRPG HARA: Gema Arunika, 1536x1024 composition. Location: Takhta Fajar. Environment description in Indonesian: Pulau tertinggi memelihara rumah lentera pertama. Takhtanya kosong; fajar hanya kembali jika serpih cahaya dibagikan, bukan dikuasai. Palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC. Floating-island fantasy world, ancient broken dawn lantern motifs. Authentic 16-bit JRPG pixel art with crisp coherent square pixel clusters and restrained palette, warm highlights, atmospheric readable layers. Put distinctive scenery at the top and outer edges; lower half must be a mostly open flat battlefield with subtle texture, suitable for overlaying small heroes and monsters. Scenic background only, NO characters, NO creatures, NO text, NO UI, NO borders or logos."
+    }
+  ]
+}

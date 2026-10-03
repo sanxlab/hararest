@@ -1,0 +1,12 @@
+{
+  "id": "enemy_066",
+  "generator": "built-in image_gen",
+  "source_file": "exec-7200e9ae-ea4a-414c-9dea-3bcd3f2b084c.png",
+  "source_sha256": "f1f7f956fbd2e06201bb3fcc2ab6232f16b6205d21cec45006ee7599a8a001ad",
+  "sha256": "b1b4beb82ac7be602833190b1505ecd97c29bf4cd809e726deb68d3165bda14f",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1153950,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ngengat Lampumerah. Visual design (Indonesian): Ngengat merah berbadan bohlam retak, sayap seperti poster lusuh. Original enemy species, archetype insect, element Api (Air means water), levels 650-659. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+}

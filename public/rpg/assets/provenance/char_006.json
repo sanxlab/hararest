@@ -1,0 +1,12 @@
+{
+  "id": "char_006",
+  "generator": "built-in image_gen",
+  "source_file": "exec-9c5e23a7-c548-47e1-b9c7-ad0065bf82bc.png",
+  "source_sha256": "6f630a2d964c0112e82456d95444c1b67a550a23c18a413e67af21c0cd34655f",
+  "sha256": "22da5ca4208b235301d466c4ea0bba428a47ba54c578a64dd6d81a67ea4f58ac",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 757304,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kiri Serut. Visual design (Indonesian): Topeng setengah kayu, mantel ungu asimetris, pisau ukir dengan pita hitam. Adult fantasy Trickster, element Bayangan (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

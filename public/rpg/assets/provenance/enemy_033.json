@@ -1,0 +1,12 @@
+{
+  "id": "enemy_033",
+  "generator": "built-in image_gen",
+  "source_file": "exec-9c346d67-8cff-484f-806a-8ff2e19debef.png",
+  "source_sha256": "9c97c867351872bad74d6aa2612d50b9ad03baaf6d91c838102c7da29cbefa64",
+  "sha256": "f20165409f2fe00611beaa540a7ee3fcce9f63890eca6724bb57d1f81032aaca",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 990894,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ulat Sumbukering. Visual design (Indonesian): Ulat jingga bersegmen sumbu hangus dengan duri kain merah. Original enemy species, archetype insect, element Api (Air means water), levels 320-329. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+}

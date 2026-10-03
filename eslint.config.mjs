@@ -30,7 +30,11 @@ export default tseslint.config(
         },
     },
     {
-        files: ['scripts/*.cjs'],
+        files: ['public/rpg/*.js', 'docs/rpg/prototype/*.js'],
+        languageOptions: { globals: globals.browser, parserOptions: { project: null } },
+    },
+    {
+        files: ['scripts/*.cjs', 'docs/rpg/prototype/*.cjs'],
         languageOptions: { parserOptions: { project: null } },
         rules: { '@typescript-eslint/no-require-imports': 'off' },
     }

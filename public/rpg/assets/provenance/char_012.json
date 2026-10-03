@@ -1,0 +1,12 @@
+{
+  "id": "char_012",
+  "generator": "built-in image_gen",
+  "source_file": "exec-ea6f1bb7-415e-4fb7-857a-307e2863c9c0.png",
+  "source_sha256": "46087b96c424943606e239e7ba8e2ec95078fc46093f83134b48c1662ab1d007",
+  "sha256": "07f77736313712557b4f78dc2d3a723af58fe83382d430e7e15b74840b516fbf",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 872190,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kesa Aranglumut. Visual design (Indonesian): Jaket lumut jingga, sarung tangan bara dingin, yoyo biji berlubang. Adult fantasy Trickster, element Api (Air means water), rarity 2/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

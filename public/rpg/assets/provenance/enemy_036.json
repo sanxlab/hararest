@@ -1,0 +1,12 @@
+{
+  "id": "enemy_036",
+  "generator": "built-in image_gen",
+  "source_file": "exec-51a756b9-4327-47cb-81d0-6dc55fd7c995.png",
+  "source_sha256": "b71b6bf1ff9c899c6773b6e6a97b02e78b0b319e836d1cb07bc59830b742eb52",
+  "sha256": "2cc0c8fae61ecd434e5d3e41bd5ad0c609228cbd87f34a529afbe329d0de7b31",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1031056,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kendi Merayap. Visual design (Indonesian): Kendi turkuois berkaki empat dari pecahan gagang, air mengintip retakan. Original enemy species, archetype construct, element Air (Air means water), levels 350-359. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+}
