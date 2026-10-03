@@ -682,7 +682,7 @@
     $('#summon-results').innerHTML = results
       .map(
         ({ character: c, duplicate }, i) =>
-          `<article class="summon-result" style="--rarity:var(--r${c.rarity});animation-delay:${i * 0.045}s">${heroArt(c)}<span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${duplicate ? 'Duplikat · +' + [0, 5, 10, 20, 40, 80][c.rarity] + ' Debu Gema' : 'Baru dalam koleksi'}</small></article>`,
+          `<article class="summon-result" style="--rarity:var(--r${c.rarity});animation-delay:${i * 0.045}s">${heroArt(c)}<span class="stars">${stars(c.rarity)}</span><b>${esc(c.name)}</b><small>${duplicate ? 'Duplikat · +' + [0, 5, 10, 20, 40, 80][c.rarity] + ' Debu Bintang' : 'Baru dalam koleksi'}</small></article>`,
       )
       .join('');
   }
@@ -691,7 +691,7 @@
     $('.summon-banner').classList.add('summoning');
     const data = await perform('/gacha/pulls', { banner_id: 'fajar-v1', count });
     $('.summon-banner').classList.remove('summoning');
-    if (data) toast(count + ' hasil tersimpan. Debu Gema: ' + state.dust);
+    if (data) toast(count + ' hasil tersimpan. Debu Bintang: ' + state.dust);
   }
   function showWorld() {
     modal(
@@ -726,13 +726,13 @@
               `<tr><td class="stars">${stars(s)}</td><td>${[40, 30, 20, 8, 2][i]}%</td><td>12</td></tr>`,
           )
           .join('') +
-        '</tbody></table><p>1 tarikan = 160 Embun Bintang. Sepuluh tarikan = 1.600, dihitung satu per satu. Pemanggilan memakai mata uang permainan, tanpa uang asli.</p><ul><li>★4 atau lebih paling lambat tarikan ke-10 sejak ★4/★5 terakhir.</li><li>★5: peluang dasar 2%. Mulai tarikan 61, peluang naik 5 poin persentase per tarikan; tarikan 80 dijamin ★5.</li><li>Prioritas: cek ★5 → jaminan ★4 → distribusi ★1–4. Saat peluang ★5 naik, bobot ★1–4 dibagi proporsional 40:30:20:8.</li><li>★5 mereset dua penghitung. ★4 hanya mereset penghitung ★4.</li><li>★5 memiliki peluang 50% menjadi karakter unggulan. Jika kalah, ★5 berikutnya pasti unggulan.</li><li>Duplikat dicatat sebagai salinan + 5/10/20/40/80 Debu Gema menurut bintang. Upgrade duplikat belum dibuat.</li></ul><p>Koleksi, saldo, dan pity tersimpan di akun yang sama dengan bot.</p>',
+        '</tbody></table><p>1 tarikan = 160 Embun Bintang. Sepuluh tarikan = 1.600, dihitung satu per satu. Pemanggilan memakai mata uang permainan, tanpa uang asli.</p><ul><li>★4 atau lebih paling lambat tarikan ke-10 sejak ★4/★5 terakhir.</li><li>★5: peluang dasar 2%. Mulai tarikan 61, peluang naik 5 poin persentase per tarikan; tarikan 80 dijamin ★5.</li><li>Prioritas: cek ★5 → jaminan ★4 → distribusi ★1–4. Saat peluang ★5 naik, bobot ★1–4 dibagi proporsional 40:30:20:8.</li><li>★5 mereset dua penghitung. ★4 hanya mereset penghitung ★4.</li><li>★5 memiliki peluang 50% menjadi karakter unggulan. Jika kalah, ★5 berikutnya pasti unggulan.</li><li>Duplikat menambah satu salinan dan 5/10/20/40/80 Debu Bintang sesuai bintangnya. Gunakan Debu Bintang bersama koin untuk awakening karakter dan upgrade equipment di tab Karakter. Salinan karakter tetap dimiliki.</li></ul><p>Koleksi, saldo, dan pity tersimpan di akun yang sama dengan bot.</p>',
       'ATURAN PEMANGGILAN',
     );
   }
   function help() {
     modal(
-      `<h2>Perjalanan ${esc(state.name)}.</h2><p>Progres terhubung dengan akun WhatsApp. Battle, saldo, hasil gacha, dan pity otomatis tersimpan di akunmu.</p><ol><li>Pilih musuh dan anggota tim yang belum bergerak.</li><li>Serang +1 energi, skill −2, bertahan +2, Ultimate memerlukan 5. Guardian mengurangi damage tim; Medic memulihkan.</li><li>Keunggulan elemen: Api → Angin → Tanah → Air → Api; Cahaya dan Bayangan saling unggul.</li><li>Tutup browser kapan saja. Buka .rpg lanjut untuk kembali ke battle tersimpan.</li><li>Hadiah cerita pertama hanya sekali. Latihan ulang tidak memberi hadiah tambahan.</li></ol><p>Karakter mendapat 100 XP pada kemenangan cerita pertama. XP latihan dan koin dapat dipakai untuk latihan di tab Karakter. Equipment dibeli dengan koin dan dipasang pada tiga slot. Skill aktif unik berlaku pada battle baru; pasif masih rancangan. Sebagian sprite masih memakai sketsa.</p><p>Saldo awal 1.600 Embun Bintang diberikan sekali. Jalur biasa memberi 20 Embun; boss wilayah 200. Gacha bisa dilakukan dari web atau .rpg gacha 1 / 10.</p><div class="account-actions"><button class="button outline" id="history-button">Riwayat gacha</button><button class="button outline" id="logout-button">Keluar akun</button></div>`,
+      `<h2>Perjalanan ${esc(state.name)}.</h2><p>Progres terhubung dengan akun WhatsApp. Battle, saldo, hasil gacha, dan pity otomatis tersimpan di akunmu.</p><ol><li>Pilih musuh dan anggota tim yang belum bergerak.</li><li>Serang +1 energi, skill −2, bertahan +2, Ultimate memerlukan 5. Setiap karakter memiliki skill dan pasif sendiri; baca efeknya di tab Karakter.</li><li>Keunggulan elemen: Api → Angin → Tanah → Air → Api; Cahaya dan Bayangan saling unggul.</li><li>Tutup browser kapan saja. Buka .rpg lanjut untuk kembali ke battle tersimpan.</li><li>Hadiah cerita pertama hanya sekali. Latihan ulang tidak memberi hadiah tambahan.</li></ol><p>Setiap kemenangan cerita pertama memberi anggota tim 100 XP dan menambah 100 XP latihan cadangan. Latih karakter di tab Karakter dengan XP cadangan dan koin. Beli equipment di Bengkel lalu pasang pada slot senjata, pelindung, atau jimat. Selesaikan atau mundur dari battle sebelum latihan atau mengubah perlengkapan.</p><p>Semua 60 karakter memiliki skill aktif dan pasif. Pasif otomatis aktif pada battle baru, tanpa perlu awakening. Awakening A0–A5 menaikkan HP, ATK, dan DEF dasar; upgrade equipment +0–+5 meningkatkan stat seluruh salinan jenis equipment tersebut. Keduanya memakai koin dan Debu Bintang dari duplikat gacha.</p><p>Jelajahi 999 jalur di 10 wilayah dengan 100 spesies musuh. Buka peta untuk melihat wilayah dan jalur yang sudah terbuka.</p><p>Saldo awal 1.600 Embun Bintang diberikan sekali. Jalur biasa memberi 20 Embun; boss wilayah 200. Gacha bisa dilakukan dari web atau .rpg gacha 1 / 10.</p><div class="account-actions"><button class="button outline" id="history-button">Riwayat gacha</button><button class="button outline" id="logout-button">Keluar akun</button></div>`,
       'PANDUAN PENJAGA',
     );
     $('#history-button').onclick = async () => {
