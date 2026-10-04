@@ -88,3 +88,5 @@ Untuk dev lewat Tailscale, set `RPG_PUBLIC_URL=http://100.89.85.96:1338` di env 
 Tes browser pada HTTP Tailscale: `RPG_E2E_HOST=IP-TAILSCALE-MESIN-INI npm run test:rpg-browser`. Tes memakai database sementara dan tidak menyentuh akun bot.
 
 Pembaruan `arunika-v3` melengkapi level permanen, latihan XP/koin, bengkel tiga slot, dan 60 skill aktif dengan passive untuk semua karakter, awakening A0–A5, serta upgrade equipment +0–+5. Awakening memakai koin/Debu dari duplikat; upgrade berlaku untuk semua salinan jenis equipment yang sama. Buka tab Karakter lalu pilih kartu untuk latihan, awakening dan perlengkapan. Battle lama tetap memakai aturan awal sampai selesai. Gambar 60 karakter, 100 spesies musuh, dan 10 arena dipetakan melalui `public/rpg/assets/index.json`. Berkas gambar di `v1` dan `v2` memakai cache immutable agar tidak diunduh ulang setiap aksi; koleksi dan peta memakai lazy loading. Detail generasi dan prompt ada di [catatan aset](public/rpg/assets/README.md).
+
+Deployment RPG production: lihat [panduan Heroku dan koneksi ke bot](docs/heroku-rpg.md).
