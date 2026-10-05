@@ -1,0 +1,12 @@
+{
+  "id": "enemy_080",
+  "generator": "built-in image_gen",
+  "source_file": "exec-4c27cbf6-bbb6-40fc-83d5-6c04ec7cf99a.png",
+  "source_sha256": "8056ed000b8aa9b2c307afd3f4b0706c9be86385a4c23dfc62ff0f75b7237e4f",
+  "sha256": "82837bd2c71376c21d28e4fc78d9f9327f5c190d796f6aeae827d1c8d967b6f9",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1212536,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Naga Simpul Langit. Visual design (Indonesian): Naga panjang dari tali awan hijau, tanduk jangkar putih, dada lentera. Original enemy species, archetype sky_serpent, element Angin (Air means water), levels 790-799. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

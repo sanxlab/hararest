@@ -1,0 +1,12 @@
+{
+  "id": "char_054",
+  "generator": "built-in image_gen",
+  "source_file": "exec-139ce7a8-1e61-4111-b5f0-5404c8a7168e.png",
+  "source_sha256": "29ba99cbc7cfd9cdce5f751ffd50c88fb5478a5aa53842a3e7a7b36daa847b49",
+  "sha256": "2b05867ef44981141e9dbc1d25aa4560308b50fc67a921d6dede011a2b6c61e7",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1153356,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Telu Anginbalik. Visual design (Indonesian): Kipas dua arah hijau kelabu, masker kain senja, sepatu dengan pita menghadap terbalik. Adult fantasy Trickster, element Air (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Gerbang Senja, palette anchors: #342B4E, #855978, #CB857B, #EACA93."
+}

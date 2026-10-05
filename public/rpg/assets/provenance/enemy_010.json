@@ -1,0 +1,12 @@
+{
+  "id": "enemy_010",
+  "generator": "built-in image_gen",
+  "source_file": "exec-8873b68f-c610-42c0-a19a-e7adb6a14a8b.png",
+  "source_sha256": "5433358b49573aabc3ba3ea1eed666d98e3fdf818a4e28921611c3b9a0bdf6ba",
+  "sha256": "fe0f8954301cac2547d2884835cfd97ed7ee39a968f09d5ab3aa617ce03e4739",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1162792,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rusa Lentera Patah. Visual design (Indonesian): Rusa bertanduk dua rangka lentera retak dan surai rumput emas. Original enemy species, archetype lantern_beast, element Cahaya (Air means water), levels 90-99. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

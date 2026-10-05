@@ -1,9 +1,7 @@
-name: CI and Heroku deploy
+name: Main CI and Heroku deploy
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -16,6 +14,7 @@ concurrency:
 
 jobs:
   check:
+    if: github.ref == 'refs/heads/main'
     name: Typecheck, tests, lint, and build
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -36,6 +35,7 @@ jobs:
       - run: npm run build
 
   container:
+    if: github.ref == 'refs/heads/main'
     name: Build, smoke test, and deploy container
     needs: check
     runs-on: ubuntu-latest

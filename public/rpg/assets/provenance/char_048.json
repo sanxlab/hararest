@@ -1,0 +1,12 @@
+{
+  "id": "char_048",
+  "generator": "built-in image_gen",
+  "source_file": "exec-47c12726-ed6f-450a-9cf3-791cf3500a80.png",
+  "source_sha256": "28111a29567ffd913329694876e6b03957019edaa2c95dae8a45f17fa9fe4d69",
+  "sha256": "c2982a788e7a18620113f9f9258d93b5ca1c24f7fb6600fadd2b6bd7b96e638e",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1092696,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kavo Baraudara. Visual design (Indonesian): Belati baling-baling merah, jaket pilot tembaga, ekor syal berbentuk api. Adult fantasy Trickster, element Api (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "char_003",
+  "generator": "built-in image_gen",
+  "source_file": "exec-528f561e-cfc1-4c6f-97af-989731352751.png",
+  "source_sha256": "4a1b956fefd736879f37bad98488bdadc6745adce7e60afae360f5d70855834c",
+  "sha256": "9b3a06900b23b00c955d6c4812d1c0c63a1c376378b952f729b6bad6c4193a86",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 977440,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Senau Biji. Visual design (Indonesian): Busur ranting berbentuk sabit, syal hijau terbang, kantong benih kuning di bahu. Adult fantasy Ranger, element Angin (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

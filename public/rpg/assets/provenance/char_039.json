@@ -1,0 +1,12 @@
+{
+  "id": "char_039",
+  "generator": "built-in image_gen",
+  "source_file": "exec-f5283aed-34d0-4d35-af2e-8a13f5eecae1.png",
+  "source_sha256": "46b09f0e662c2209ed2087f30ca1abfee4466476e5a52b881947dc722abaf209",
+  "sha256": "5d8334865c57b56ed1576e1542186cfd30c6b54ea69d9c5ba407e61cb52e72c8",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 890404,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Iru Anginpos. Visual design (Indonesian): Busur antena tipis, tas surat hijau kelabu, mantel bersayap kertas. Adult fantasy Ranger, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+}

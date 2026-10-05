@@ -1,0 +1,12 @@
+{
+  "id": "char_046",
+  "generator": "built-in image_gen",
+  "source_file": "exec-09b9727b-306c-4c44-9a39-089702d073c9.png",
+  "source_sha256": "ebda96716be0050b932706092bb24d2643e1de5672df032d043a6664503c1063",
+  "sha256": "2ddc70ea66aade39780ea3ca02f7c6d0abaf91e553230aae9c267b620f049385",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1085702,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Yali Halo. Visual design (Indonesian): Tongkat lingkar awan putih, mantel emas tembus cahaya, rambut biru pucat bersudut. Adult fantasy Arcanist, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

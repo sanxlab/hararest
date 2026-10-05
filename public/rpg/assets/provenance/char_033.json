@@ -1,0 +1,12 @@
+{
+  "id": "char_033",
+  "generator": "built-in image_gen",
+  "source_file": "exec-f1892af3-b7de-4b64-bd2a-0199b01d525b.png",
+  "source_sha256": "10b0994879fd72669e174916bfd5fcb465d26e6b463b00506e4acabf9ab7cdae",
+  "sha256": "d23f8fc1d4c30a8d9975284267d887b4e8282768b47251f99b37edf1cde07721",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 847876,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Viko Uapbidik. Visual design (Indonesian): Senapan panah pompa air, tabung biru di punggung, kacamata uap bundar. Adult fantasy Ranger, element Air (Air means water), rarity 3/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "enemy_077",
+  "generator": "built-in image_gen",
+  "source_file": "exec-06e73c57-674d-4377-a8ac-6babaa63c520.png",
+  "source_sha256": "57997049e600cc06e5477216e6ae312c1964308491728a108a69cad0add1e4b6",
+  "sha256": "dd64d07c5066a669361ddf8919f2d25a34d8f1245e740e191851e96ad9e13b8d",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 836234,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pari Awanlipat. Visual design (Indonesian): Pari kain awan berlipat dengan tepian mint dan mata simpul tali. Original enemy species, archetype sky_fish, element Angin (Air means water), levels 760-769. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

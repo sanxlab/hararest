@@ -1,0 +1,12 @@
+{
+  "id": "char_035",
+  "generator": "built-in image_gen",
+  "source_file": "exec-a8075a9c-0ef7-40f8-9b5c-2b79db937565.png",
+  "source_sha256": "2a5ae2cd537153420c57d2f637dd88948f27aae372ff2d7592f5c7b22012d32c",
+  "sha256": "a2b9d06e3aeb7464d5b7cf1331b9e605ac9c407a83c114c673ea3a5afc1f8861",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 988072,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Umi Batuhangat. Visual design (Indonesian): Tas batu pijat oranye, tunik cokelat krem, tongkat berkepala geode. Adult fantasy Medic, element Tanah (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

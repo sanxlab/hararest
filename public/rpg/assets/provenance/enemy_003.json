@@ -1,0 +1,12 @@
+{
+  "id": "enemy_003",
+  "generator": "built-in image_gen",
+  "source_file": "exec-c63a1568-3b05-43a9-9455-4591b177b745.png",
+  "source_sha256": "edd06a0494161d7957c0b7d5130c32d9f84e3d9533ccf7a8f7ed6da7d6d16b4b",
+  "sha256": "c7d71de90bb98733e910b35b18393204b29c3beaf7070fd7a16fe18eee5f9270",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 816688,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Pipit Gelagah. Visual design (Indonesian): Burung rumput berparuh pipa, ekor panjang berbentuk pita hijau. Original enemy species, archetype avian, element Angin (Air means water), levels 20-29. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

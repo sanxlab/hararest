@@ -66,8 +66,10 @@ Jika Anda ingin menjalankan aplikasi dengan menggunakan Docker tanpa harus mengo
 ## Skrip Tersedia
 
 Panduan CI/CD container, GitHub Secrets, dan migrasi cookies tersedia di
-[Deploy ke Heroku](docs/heroku.md). Push ke `main` akan deploy setelah semua
-pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
+[Deploy ke Heroku](docs/heroku.md).
+Deployment branch dev langsung ke Docker di VPS dijelaskan di
+[Dev deployment on the VPS](docs/dev-vps.md). Push ke `main` akan deploy setelah
+semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
 
 - `npm run dev` : Menjalankan server dalam mode pengembangan.
 - `npm run build` : Melakukan kompilasi kode TypeScript ke dalam folder `dist`.
@@ -76,3 +78,15 @@ pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi.
 - `npm run typecheck` : Memeriksa tipe kode aplikasi dan tes.
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
+
+## RPG Kotonehara
+
+Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](https://github.com/MapIHS/kotonehara/blob/dev/docs/rpg.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.
+
+Untuk dev lewat Tailscale, set `RPG_PUBLIC_URL=http://100.89.85.96:1338` di env **Kotonehara**. Di env Hararest, gunakan `TAILSCALE_IP=100.89.85.96`, `RPG_UPSTREAM_URL=http://kotonehara-dev:8089`, dan `RPG_GATEWAY_SECRET` yang sama dengan bot. Pemain membuka `/rpg/` lewat port Hararest1338 dari perangkat yang terhubung ke tailnet; port8089 hanya untuk API internal bot. Alamat publik di luar tailnet tetap memakai HTTPS.
+
+Tes browser pada HTTP Tailscale: `RPG_E2E_HOST=IP-TAILSCALE-MESIN-INI npm run test:rpg-browser`. Tes memakai database sementara dan tidak menyentuh akun bot.
+
+Pembaruan `arunika-v3` melengkapi level permanen, latihan XP/koin, bengkel tiga slot, dan 60 skill aktif dengan passive untuk semua karakter, awakening A0–A5, serta upgrade equipment +0–+5. Awakening memakai koin/Debu dari duplikat; upgrade berlaku untuk semua salinan jenis equipment yang sama. Buka tab Karakter lalu pilih kartu untuk latihan, awakening dan perlengkapan. Battle lama tetap memakai aturan awal sampai selesai. Gambar 60 karakter, 100 spesies musuh, dan 10 arena dipetakan melalui `public/rpg/assets/index.json`. Berkas gambar di `v1` dan `v2` memakai cache immutable agar tidak diunduh ulang setiap aksi; koleksi dan peta memakai lazy loading. Detail generasi dan prompt ada di [catatan aset](public/rpg/assets/README.md).
+
+Deployment RPG production: lihat [panduan Heroku dan koneksi ke bot](docs/heroku-rpg.md).

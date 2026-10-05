@@ -1,0 +1,12 @@
+{
+  "id": "char_010",
+  "generator": "built-in image_gen",
+  "source_file": "exec-b373215d-6360-4e8d-9741-788d0821d281.png",
+  "source_sha256": "7a4c9aad0363f9f024507b5cc86a77434be46c77057508069173c226318c421f",
+  "sha256": "c4e03c36135b255d8152139bf8c2d63b9217354a7c57a194eec419d1e9f90feb",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1103698,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Vena Ronggacahya. Visual design (Indonesian): Tongkat rongga pohon berisi kunang-kunang, jubah krem berserat, mata emas. Adult fantasy Arcanist, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Hutan Lentera, palette anchors: #172F38, #477765, #B7C98C, #F0AA61."
+}

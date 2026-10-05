@@ -1,0 +1,12 @@
+{
+  "id": "enemy_062",
+  "generator": "built-in image_gen",
+  "source_file": "exec-30ab6c6c-2ad0-45c7-bfdd-6bc76406c89d.png",
+  "source_sha256": "a1b04e7409ddd34dda616571a291af10254bebf41a332cf5bf8e9a1803f4063d",
+  "sha256": "9e42dd2fe61ec10b869a1d507e792d60a5bd9207f367184361f4a0a87aef1c98",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 936026,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Genangan Kanal. Visual design (Indonesian): Genangan biru berbentuk wajah terbalik dengan tutup kanal mengapung. Original enemy species, archetype slime, element Air (Air means water), levels 610-619. Not a human hero. From Kota Senyap, palette anchors: #252D46, #616B91, #AAA5BB, #E0C69D."
+}

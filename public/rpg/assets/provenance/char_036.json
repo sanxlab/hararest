@@ -1,0 +1,12 @@
+{
+  "id": "char_036",
+  "generator": "built-in image_gen",
+  "source_file": "exec-b2e2b598-e69c-40e2-a7d5-4b1c7eab45c2.png",
+  "source_sha256": "336eef8f48981502f535624ab834308132c8bccdb9f114e1b898a970c246a201",
+  "sha256": "92eac202603a06e860d286518b1057fcf05de4c6dd78aacc061d093101c47e23",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 817816,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Jera Pijarpaku. Visual design (Indonesian): Sepasang belati paku emas, kacamata satu lensa putih, jubah pendek bersudut. Adult fantasy Trickster, element Cahaya (Air means water), rarity 1/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

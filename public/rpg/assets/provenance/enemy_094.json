@@ -1,0 +1,12 @@
+{
+  "id": "enemy_094",
+  "generator": "built-in image_gen",
+  "source_file": "exec-7a213d6d-0623-4719-98ad-e118ade7b4fa.png",
+  "source_sha256": "1838552332c67e151676ea079cec3ed29eb36246a13366359d0560dd40cf3492",
+  "sha256": "79db6ed21ef2f3b8c8e06de1a6c0d864ab43f54a2bd56366c60d00ce6a34b91d",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1168798,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Ikan Cakraair. Visual design (Indonesian): Ikan biru berputar di dalam cincin air dengan sirip berbentuk tetes. Original enemy species, archetype sky_fish, element Air (Air means water), levels 930-939. Not a human hero. From Takhta Fajar, palette anchors: #30314D, #797797, #DBBDA1, #FFF0BC."
+}

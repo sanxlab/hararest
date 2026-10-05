@@ -1,0 +1,12 @@
+{
+  "id": "enemy_006",
+  "generator": "built-in image_gen",
+  "source_file": "exec-e0eed611-ed24-4f3e-bef0-099df5af3fba.png",
+  "source_sha256": "4f0134e4c1f3a1d5c681f07a3a1677b53b818cf5acbd405ca118438a12728734",
+  "sha256": "cfe8f10afed276204aabbabdb32be5ce0d6cc942f95542c04b59189bc5f9d015",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 950180,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Musang Bayangrumput. Visual design (Indonesian): Musang ungu pipih dengan ekor menyerupai bayangan ilalang. Original enemy species, archetype beast, element Bayangan (Air means water), levels 50-59. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

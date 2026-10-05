@@ -1,0 +1,126 @@
+name: Dev CI and VPS deploy
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hararest-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.ref == 'refs/heads/dev'
+    name: Typecheck, tests, lint, and build
+    runs-on: self-hosted
+    timeout-minutes: 15
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run typecheck
+      - run: npm test -- --runInBand --roots src
+      - run: python3 -B src/__tests__/scraper_security_test.py
+      - run: npm run lint
+      - run: npm run build
+
+  container:
+    if: github.ref == 'refs/heads/dev'
+    name: Build and smoke test container
+    needs: check
+    runs-on: self-hosted
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build production image
+        run: docker build --platform linux/amd64 --tag hararest:ci .
+      - name: Smoke test as a non-root Heroku-style user
+        run: |
+          docker run --detach --name hararest-ci --user 12345:12345 \
+            --publish 127.0.0.1:18080:18080 --env PORT=18080 --env TRUST_PROXY_HOPS=1 \
+            --env YTDLP_COOKIES_BASE64="$(printf '# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t2147483647\tfixture\tci-only\n' | base64 -w0)" \
+            hararest:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:18080/health > /dev/null; then
+              docker exec hararest-ci node -e "try { require.resolve('puppeteer'); process.exit(1); } catch (err) { if (err.code !== 'MODULE_NOT_FOUND') throw err; }"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs hararest-ci
+          exit 1
+      - name: Check runtime cookie restoration and writable storage
+        run: |
+          docker exec -i hararest-ci node <<'JS'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const { config } = require('./dist/config/default');
+          assert.equal(config.port, 18080);
+          assert.equal(config.trustProxyHops, 1);
+          assert.equal(fs.statSync(config.youtube.cookiePath).mode & 0o777, 0o600);
+          assert.ok(fs.readFileSync(config.youtube.cookiePath, 'utf8').includes('ci-only'));
+          fs.accessSync(config.youtube.tmpDir, fs.constants.W_OK);
+          fs.rmSync(path.dirname(config.youtube.cookiePath), { recursive: true });
+          console.log('Runtime cookies and temporary storage passed');
+          JS
+      - name: Render a quote with production dependencies
+        run: |
+          docker exec -i hararest-ci node <<'JS'
+          const assert = require('node:assert/strict');
+          (async () => {
+            const response = await fetch('http://127.0.0.1:18080/api/quote/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ messages: [{ from: { id: 1, name: 'CI' }, text: 'Quote 👋' }] }),
+              signal: AbortSignal.timeout(30000),
+            });
+            assert.equal(response.status, 200);
+            const body = await response.json();
+            assert.equal(body.ok, true);
+            const info = await require('sharp')(Buffer.from(body.result.image, 'base64')).metadata();
+            assert.equal(info.format, 'png');
+            assert.ok(info.width > 0 && info.height > 0);
+            console.log('Embedded quote renderer passed');
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          JS
+      - name: Stop smoke-test container
+        if: always()
+        run: docker rm --force hararest-ci || true
+
+  deploy-dev-to-vps:
+    name: Deploy dev stack to VPS
+    needs: [check, container]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: self-hosted
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check VPS runtime configuration
+        run: |
+          test -r /opt/oohara/hararest-dev.env
+          mkdir -p /opt/oohara/hararest-cookies
+          docker network create oohara-dev >/dev/null 2>&1 || docker network inspect oohara-dev >/dev/null
+          docker compose version
+      - name: Deploy Hararest dev
+        run: env -u TAILSCALE_IP docker compose --env-file /opt/oohara/hararest-dev.env --project-name hararest-dev --file compose.dev.yml up --detach --build --remove-orphans
+      - name: Check Hararest dev health
+        run: |
+          for attempt in $(seq 1 30); do
+            if env -u TAILSCALE_IP docker compose --env-file /opt/oohara/hararest-dev.env --project-name hararest-dev --file compose.dev.yml exec -T hararest node -e 'fetch("http://127.0.0.1:1337/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          env -u TAILSCALE_IP docker compose --env-file /opt/oohara/hararest-dev.env --project-name hararest-dev --file compose.dev.yml logs --tail 100
+          exit 1

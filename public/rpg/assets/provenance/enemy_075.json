@@ -1,0 +1,12 @@
+{
+  "id": "enemy_075",
+  "generator": "built-in image_gen",
+  "source_file": "exec-675fb785-848e-44e4-bf6d-fcdf9872e40d.png",
+  "source_sha256": "b3a498fe78c60dbcb3158e859bb292d60740387a622a05e7e547afc52a6493d2",
+  "sha256": "15de7810e6fa3aba478304a60e2f1bcb97cb5e5cfc4a6bd53fca5556c091bc38",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 760054,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Layang Malambermata. Visual design (Indonesian): Layang-layang violet bermata tunggal dengan ekor simpul bayangan. Original enemy species, archetype construct, element Bayangan (Air means water), levels 740-749. Not a human hero. From Kepulauan Awan, palette anchors: #374B75, #84A5C2, #E1DFD7, #EDCDA8."
+}

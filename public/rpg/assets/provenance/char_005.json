@@ -1,0 +1,12 @@
+{
+  "id": "char_005",
+  "generator": "built-in image_gen",
+  "source_file": "exec-e20eef5c-5d82-4f17-aaf5-05f0e3af46f4.png",
+  "source_sha256": "165fa68994630ea88b506c37fa47132960a6f0c30393e64a8b792004a84d21e8",
+  "sha256": "cd6e7eedeb502605ce52746a754c6fdc97bb998dda32d34002ec43cb71bb06d3",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 902026,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Tavi Embun. Visual design (Indonesian): Celemek putih kuning, rambut serupa tunas, lentera tabung berisi tetes bercahaya. Adult fantasy Medic, element Cahaya (Air means water), rarity 5/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

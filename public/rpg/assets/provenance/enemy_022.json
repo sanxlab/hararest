@@ -1,0 +1,12 @@
+{
+  "id": "enemy_022",
+  "generator": "built-in image_gen",
+  "source_file": "exec-d0e5d4e8-e823-41d6-81a4-1d5fc908bc9e.png",
+  "source_sha256": "419f62ddc8ae781401124377315fe91def12b3bb81bda649c04517a05c234db6",
+  "sha256": "720ae5edcba967a9e900fde48a1132f7b0890d76d2483bb6f3681e98d7274fb1",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 875360,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Kerang Matahari. Visual design (Indonesian): Kerang gading bersinar dari celah berbentuk mata, kaki pasir pendek. Original enemy species, archetype mollusk, element Cahaya (Air means water), levels 210-219. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

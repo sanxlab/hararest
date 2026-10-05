@@ -1,0 +1,12 @@
+{
+  "id": "enemy_028",
+  "generator": "built-in image_gen",
+  "source_file": "exec-82b99207-5c4f-4b9f-a31a-b8f639c83809.png",
+  "source_sha256": "2ef37aebed28c1c8f9acf70038518f4302b0dfb627412948941492e45922febc",
+  "sha256": "49628ffa9e813e215d3adb629accec2a89fef934232c9ab0b9cf2726709ee4c8",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1122112,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Bangau Karangtajam. Visual design (Indonesian): Bangau kelabu berkaki karang merah dan paruh seperti jangkar tipis. Original enemy species, archetype avian, element Angin (Air means water), levels 270-279. Not a human hero. From Karang Biru, palette anchors: #153952, #327F99, #8BCAC2, #F5D4A1."
+}

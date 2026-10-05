@@ -1,0 +1,12 @@
+{
+  "id": "char_034",
+  "generator": "built-in image_gen",
+  "source_file": "exec-6415e1d0-4472-49f0-b650-56fd867ac64e.png",
+  "source_sha256": "8e0be8b92a63fe2b2a34a96c471c5610e04b1520005c49aa6637f52110538ccc",
+  "sha256": "ac72113f930ff39f4e0e6a3ab3d48af1df90f0ab392c6c64720f49c71e7b22b1",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1370594,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Rena Angincerobong. Visual design (Indonesian): Tongkat kipas besi, jubah abu dengan sisi hijau, rambut panjang melayang vertikal. Adult fantasy Arcanist, element Angin (Air means water), rarity 4/5. Adult chibi proportions about three heads tall, neutral ready battle pose. From Puncak Bara, palette anchors: #352E42, #8F4B49, #DA8551, #F6D29A."
+}

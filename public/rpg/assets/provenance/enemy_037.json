@@ -1,0 +1,12 @@
+{
+  "id": "enemy_037",
+  "generator": "built-in image_gen",
+  "source_file": "exec-a2c9c7b6-7a69-4774-826e-b173d2fbe72b.png",
+  "source_sha256": "5731e34231e487fcfaf1804a46f676dc2569acb710bf907b508c7df8c828a5fb",
+  "sha256": "8cdd972164629e728e08077f3b1808cdc89bee5ca30a3bdc812f8ab62a8d6db3",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1045778,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Unta Prismapunggung. Visual design (Indonesian): Unta batu dengan dua punuk prisma amber dan mata cekung. Original enemy species, archetype beast, element Tanah (Air means water), levels 360-369. Not a human hero. From Gurun Kaca, palette anchors: #3D344C, #A47168, #E9BB84, #C5E2DB."
+}

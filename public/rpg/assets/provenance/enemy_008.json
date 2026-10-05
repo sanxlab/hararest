@@ -1,0 +1,12 @@
+{
+  "id": "enemy_008",
+  "generator": "built-in image_gen",
+  "source_file": "exec-95cc8e14-0b6f-4497-8ae9-818cba9dfdbd.png",
+  "source_sha256": "1ff7b7bb53a1259dd38c1fb0894512f8b47b85b35cf38db89c121506c0d01407",
+  "sha256": "9813b2a0a15f665c5360e5ed92e2118ebcceb64a04e2cde749faae361da0f1d2",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 969468,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Belut Awanrendah. Visual design (Indonesian): Belut sian berenang pada kabut setinggi tanah, sirip transparan kotak. Original enemy species, archetype serpent, element Air (Air means water), levels 70-79. Not a human hero. From Padang Embun, palette anchors: #203C45, #72BAA8, #DAE7B7, #EFC578."
+}

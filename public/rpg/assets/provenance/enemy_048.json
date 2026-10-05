@@ -1,0 +1,12 @@
+{
+  "id": "enemy_048",
+  "generator": "built-in image_gen",
+  "source_file": "exec-4dc74b94-cf88-4c9d-9b79-6934e3d553f6.png",
+  "source_sha256": "06a0989c5a7c28e49b045028a60ee21167e796b9d40bd8b036eeb1a1fd25761e",
+  "sha256": "b288a895a7f05c45fb43831a64dc50700042c74467a063fc78576756cd2d0dd2",
+  "width": 1254,
+  "height": 1254,
+  "alpha": true,
+  "bytes": 1141236,
+  "prompt": "Use case: stylized-concept. Create ONE finished pixel-art sprite for the original JRPG HARA: Gema Arunika. Crisp 16-bit JRPG pixel art, coherent large square pixels, dark olive outlines, restrained regional palette, warm upper-left light. Clear readable silhouette, complete subject and equipment comfortably inside the square canvas. Three-quarter side view facing RIGHT. Full body centered, transparent padding on all sides, feet or floating anchor near bottom. Genuine transparent alpha background, no backdrop, no ground, no cast shadow, no text, no logos, no frame, no UI, no sprite sheet. Square 1024x1024 composition. Subject: Anggrek Penampung. Visual design (Indonesian): Anggrek sian berbentuk corong, tetes air besar menggantung di akar. Original enemy species, archetype plant, element Air (Air means water), levels 470-479. Not a human hero. From Rimba Petir, palette anchors: #21344D, #4B7461, #C3C96C, #B89FE2."
+}

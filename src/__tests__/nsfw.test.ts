@@ -1,9 +1,15 @@
+import axios from 'axios';
+import { publicHttpAgent, publicHttpsAgent } from '../utils/publicAgent';
 import { NsfwService } from '../modules/nsfw/nsfw.service';
 
-const get = jest.fn();
+jest.mock('axios');
+const get = axios.get as jest.Mock;
+const isAxiosError = axios.isAxiosError as unknown as jest.Mock;
 const service = new NsfwService();
-Object.assign(service, { getGotScraping: async () => ({ get }) });
-beforeEach(() => get.mockReset());
+beforeEach(() => {
+  get.mockReset();
+  isAxiosError.mockImplementation((error) => error?.isAxiosError === true);
+});
 
 it.each([
   [
@@ -16,14 +22,22 @@ it.each([
   ['searchNhentai', ['hello world'], 'https://nhentai.net/api/v2/search?query=hello%20world'],
   ['getPurrbot', ['neko'], 'https://purrbot.site/api/img/nsfw/neko/gif'],
 ] as const)('requests %s with encoded parameters and a timeout', async (method, args, url) => {
-  get.mockResolvedValue({ body: { fixture: true } });
+  get.mockResolvedValue({ data: '{"fixture":true}' });
   const invoke = service[method].bind(service) as (
     ...params: readonly unknown[]
   ) => Promise<unknown>;
   await expect(invoke(...args)).resolves.toEqual({ fixture: true });
   expect(get).toHaveBeenCalledWith(
     url,
-    expect.objectContaining({ timeout: { request: 15000 }, retry: { limit: 1 } }),
+    expect.objectContaining({
+      timeout: 15000,
+      maxRedirects: 0,
+      proxy: false,
+      adapter: 'http',
+      httpAgent: publicHttpAgent,
+      httpsAgent: publicHttpsAgent,
+      maxContentLength: 5 * 1024 * 1024,
+    }),
   );
 });
 
@@ -43,7 +57,7 @@ it('does not expose raw upstream request details', async () => {
 it.each([403, 503])(
   'reports upstream HTTP %s without another extraction attempt',
   async (statusCode) => {
-    get.mockRejectedValue({ response: { statusCode } });
+    get.mockRejectedValue({ isAxiosError: true, response: { status: statusCode } });
     await expect(service.getDanbooru('cat', 1)).rejects.toMatchObject({
       statusCode: 502,
       message: expect.stringContaining(`HTTP ${statusCode}`),
@@ -53,7 +67,7 @@ it.each([403, 503])(
 );
 
 it('reports invalid upstream JSON as a gateway error', async () => {
-  get.mockRejectedValue({ name: 'ParseError', message: 'Unexpected token <' });
+  get.mockResolvedValue({ data: '{broken-json' });
   await expect(service.getNhentaiGallery('123')).rejects.toMatchObject({
     statusCode: 502,
     message: expect.stringContaining('JSON tidak valid'),
@@ -69,7 +83,7 @@ it.each([
   'Cloudflare',
   'Enable JavaScript',
 ])('rejects challenge responses: %s', async (body) => {
-  get.mockResolvedValue({ body });
+  get.mockResolvedValue({ data: body });
   await expect(service.getPurrbot('neko')).rejects.toMatchObject({
     statusCode: 502,
     message: expect.stringContaining('halaman verifikasi'),
@@ -78,9 +92,21 @@ it.each([
 });
 
 it('preserves the obsolete API error', async () => {
-  get.mockResolvedValue({ body: 'Use new API' });
+  get.mockResolvedValue({ data: 'Use new API' });
   await expect(service.searchNhentai('test')).rejects.toMatchObject({
     statusCode: 502,
     message: 'NHentai Search API telah usang atau berubah.',
   });
+});
+
+it('preserves valid JSON objects containing verification-related words', async () => {
+  const data = { source: 'Cloudflare', results: [] };
+  get.mockResolvedValue({ data: JSON.stringify(data) });
+  await expect(service.getWaifuIm('waifu', false)).resolves.toEqual(data);
+});
+
+it('rejects redirects without following another request', async () => {
+  get.mockRejectedValue({ isAxiosError: true, response: { status: 302 } });
+  await expect(service.getWaifuIm('waifu', false)).rejects.toMatchObject({ statusCode: 502 });
+  expect(get).toHaveBeenCalledTimes(1);
 });
