@@ -2,6 +2,7 @@ import { queryInteger } from '../../utils/query';
 import { Request, Response, NextFunction } from "express";
 import { NsfwService } from "./nsfw.service";
 import { AppError } from "../../utils/AppError";
+import { generateNhentaiPdf } from "./nhentai-pdf.service";
 
 const nsfwService = new NsfwService();
 
@@ -70,6 +71,26 @@ export const purrbotHandler = async (req: Request, res: Response, next: NextFunc
     }
     const data = await nsfwService.getPurrbot(category as string);
     res.status(200).json({ status: "success", data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const nhentaiPdfHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { id } = req.params;
+    if (typeof id !== "string" || !/^[1-9]\d*$/.test(id)) {
+      return next(new AppError("Path parameter \"id\" harus berupa angka positif.", 400));
+    }
+    const { pdf, title, pageCount } = await generateNhentaiPdf(id);
+    const safeTitle = title.replace(/[^\w\s.-]/g, '').trim().slice(0, 100) || `nhentai-${id}`;
+    const filename = `${safeTitle}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    res.setHeader('Content-Length', pdf.length);
+    res.setHeader('X-Page-Count', pageCount);
+    res.status(200).end(pdf);
   } catch (error) {
     next(error);
   }
