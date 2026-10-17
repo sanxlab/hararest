@@ -33,7 +33,7 @@
     "lru-cache": "5.1.1",
     "node-fetch": "^2.7.0",
     "runes": "0.4.3",
-    "sharp": "0.35.4",
+    "sharp": "0.35.5",
     "similarity": "^1.2.1",
     "tough-cookie": "^6.0.2",
     "winston": "^3.19.0",
