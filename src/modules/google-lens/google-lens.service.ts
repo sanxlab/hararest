@@ -7,6 +7,7 @@ import { AppError } from '../../utils/AppError';
 import logger from '../../utils/logger';
 
 const LIMITS = { concurrency: 1, maxBytes: 10 * 1024 * 1024, maxPixels: 20_000_000, timeoutMs: 90_000 };
+const REMOTE_TIMEOUT_MS = 180_000;
 let activeRequests = 0;
 type LensWaiter = {
   signal?: AbortSignal;
@@ -217,7 +218,9 @@ export class GoogleLensService {
     }
 
     const timeoutController = new AbortController();
-    const timeout = setTimeout(() => timeoutController.abort(), LIMITS.timeoutMs);
+    // A second Heroku dyno may already be using the single-profile worker; allow
+    // one full worker run to finish before this queued request reaches the browser.
+    const timeout = setTimeout(() => timeoutController.abort(), REMOTE_TIMEOUT_MS);
     timeout.unref();
     const requestSignal = signal
       ? AbortSignal.any([signal, timeoutController.signal])
