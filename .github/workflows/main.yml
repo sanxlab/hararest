@@ -43,7 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Build production image
-        run: docker build --platform linux/amd64 --tag hararest:ci .
+        # Heroku Container Registry rejects OCI manifests and BuildKit provenance
+        # indexes. Load a single-platform Docker V2 Schema 2 image before pushing.
+        run: docker buildx build --platform linux/amd64 --provenance=false --load --tag hararest:ci .
       - name: Smoke test as a non-root Heroku-style user
         run: |
           docker run --detach --name hararest-ci --user 12345:12345 \
