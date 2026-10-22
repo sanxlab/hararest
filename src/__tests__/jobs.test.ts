@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import supertest from 'supertest';
+import { AppError } from '../utils/AppError';
 import { JobResult, JobService, JOB_LIMITS } from '../modules/jobs/jobs.service';
 import { createJobRoutes } from '../modules/jobs/jobs.route';
 import { YoutubeService } from '../modules/youtube/youtube.service';
@@ -143,6 +144,17 @@ it('enforces capacity and prevents idempotency-key reuse with different input', 
   expect(second).toHaveBeenCalledTimes(1);
   b.reject(new Error('failed'));
   await ready(two.id);
+});
+
+it('exposes only the safe Google Lens verification message for a failed job', async () => {
+  const job = jobs.submit('lens-verification', async () => {
+    throw new AppError('Google Lens requires additional verification', 503);
+  });
+  const result = await ready(job.id);
+  expect(result).toMatchObject({
+    state: 'failed',
+    error: 'Google Lens requires additional verification',
+  });
 });
 
 it('aborts work at its deadline without freeing the worker slot prematurely', async () => {

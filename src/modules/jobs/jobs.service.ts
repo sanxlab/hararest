@@ -185,9 +185,15 @@ export class JobService {
       if (job.controller.signal.aborted || job.removed) return;
       job.state = 'failed';
       // Extractor errors may contain cookie paths, command lines and signed URLs.
-      job.error = error instanceof AppError && error.statusCode < 500 ? error.message : 'Gagal menyiapkan media. Coba lagi nanti.';
+      const safeUpstreamMessage = error instanceof AppError && error.message === 'Google Lens requires additional verification';
+      job.error = error instanceof AppError && (error.statusCode < 500 || safeUpstreamMessage)
+        ? error.message
+        : 'Gagal menyiapkan media. Coba lagi nanti.';
       job.expiresAt = Date.now() + this.limits.ttlMs;
-      logger.warn('Background media job failed', { jobId: job.id });
+      logger.warn('Background media job failed', {
+        jobId: job.id,
+        ...(safeUpstreamMessage ? { reason: 'google_lens_verification_required' } : {}),
+      });
     } finally {
       job.work = undefined;
       job.working = false;
