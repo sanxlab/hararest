@@ -12,6 +12,7 @@ dist
 logs
 tmp
 cookies
+.browser_profile/
 .clinerules
 
 # Local audit notes

@@ -58,7 +58,6 @@ COPY public ./public
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/modules/instagram/snapinsta_scraper.py ./src/modules/instagram/snapinsta_scraper.py
 COPY --from=builder /app/src/modules/facebook/fdown_scraper.py ./src/modules/facebook/fdown_scraper.py
-
 ENV NODE_ENV=production
 ENV YTDLP_PATH=/usr/local/bin/yt-dlp
 ENV PYTHON_BIN=/opt/media-fallback/bin/python
