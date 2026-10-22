@@ -8,6 +8,48 @@ import logger from '../../utils/logger';
 
 const LIMITS = { concurrency: 1, maxBytes: 10 * 1024 * 1024, maxPixels: 20_000_000, timeoutMs: 90_000 };
 let activeRequests = 0;
+type LensWaiter = {
+  signal?: AbortSignal;
+  resolve: (release: () => void) => void;
+  reject: (error: AppError) => void;
+  onAbort?: () => void;
+};
+const lensWaiters: LensWaiter[] = [];
+
+function releaseLensSlot() {
+  activeRequests--;
+  while (lensWaiters.length > 0) {
+    const waiter = lensWaiters.shift()!;
+    waiter.signal?.removeEventListener('abort', waiter.onAbort!);
+    if (waiter.signal?.aborted) {
+      waiter.reject(new AppError('Google Lens search was cancelled.', 499));
+      continue;
+    }
+    activeRequests++;
+    waiter.resolve(releaseLensSlot);
+    return;
+  }
+}
+
+function acquireLensSlot(signal?: AbortSignal): Promise<() => void> {
+  if (signal?.aborted) return Promise.reject(new AppError('Google Lens search was cancelled.', 499));
+  if (activeRequests < LIMITS.concurrency) {
+    activeRequests++;
+    return Promise.resolve(releaseLensSlot);
+  }
+  return new Promise((resolve, reject) => {
+    const waiter: LensWaiter = { signal, resolve, reject };
+    waiter.onAbort = () => {
+      const index = lensWaiters.indexOf(waiter);
+      if (index < 0) return;
+      lensWaiters.splice(index, 1);
+      signal?.removeEventListener('abort', waiter.onAbort!);
+      reject(new AppError('Google Lens search was cancelled.', 499));
+    };
+    lensWaiters.push(waiter);
+    signal?.addEventListener('abort', waiter.onAbort, { once: true });
+  });
+}
 
 export interface GoogleLensResult {
   mode: 'ai' | 'visual';
@@ -29,13 +71,10 @@ export class GoogleLensService {
     if (imageBuffer.length > LIMITS.maxBytes) {
       throw new AppError('Ukuran gambar maksimal 10 MiB.', 413);
     }
-    if (activeRequests >= LIMITS.concurrency) {
-      throw new AppError('Google Lens sedang memproses pencarian lain. Coba lagi sebentar.', 503);
-    }
-    if (signal?.aborted) throw new AppError('Google Lens search was cancelled.', 499);
-    activeRequests++;
+    const release = await acquireLensSlot(signal);
     let tempDir: string | undefined;
     try {
+      if (signal?.aborted) throw new AppError('Google Lens search was cancelled.', 499);
       const options = { limitInputPixels: LIMITS.maxPixels, animated: false };
       let metadata: sharp.Metadata;
       try {
@@ -63,7 +102,7 @@ export class GoogleLensService {
       }
       return await this.run(imagePath, mode, signal);
     } finally {
-      activeRequests--;
+      release();
       if (tempDir) await fs.rm(tempDir, { recursive: true, force: true }).catch((error: unknown) => {
         logger.warn('Failed to clean up Google Lens temporary image', { error });
       });

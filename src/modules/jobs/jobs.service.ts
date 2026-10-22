@@ -6,7 +6,8 @@ import logger from '../../utils/logger';
 
 export type JobResult =
   | { kind: 'file'; path: string; size: number; mimeType: string }
-  | { kind: 'player'; data: unknown; dispose: () => void };
+  | { kind: 'player'; data: unknown; dispose: () => void }
+  | { kind: 'data'; data: unknown };
 export type JobState = 'queued' | 'processing' | 'ready' | 'failed';
 type Work = (signal: AbortSignal) => Promise<JobResult>;
 interface Job {
@@ -18,7 +19,7 @@ interface Job {
   expiresAt: number;
   controller: AbortController;
   timer: NodeJS.Timeout;
-  work: Work;
+  work?: Work;
   result?: JobResult;
   error?: string;
   readers: number;
@@ -123,7 +124,9 @@ export class JobService {
     const result = job.state === 'ready' && job.result
       ? job.result.kind === 'file'
         ? { kind: 'file', size: job.result.size, mimeType: job.result.mimeType, fileUrl: `/api/jobs/${job.id}/file` }
-        : { kind: 'player', player: job.result.data }
+        : job.result.kind === 'player'
+          ? { kind: 'player', player: job.result.data }
+          : { kind: 'data', data: job.result.data }
       : undefined;
     return {
       id: job.id, state: job.state, createdAt: new Date(job.createdAt).toISOString(),
@@ -137,6 +140,7 @@ export class JobService {
     job.state = 'failed';
     job.error = 'Penyiapan melewati batas waktu 9 menit (termasuk antrean). Silakan coba lagi.';
     job.expiresAt = Date.now() + this.limits.ttlMs;
+    job.work = undefined;
     clearTimeout(job.timer);
   }
 
@@ -158,7 +162,10 @@ export class JobService {
     try {
       await this.storageReady;
       job.controller.signal.throwIfAborted();
-      const result = await job.work(job.controller.signal);
+      const work = job.work;
+      job.work = undefined;
+      if (!work) throw new AppError('Job tidak memiliki tugas.', 500);
+      const result = await work(job.controller.signal);
       job.result = result;
       if (result.kind === 'file') this.storedBytes += result.size;
       if (job.controller.signal.aborted || job.removed) { this.dispose(job); return; }
@@ -182,6 +189,7 @@ export class JobService {
       job.expiresAt = Date.now() + this.limits.ttlMs;
       logger.warn('Background media job failed', { jobId: job.id });
     } finally {
+      job.work = undefined;
       job.working = false;
       if (job.removed) this.dispose(job);
       clearTimeout(job.timer);
@@ -192,6 +200,7 @@ export class JobService {
     this.jobs.delete(job.id);
     if (job.key) this.keys.delete(job.key);
     job.removed = true;
+    job.work = undefined;
     clearTimeout(job.timer);
     if (job.readers === 0 && !job.working) this.dispose(job);
   }
@@ -213,6 +222,7 @@ export class JobService {
     job.result = undefined;
     if (!result) return;
     if (result.kind === 'player') { result.dispose(); return; }
+    if (result.kind === 'data') return;
     this.storedBytes -= result.size;
     const task = unlink(result.path).catch((error: NodeJS.ErrnoException) => {
       if (error.code !== 'ENOENT') logger.warn('Could not clean up job file', { jobId: job.id });
