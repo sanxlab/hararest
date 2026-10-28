@@ -56,6 +56,12 @@ def external_http_url(value: str) -> bool:
         return False
 
 
+def clean_ai_response(value: str) -> str:
+    """Drop Google's page chrome and retain the AI conversation from the user prompt onward."""
+    match = re.search(r"(?:Anda mengirim|You sent)\s*:", value, re.IGNORECASE)
+    return value[match.start():].strip() if match else ""
+
+
 def scrape(image: Path, mode: str = "visual") -> dict:
     with sync_playwright() as playwright:
         profile_dir = Path(
@@ -408,7 +414,7 @@ def scrape(image: Path, mode: str = "visual") -> dict:
             return {
                 "mode": mode,
                 "lensPage": page.url,
-                "aiResponse": extracted["text"] if mode == "ai" else "",
+                "aiResponse": clean_ai_response(extracted["text"]) if mode == "ai" else "",
                 "aiImageCards": ai_extracted["cards"],
                 "aiImages": ai_extracted["images"],
                 "visualMatches": unique_matches[:MAX_RESULTS],
