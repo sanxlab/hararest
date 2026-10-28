@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { AppError } from '../../utils/AppError';
 import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
-import { PixivDownload, PixivSearchResponse, PixivSearchItem } from './pixiv.types';
+import { PixivDownload, PixivSearchResponse, PixivSearchItem, PixivUserProfile, PixivUserArtwork, PixivUserResponse } from './pixiv.types';
 
 type PixivPageResponse = { data?: { error?: boolean; body?: Array<{ urls?: { original?: string } }> } };
-type PixivSearchData = { id?: string; title?: string; url?: string; userName?: string };
+type PixivSearchData = { id?: string; title?: string; url?: string; userName?: string; xRestrict?: number; tags?: string[] };
 const MAX_PAGE_COUNT = 1000;
 
 export class PixivService {
@@ -104,12 +104,21 @@ export class PixivService {
                  throw new Error("Could not extract original URLs from Pixiv response.");
             }
 
+            const xRestrict = typeof body.xRestrict === 'number' ? body.xRestrict : 0;
+            const tagsList = Array.isArray(body.tags?.tags)
+                ? (body.tags.tags as Array<{ tag?: string }>).map((t) => t?.tag || '').filter(Boolean)
+                : [];
+            const isNsfw = xRestrict > 0 || tagsList.some((t: string) => /r-?18/i.test(t));
+
             return {
                 id: body.id,
                 title: body.title,
                 description: body.description || '',
                 author: body.userName,
-                urls
+                urls,
+                nsfw: isNsfw,
+                xRestrict,
+                tags: tagsList
             };
         } catch (error) {
             if (error instanceof AppError) throw error;
@@ -117,11 +126,12 @@ export class PixivService {
         }
     }
 
-    public async search(query: string): Promise<PixivSearchResponse> {
+    public async search(query: string, options?: { mode?: 'all' | 'safe' | 'r18'; nsfw?: boolean }): Promise<PixivSearchResponse> {
         try {
-            const url = `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(query)}?word=${encodeURIComponent(query)}&order=date_d&mode=all&p=1&s_mode=s_tag_full`;
+            const mode = options?.nsfw ? 'r18' : (options?.mode || 'all');
+            const url = `https://www.pixiv.net/ajax/search/artworks/${encodeURIComponent(query)}?word=${encodeURIComponent(query)}&order=date_d&mode=${mode}&p=1&s_mode=s_tag_full`;
             const response = await axios.get(url, this.requestOptions);
-            
+
             if (response.data?.error) {
                 throw new Error(response.data.message || "Failed to search on Pixiv");
             }
@@ -129,17 +139,134 @@ export class PixivService {
             const illusts = response.data?.body?.illustManga?.data as PixivSearchData[] | undefined;
             const results: PixivSearchItem[] = (illusts || [])
                 .filter((item): item is Required<PixivSearchData> => !!item.id && !!item.title && !!item.url && !!item.userName)
-                .map((item) => ({
-                    id: item.id,
-                    title: item.title,
-                    url: item.url,
-                    author: item.userName
-                }));
+                .map((item) => {
+                    const xRestrict = typeof item.xRestrict === 'number' ? item.xRestrict : 0;
+                    const tags = Array.isArray(item.tags) ? item.tags : [];
+                    const isNsfw = xRestrict > 0 || tags.some((t) => /r-?18/i.test(t));
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        url: item.url,
+                        author: item.userName,
+                        nsfw: isNsfw,
+                        xRestrict,
+                        tags
+                    };
+                });
 
             return { results: results.slice(0, 10) }; // Return top 10
         } catch (error) {
             if (error instanceof AppError) throw error;
             throw new AppError('Pixiv search is currently unavailable.', 502);
+        }
+    }
+
+    public extractUserId(urlOrId: string): string {
+        const value = urlOrId.trim();
+        if (/^[1-9]\d*$/.test(value)) return value;
+        try {
+            const url = new URL(value.startsWith('http://') || value.startsWith('https://') ? value : `https://${value}`);
+            if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.port ||
+                !(url.hostname === 'pixiv.net' || url.hostname.endsWith('.pixiv.net'))) throw new Error();
+            const match = url.pathname.match(/^\/(?:[a-z]{2}\/)?users\/([1-9]\d*)\/?$/);
+            if (match) return match[1];
+            const legacyId = url.searchParams.get('id');
+            if ((url.pathname === '/member.php' || url.pathname === '/member_illust.php') && legacyId && /^[1-9]\d*$/.test(legacyId)) {
+                return legacyId;
+            }
+        } catch { /* Handled below */ }
+        throw new AppError('Invalid Pixiv user ID or profile URL', 400);
+    }
+
+    public async user(idOrUrl: string, options?: { mode?: 'all' | 'safe' | 'r18'; nsfw?: boolean }): Promise<PixivUserResponse> {
+        try {
+            const userId = this.extractUserId(idOrUrl);
+
+            // Fetch user info
+            const userRes = await axios.get(`https://www.pixiv.net/ajax/user/${userId}?full=1`, this.requestOptions);
+            if (userRes.data?.error) {
+                throw new Error(userRes.data.message || 'Failed to fetch user from Pixiv');
+            }
+            const userBody = userRes.data?.body;
+            if (!userBody || typeof userBody !== 'object') {
+                throw new AppError('Invalid Pixiv user response', 502);
+            }
+
+            // Fetch top illusts/manga
+            let topIllusts: Record<string, unknown> = {};
+            let topManga: Record<string, unknown> = {};
+            try {
+                const topRes = await axios.get(`https://www.pixiv.net/ajax/user/${userId}/profile/top?lang=en`, this.requestOptions);
+                if (topRes.data && !topRes.data.error && topRes.data.body) {
+                    topIllusts = topRes.data.body.illusts || {};
+                    topManga = topRes.data.body.manga || {};
+                }
+            } catch {
+                // Ignore top fetch failure, proceed with empty or partial
+            }
+
+            type RawArtwork = {
+                id?: string | number;
+                title?: string;
+                url?: string;
+                xRestrict?: number;
+                tags?: string[];
+                pageCount?: number;
+                width?: number;
+                height?: number;
+            };
+
+            const allRaw: RawArtwork[] = [
+                ...Object.values(topIllusts),
+                ...Object.values(topManga)
+            ] as RawArtwork[];
+
+            // Sort newest first (highest ID first)
+            allRaw.sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+
+            const wantNsfw = options?.nsfw === true || options?.mode === 'r18';
+            const wantSafe = options?.nsfw === false || options?.mode === 'safe';
+
+            const artworks: PixivUserArtwork[] = [];
+            for (const item of allRaw) {
+                if (!item.id || !item.url) continue;
+                const xRestrict = typeof item.xRestrict === 'number' ? item.xRestrict : 0;
+                const tags = Array.isArray(item.tags) ? item.tags : [];
+                const isNsfw = xRestrict > 0 || tags.some((t) => /r-?18/i.test(t));
+
+                if (wantNsfw && !isNsfw) continue;
+                if (wantSafe && isNsfw) continue;
+
+                artworks.push({
+                    id: String(item.id),
+                    title: item.title || '',
+                    url: item.url,
+                    nsfw: isNsfw,
+                    xRestrict,
+                    tags,
+                    pageCount: typeof item.pageCount === 'number' ? item.pageCount : 1,
+                    width: item.width,
+                    height: item.height
+                });
+                if (artworks.length === 15) break;
+            }
+
+            const profile: PixivUserProfile = {
+                id: String(userBody.userId || userId),
+                name: userBody.name || '',
+                comment: userBody.comment || undefined,
+                avatar: userBody.imageBig || userBody.image || undefined,
+                premium: !!userBody.premium,
+                twitterUrl: userBody.social?.twitter?.url || undefined
+            };
+
+            return {
+                user: profile,
+                artworks
+            };
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+            throw new AppError('Pixiv user information is currently unavailable.', 502);
         }
     }
 }

@@ -6,5 +6,6 @@ const controller = new PinterestController();
 
 router.get('/', controller.download);
 router.get('/search', controller.search);
+router.get('/user', controller.user);
 
 export default router;

@@ -17,3 +17,19 @@ export interface PinterestSearchItem {
 export interface PinterestSearchResponse {
     results: PinterestSearchItem[];
 }
+
+export interface PinterestUserProfile {
+    username: string;
+    fullName: string;
+    bio?: string;
+    avatar?: string;
+    followers?: number;
+    following?: number;
+    pinsCount?: number;
+    boardsCount?: number;
+}
+
+export interface PinterestUserResponse {
+    user: PinterestUserProfile;
+    pins: PinterestSearchItem[];
+}

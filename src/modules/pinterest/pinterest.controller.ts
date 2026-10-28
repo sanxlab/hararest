@@ -37,7 +37,26 @@ export class PinterestController {
             }
 
             const data = await this.pinterestService.search(q);
-            
+
+            res.json({
+                success: true,
+                data
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public user = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const target = req.query.username || req.query.url || req.query.user || req.query.q;
+
+            if (!target || typeof target !== 'string') {
+                throw new AppError('Pinterest username or profile URL (username / url) is required', 400);
+            }
+
+            const data = await this.pinterestService.user(target);
+
             res.json({
                 success: true,
                 data

@@ -52,7 +52,7 @@ describe('API validation and routes', () => {
     ['/api/pinterest?url=https://pin.it/test', PinterestService.prototype.download, ['https://pin.it/test']],
     ['/api/pinterest/search?q=test', PinterestService.prototype.search, ['test']],
     ['/api/pixiv?id=123', PixivService.prototype.download, ['123']],
-    ['/api/pixiv/search?q=test', PixivService.prototype.search, ['test']],
+    ['/api/pixiv/search?q=test', PixivService.prototype.search, ['test', { nsfw: false, mode: undefined }]],
     ['/api/nsfw/danbooru?tags=test&limit=5', NsfwService.prototype.getDanbooru, ['test', 5]],
     ['/api/nsfw/waifu?tag=waifu&nsfw=false', NsfwService.prototype.getWaifuIm, ['waifu', false]],
     ['/api/nsfw/nhentai/gallery/123', NsfwService.prototype.getNhentaiGallery, ['123']],
