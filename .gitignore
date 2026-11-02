@@ -25,3 +25,5 @@ scripts/*
 !scripts/rpg-browser.cjs
 !scripts/rpg-art-import.cjs
 !scripts/rpg-art-audit.cjs
+
+!scripts/youtube-metadata-smoke.cjs

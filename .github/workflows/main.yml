@@ -96,6 +96,8 @@ jobs:
             console.log('Embedded quote renderer passed');
           })().catch(error => { console.error(error); process.exitCode = 1; });
           JS
+      - name: Verify YouTube MP3 tags and cover in production image
+        run: docker exec -i hararest-ci node < scripts/youtube-metadata-smoke.cjs
       - name: Stop smoke-test container
         if: always()
         run: docker rm --force hararest-ci || true
