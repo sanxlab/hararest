@@ -227,6 +227,12 @@ export class YoutubeService {
                 '--extract-audio',
                 '--audio-format',
                 'mp3',
+                // yt-dlp maps music fields (track, artist, album, track/disc,
+                // composer and genre) to ID3; unavailable fields stay unset.
+                '--embed-metadata',
+                '--parse-metadata', '%(release_date,release_year,upload_date|).4s:%(meta_date)s',
+                '--embed-thumbnail',
+                '--convert-thumbnails', 'jpg',
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',

@@ -79,6 +79,21 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 - `npm run lint` : Melakukan pengecekan kode (Linting) dengan ESLint.
 - `npm run format` : Melakukan pemformatan kode dengan Prettier.
 
+## Tag musik MP3 YouTube
+
+Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover bila tersedia.
+Judul memakai nama track, dengan judul video sebagai fallback; artis memakai
+metadata artis, dengan nama channel sebagai fallback. Album, album artist,
+nomor track/disc, composer, genre, deskripsi dan URL sumber disimpan sesuai
+metadata yang disediakan YouTube/yt-dlp. Tahun memakai tanggal rilis, tahun
+rilis, lalu tanggal unggah sebagai fallback. Data musik yang tidak tersedia
+tidak ditebak. Ini berlaku pada endpoint audio, job audio, serta command
+`.yta` dan `.play` Kotonehara yang menggunakan unduhan tersebut.
+
+Tes offline tag dan cover: `npm test -- --runInBand src/__tests__/youtube-metadata.test.ts`.
+Tes memerlukan `bin/yt-dlp`, FFmpeg dan FFprobe; jika tool tidak ada, tes dilewati.
+Fixture lokal tidak menghubungi YouTube.
+
 ## RPG Kotonehara
 
 Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](https://github.com/MapIHS/kotonehara/blob/dev/docs/rpg.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.
