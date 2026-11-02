@@ -7,6 +7,7 @@ import path from 'path';
 import { EventEmitter } from 'node:events';
 import { YoutubeService, YOUTUBE_LIMITS } from '../modules/youtube/youtube.service';
 import { config } from '../config/default';
+import logger from '../utils/logger';
 
 // Mock child_process
 jest.mock('child_process');
@@ -299,6 +300,28 @@ describe('YouTube download lifecycle', () => {
             child.emit('close');
         }
         expect((await results).every(result => result.status === 'rejected')).toBe(true);
+    });
+
+    it.each([
+        ['ERROR: HTTP Error 403: Forbidden https://example.com?token=secret', 'upstream_http_error', 403],
+        ["ERROR: Sign in to confirm you're not a bot", 'youtube_verification_required', undefined],
+        ['ERROR: YoutubeCoverSource postprocessor could not be loaded', 'cover_plugin_failed', undefined],
+        ['ERROR: Connection timed out', 'network_timeout', undefined],
+        ['ERROR: Requested format is not available', 'format_unavailable', undefined],
+        ['ERROR: Failed to download thumbnail', 'cover_failed', undefined],
+        ['ERROR: ffmpeg exited with code 1', 'postprocessing_failed', undefined],
+        ['', 'extractor_failed', undefined],
+        ['private stderr with token=secret', 'extractor_failed', undefined],
+    ])('logs safe diagnostics for %s without exposing source credentials', async (stderr, reason, upstreamStatus) => {
+        const log = jest.spyOn(logger, 'error');
+        try {
+            mockExecFile.mockImplementation((_file: string, _args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                callback(new Error('Command failed: --cookies /private/cookies.txt --use-postprocessor YoutubeCoverSource:when=pre_process https://example.com?token=secret'), '', stderr);
+            });
+            await expect(service.downloadAudio('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
+            expect(log).toHaveBeenCalledWith('YTDL download failed', { format: 'audio', reason, ...(upstreamStatus ? { upstreamStatus } : {}) });
+            expect(JSON.stringify(log.mock.calls)).not.toMatch(/private|secret|cookies|example\.com/);
+        } finally { log.mockRestore(); }
     });
 
     it('does not expose command arguments, cookie paths, or extractor stderr on failures', async () => {

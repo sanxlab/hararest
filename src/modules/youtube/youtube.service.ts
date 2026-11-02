@@ -16,6 +16,32 @@ interface YtDlpResult {
 interface YtDlpCommandError extends Error {
     stdout?: string;
     stderr?: string;
+    code?: string | number;
+    signal?: string;
+}
+
+// Classify failures without logging command lines, cookies, paths or signed URLs.
+function failureDiagnostics(error: unknown): Record<string, string | number> {
+    const failure = error instanceof Error ? error as YtDlpCommandError : undefined;
+    const detail = failure?.stderr ?? failure?.message ?? '';
+    const httpStatus = detail.match(/HTTP(?: Error| error| status(?: code)?)?[: ]+(\d{3})\b/i)?.[1];
+    let reason = 'extractor_failed';
+    if (failure?.name === 'AbortError') reason = 'cancelled';
+    else if (failure?.signal === 'SIGKILL') reason = 'process_killed';
+    else if (failure?.code === 'ENOENT') reason = 'binary_missing';
+    else if (/YoutubeCoverSource|yt_dlp_plugins|no such postprocessor/i.test(detail)) reason = 'cover_plugin_failed';
+    else if (/sign in|confirm you.re not a bot|login required|cookies.*(?:expired|invalid)/i.test(detail)) reason = 'youtube_verification_required';
+    else if (httpStatus) reason = 'upstream_http_error';
+    else if (/timed? out|timeout|ETIMEDOUT/i.test(detail)) reason = 'network_timeout';
+    else if (/requested format.*not available|no video formats/i.test(detail)) reason = 'format_unavailable';
+    else if (/thumbnail|image data|invalid image/i.test(detail)) reason = 'cover_failed';
+    else if (/ffmpeg|ffprobe|postprocessing/i.test(detail)) reason = 'postprocessing_failed';
+    else if (/Could not determine output filename/.test(detail)) reason = 'output_missing';
+    return {
+        reason,
+        ...(httpStatus ? { upstreamStatus: Number(httpStatus) } : {}),
+        ...(typeof failure?.code === 'number' ? { exitCode: failure.code } : {}),
+    };
 }
 
 const DEFAULT_VIDEO_FORMAT = '18/b[height<=360]/bv*[height<=360]+ba/b';
@@ -166,7 +192,7 @@ export class YoutubeService {
             };
         } catch (error) {
             if (error instanceof AppError) throw error;
-            logger.error('YTDL info failed');
+            logger.error('YTDL info failed', failureDiagnostics(error));
             throw new AppError('Failed to fetch video info.', 500);
         }
     }
@@ -208,7 +234,7 @@ export class YoutubeService {
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
-            logger.error('YTDL download failed');
+            logger.error('YTDL download failed', { format: 'video', ...failureDiagnostics(error) });
             throw new AppError('Failed to download media.', 500);
         }
     }
@@ -257,7 +283,7 @@ export class YoutubeService {
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
-            logger.error('YTDL download failed');
+            logger.error('YTDL download failed', { format: 'audio', ...failureDiagnostics(error) });
             throw new AppError('Failed to download media.', 500);
         }
     }
@@ -321,7 +347,7 @@ export class YoutubeService {
             return results;
         } catch (error) {
             if (error instanceof AppError) throw error;
-            logger.error('YTDL search failed');
+            logger.error('YTDL search failed', failureDiagnostics(error));
             throw new AppError('Failed to search YouTube.', 500);
         }
     }
