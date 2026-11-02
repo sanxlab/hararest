@@ -29,10 +29,11 @@ function run(file: string, args: string[]): Promise<string> {
 }
 
 offlineTest.each([
-  { name: 'music tags, release date and cover', music: true, date: '2020', musicURL: false },
-  { name: 'title/channel/date fallback without fabricated music tags', music: false, date: '2024', musicURL: false },
-  { name: 'YouTube Music lyrics alongside cover and existing tags', music: true, date: '2020', musicURL: true },
-])('writes a real playable MP3 with $name', async ({ music, date, musicURL }) => {
+  { name: 'music tags, release date and cover', music: true, date: '2020', musicURL: false, coverMode: '' },
+  { name: 'title/channel/date fallback without fabricated music tags', music: false, date: '2024', musicURL: false, coverMode: '' },
+  { name: 'YouTube Music lyrics alongside cover and existing tags', music: true, date: '2020', musicURL: true, coverMode: '' },
+  ...['prefer-jpeg', 'jpeg-unavailable', 'lower-resolution-jpeg'].map(coverMode => ({ name: coverMode, music: true, date: '2020', musicURL: false, coverMode })),
+])('writes a real playable MP3 with $name', async ({ music, date, musicURL, coverMode }) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-id3-'));
   const lyricText = 'Original offline fixture lyric\nAnother original offline line';
   const lyricsRequest = jest.spyOn(globalThis, 'fetch').mockImplementation(async endpoint => {
@@ -43,22 +44,38 @@ offlineTest.each([
   const targetURL = `https://${musicURL ? 'music' : 'www'}.youtube.com/watch?v=offline`;
   try {
     const source = path.join(directory, 'source.wav');
-    const cover = path.join(directory, musicURL ? 'cover.jpg' : 'cover.png');
+    let cover = path.join(directory, musicURL ? 'cover.jpg' : 'cover.png');
     await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', source]);
     if (music) {
       await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=128x128:duration=1', '-frames:v', '1', '-threads', '1', '-q:v', '2', cover]);
+    }
+    let thumbnails: Array<{ id: string; url: string; ext: string; preference?: number }> = [
+      { id: 'cover', url: pathToFileURL(cover).href, ext: musicURL ? 'jpg' : 'png' },
+    ];
+    if (coverMode) {
+      const jpeg = path.join(directory, 'vi', 'offline', coverMode === 'lower-resolution-jpeg' ? 'hqdefault.jpg' : 'maxresdefault.jpg');
+      const webp = path.join(directory, 'vi_webp', 'offline', 'maxresdefault.webp');
+      fs.mkdirSync(path.dirname(jpeg), { recursive: true });
+      fs.mkdirSync(path.dirname(webp), { recursive: true });
+      if (coverMode !== 'jpeg-unavailable') await run('ffmpeg', ['-v', 'error', '-y', '-i', cover, '-threads', '1', '-q:v', '2', jpeg]);
+      await run('ffmpeg', ['-v', 'error', '-y', '-i', cover, '-threads', '1', '-quality', '10', webp]);
+      thumbnails = [
+        { id: 'jpeg', url: pathToFileURL(jpeg).href, ext: 'jpg', preference: coverMode === 'lower-resolution-jpeg' ? -7 : -1 },
+        { id: 'webp', url: pathToFileURL(webp).href, ext: 'webp', preference: 0 },
+      ];
+      cover = coverMode === 'prefer-jpeg' ? jpeg : webp;
     }
     const metadata = path.join(directory, 'info.json');
     fs.writeFileSync(metadata, JSON.stringify({
       id: 'offline-track', title: 'Video title', uploader: 'Channel name',
       upload_date: '20241105', description: 'Fixture description',
       webpage_url: targetURL,
-      extractor: 'generic', extractor_key: 'Generic', ext: 'wav',
+      extractor: coverMode ? 'youtube' : 'generic', extractor_key: coverMode ? 'Youtube' : 'Generic', ext: 'wav',
       url: pathToFileURL(source).href,
       ...(music ? {
         track: 'Song title', artist: 'Artist', album: 'Album', album_artist: 'Album Artist',
         track_number: 3, disc_number: 1, composer: 'Composer', genre: 'Pop', release_date: '20200102',
-        thumbnails: [{ id: 'cover', url: pathToFileURL(cover).href, ext: musicURL ? 'jpg' : 'png' }],
+        thumbnails,
       } : {}),
     }));
     execFile.mockImplementation((file, args, options, callback) => realChildProcess.execFile(

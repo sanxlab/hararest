@@ -14,9 +14,13 @@ async function main() {
   const originalFetch = globalThis.fetch;
   try {
     const source = path.join(directory, 'source.wav');
-    const cover = path.join(directory, 'cover.png');
+    const cover = path.join(directory, 'vi', 'offline', 'maxresdefault.jpg');
+    const webp = path.join(directory, 'vi_webp', 'offline', 'maxresdefault.webp');
+    fs.mkdirSync(path.dirname(cover), { recursive: true });
+    fs.mkdirSync(path.dirname(webp), { recursive: true });
     await run('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', source]);
-    await run('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=blue:s=64x64', '-frames:v', '1', '-threads', '1', cover]);
+    await run('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=128x128:duration=1', '-frames:v', '1', '-threads', '1', '-q:v', '2', cover]);
+    await run('ffmpeg', ['-v', 'error', '-y', '-i', cover, '-threads', '1', '-quality', '10', webp]);
     const binary = path.resolve(config.youtube.binPath);
     const infoFile = path.join(directory, 'info.json');
     const shim = path.join(directory, 'offline-yt-dlp');
@@ -34,12 +38,15 @@ async function main() {
       const url = `https://${music ? 'music' : 'www'}.youtube.com/watch?v=offline`;
       fs.writeFileSync(infoFile, JSON.stringify({
         id: 'offline', title: 'Video title', uploader: 'Channel', upload_date: '20241105',
-        webpage_url: url, extractor: 'generic', extractor_key: 'Generic', ext: 'wav',
+        webpage_url: url, extractor: music ? 'youtube' : 'generic', extractor_key: music ? 'Youtube' : 'Generic', ext: 'wav',
         url: pathToFileURL(source).href,
         ...(music ? {
           track: 'Song', artist: 'Artist', album: 'Album', album_artist: 'Album Artist',
           composer: 'Composer', genre: 'Pop', track_number: 3, disc_number: 1, release_date: '20200102',
-          thumbnails: [{ id: 'cover', url: pathToFileURL(cover).href, ext: 'png' }],
+          thumbnails: [
+            { id: 'jpeg', url: pathToFileURL(cover).href, ext: 'jpg', preference: -1 },
+            { id: 'webp', url: pathToFileURL(webp).href, ext: 'webp', preference: 0 },
+          ],
         } : {}),
       }));
       const service = new YoutubeService(path.join(directory, music ? 'music' : 'fallback'));

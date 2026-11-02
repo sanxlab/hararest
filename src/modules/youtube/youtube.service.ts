@@ -234,6 +234,8 @@ export class YoutubeService {
                 '--parse-metadata', '%(release_date,release_year,upload_date|).4s:%(meta_date)s',
                 '--embed-thumbnail',
                 '--convert-thumbnails', 'png',
+                '--plugin-dirs', path.resolve(__dirname, '../../../vendor/yt-dlp-plugins'),
+                '--use-postprocessor', 'YoutubeCoverSource:when=pre_process',
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',
