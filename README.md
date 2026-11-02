@@ -81,7 +81,9 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 
 ## Tag musik MP3 YouTube
 
-Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover bila tersedia.
+Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover PNG bila tersedia.
+Cover tidak diperkecil atau di-encode ulang ke JPEG; kualitasnya dibatasi gambar
+sumber YouTube, tanpa menambah kompresi lossy saat penyematan.
 Judul memakai nama track, dengan judul video sebagai fallback; artis memakai
 metadata artis, dengan nama channel sebagai fallback. Album, album artist,
 nomor track/disc, composer, genre, deskripsi dan URL sumber disimpan sesuai
@@ -99,9 +101,12 @@ Fixture lokal tidak menghubungi YouTube.
 Unduhan audio dari `https://music.youtube.com/watch?...` otomatis mencari lirik
 melalui [LRCLIB](https://lrclib.net/docs), memakai judul, artis, album (bila tersedia),
 dan durasi dari MP3. Hasil harus cocok dengan metadata dan selisih durasinya tidak
-lebih dari dua detik. Lirik ditanam ke frame ID3 `USLT` (Lyrics) sebagai teks biasa;
-LRC bertimestamp dikonversi menjadi teks jika hanya versi itu yang tersedia.
-Dukungan menampilkan lirik bergantung pada aplikasi pemutar musik.
+lebih dari dua detik. Jika tersedia LRC bertimestamp yang valid, timestamp tetap
+disimpan dalam `USLT` (Lyrics) dan timeline juga ditulis sebagai `SYLT` dengan
+satuan milidetik, untuk pemutar yang mendukung ID3 sinkron. Dengan begitu pemutar
+bisa membaca LRC dari tag Lyrics atau memakai timeline SYLT. Jika provider hanya
+menyediakan lirik biasa, `USLT` tetap berupa teks tanpa sinkronisasi.
+Dukungan menampilkan lirik berjalan bergantung pada aplikasi pemutar musik.
 
 Jika lagu instrumental, lirik tidak ditemukan, tidak cocok, atau layanan gagal,
 MP3 tetap dikirim dengan tag dan cover yang sudah ada. Link YouTube biasa tidak

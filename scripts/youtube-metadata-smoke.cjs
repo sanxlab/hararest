@@ -24,10 +24,11 @@ async function main() {
     const args = [binary, '--ignore-config', '--load-info-json', infoFile, '--enable-file-urls'];
     fs.writeFileSync(shim, `#!/usr/bin/env python3\nimport os, sys\nargs = ${JSON.stringify(args)}\nos.execv(args[0], args + sys.argv[1:])\n`, { mode: 0o700 });
     const lyricText = 'Original production fixture lyric\nAnother original fixture line';
+    const lrcText = '[00:00.00]Original production fixture lyric\n[00:00.45]Another original fixture line';
     globalThis.fetch = async endpoint => {
       const query = new URL(String(endpoint));
       assert.equal(query.origin + query.pathname, 'https://lrclib.net/api/get');
-      return new Response(JSON.stringify({ trackName: 'Song', artistName: 'Artist', albumName: 'Album', duration: Number(query.searchParams.get('duration')), instrumental: false, plainLyrics: lyricText }), { headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ trackName: 'Song', artistName: 'Artist', albumName: 'Album', duration: Number(query.searchParams.get('duration')), instrumental: false, plainLyrics: lyricText, syncedLyrics: lrcText }), { headers: { 'content-type': 'application/json' } });
     };
     for (const music of [true, false]) {
       const url = `https://${music ? 'music' : 'www'}.youtube.com/watch?v=offline`;
@@ -52,12 +53,30 @@ async function main() {
       assert.equal(format.tags.purl, url);
       assert.ok(streams.some(s => s.codec_type === 'audio' && s.codec_name === 'mp3'));
       if (music) {
-        assert.equal(Object.entries(format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1], lyricText);
-        assert.equal(fs.readFileSync(output).toString('ascii', 10, 14), 'USLT');
+        assert.equal(Object.entries(format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1], lrcText);
+        const tags = fs.readFileSync(output);
+        assert.equal(tags.toString('ascii', 10, 14), 'USLT');
+        const frameSize = offset => tags[3] === 3 ? tags.readUInt32BE(offset + 4)
+          : tags[offset + 4] * 0x200000 + tags[offset + 5] * 0x4000 + tags[offset + 6] * 0x80 + tags[offset + 7];
+        const syltOffset = 20 + frameSize(10);
+        assert.equal(tags.toString('ascii', syltOffset, syltOffset + 4), 'SYLT');
+        assert.equal(tags[syltOffset + 14], 2); // millisecond timestamps
+        const sylt = tags.subarray(syltOffset + 10, syltOffset + 10 + frameSize(syltOffset));
+        let cursor = 10;
+        for (const [text, timeMs] of [['Original production fixture lyric', 0], ['Another original fixture line', 450]]) {
+          let end = cursor;
+          while (sylt.readUInt16LE(end) !== 0) end += 2;
+          assert.equal(sylt.toString('utf16le', cursor, end).replace(/^\uFEFF/, ''), text);
+          assert.equal(sylt.readUInt32BE(end + 2), timeMs);
+          cursor = end + 6;
+        }
         for (const [key, value] of Object.entries({ album: 'Album', album_artist: 'Album Artist', composer: 'Composer', genre: 'Pop', track: '3', disc: '1' })) {
           assert.equal(format.tags[key], value);
         }
-        assert.ok(streams.some(s => s.codec_name === 'mjpeg' && s.disposition.attached_pic === 1));
+        assert.ok(streams.some(s => s.codec_name === 'png' && s.disposition.attached_pic === 1));
+        const originalPixels = (await run('ffmpeg', ['-v', 'error', '-i', cover, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-'])).stdout;
+        const embeddedPixels = (await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-'])).stdout;
+        assert.equal(embeddedPixels, originalPixels);
       } else {
         assert.equal(format.tags.album, undefined);
         assert.equal(format.tags.track, undefined);

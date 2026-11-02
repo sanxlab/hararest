@@ -43,10 +43,10 @@ offlineTest.each([
   const targetURL = `https://${musicURL ? 'music' : 'www'}.youtube.com/watch?v=offline`;
   try {
     const source = path.join(directory, 'source.wav');
-    const cover = path.join(directory, 'cover.png');
+    const cover = path.join(directory, musicURL ? 'cover.jpg' : 'cover.png');
     await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=1', source]);
     if (music) {
-      await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=blue:s=64x64', '-frames:v', '1', '-threads', '1', cover]);
+      await run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=128x128:duration=1', '-frames:v', '1', '-threads', '1', '-q:v', '2', cover]);
     }
     const metadata = path.join(directory, 'info.json');
     fs.writeFileSync(metadata, JSON.stringify({
@@ -58,7 +58,7 @@ offlineTest.each([
       ...(music ? {
         track: 'Song title', artist: 'Artist', album: 'Album', album_artist: 'Album Artist',
         track_number: 3, disc_number: 1, composer: 'Composer', genre: 'Pop', release_date: '20200102',
-        thumbnails: [{ id: 'cover', url: pathToFileURL(cover).href, ext: 'png' }],
+        thumbnails: [{ id: 'cover', url: pathToFileURL(cover).href, ext: musicURL ? 'jpg' : 'png' }],
       } : {}),
     }));
     execFile.mockImplementation((file, args, options, callback) => realChildProcess.execFile(
@@ -82,13 +82,18 @@ offlineTest.each([
     if (music) {
       expect(probe.format.tags).toMatchObject({ album: 'Album', album_artist: 'Album Artist', track: '3', disc: '1', composer: 'Composer', genre: 'Pop' });
       expect(probe.streams).toEqual(expect.arrayContaining([
-        expect.objectContaining({ codec_name: 'mjpeg', disposition: { attached_pic: 1 } }),
+        expect.objectContaining({ codec_name: 'png', disposition: { attached_pic: 1 } }),
       ]));
     } else {
       expect(probe.format.tags.album).toBeUndefined();
       expect(probe.format.tags.track).toBeUndefined();
       expect(probe.format.tags.genre).toBeUndefined();
       expect(probe.streams).toHaveLength(1);
+    }
+    if (music) {
+      const originalPixels = await run('ffmpeg', ['-v', 'error', '-i', cover, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-']);
+      const embeddedPixels = await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-']);
+      expect(embeddedPixels).toBe(originalPixels);
     }
     if (musicURL) {
       expect(Object.entries(probe.format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1]).toBe(lyricText);
