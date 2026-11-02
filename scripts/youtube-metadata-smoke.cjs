@@ -11,6 +11,7 @@ const run = promisify(execFile);
 
 async function main() {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'hararest-mp3-smoke-'));
+  const originalFetch = globalThis.fetch;
   try {
     const source = path.join(directory, 'source.wav');
     const cover = path.join(directory, 'cover.png');
@@ -22,8 +23,14 @@ async function main() {
     // Enable local fixture URLs only in this verification process, never in the API.
     const args = [binary, '--ignore-config', '--load-info-json', infoFile, '--enable-file-urls'];
     fs.writeFileSync(shim, `#!/usr/bin/env python3\nimport os, sys\nargs = ${JSON.stringify(args)}\nos.execv(args[0], args + sys.argv[1:])\n`, { mode: 0o700 });
-    const url = 'https://www.youtube.com/watch?v=offline';
+    const lyricText = 'Original production fixture lyric\nAnother original fixture line';
+    globalThis.fetch = async endpoint => {
+      const query = new URL(String(endpoint));
+      assert.equal(query.origin + query.pathname, 'https://lrclib.net/api/get');
+      return new Response(JSON.stringify({ trackName: 'Song', artistName: 'Artist', albumName: 'Album', duration: Number(query.searchParams.get('duration')), instrumental: false, plainLyrics: lyricText }), { headers: { 'content-type': 'application/json' } });
+    };
     for (const music of [true, false]) {
+      const url = `https://${music ? 'music' : 'www'}.youtube.com/watch?v=offline`;
       fs.writeFileSync(infoFile, JSON.stringify({
         id: 'offline', title: 'Video title', uploader: 'Channel', upload_date: '20241105',
         webpage_url: url, extractor: 'generic', extractor_key: 'Generic', ext: 'wav',
@@ -45,6 +52,8 @@ async function main() {
       assert.equal(format.tags.purl, url);
       assert.ok(streams.some(s => s.codec_type === 'audio' && s.codec_name === 'mp3'));
       if (music) {
+        assert.equal(Object.entries(format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1], lyricText);
+        assert.equal(fs.readFileSync(output).toString('ascii', 10, 14), 'USLT');
         for (const [key, value] of Object.entries({ album: 'Album', album_artist: 'Album Artist', composer: 'Composer', genre: 'Pop', track: '3', disc: '1' })) {
           assert.equal(format.tags[key], value);
         }
@@ -56,8 +65,9 @@ async function main() {
       }
       await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:a:0', '-f', 'null', '-']);
     }
-    console.log('Production MP3 tags, cover art, fallback metadata, and audio decoding passed');
+    console.log('Production MP3 tags, cover art, embedded lyrics, fallback metadata, and audio decoding passed');
   } finally {
+    globalThis.fetch = originalFetch;
     fs.rmSync(directory, { recursive: true, force: true });
   }
 }

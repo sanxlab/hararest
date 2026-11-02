@@ -6,6 +6,7 @@ import { config } from '../../config/default';
 import { AppError } from '../../utils/AppError';
 import { VideoInfo, YtDlpJSON, SearchResult } from './youtube.types';
 import logger from '../../utils/logger';
+import { youtubeMusicLyrics } from './youtube.lyrics';
 
 interface YtDlpResult {
     stdout: string;
@@ -244,6 +245,8 @@ export class YoutubeService {
 
             const finalPath = stdout.trim().split('\n').at(-1)?.trim();
             if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
+                await this.validateDownload(finalPath, maxBytes);
+                await youtubeMusicLyrics.enrich(finalPath, url, { signal: options.signal, maxBytes });
                 await this.validateDownload(finalPath, maxBytes);
                 return path.resolve(finalPath);
             }

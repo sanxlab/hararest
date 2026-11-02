@@ -94,6 +94,20 @@ Tes offline tag dan cover: `npm test -- --runInBand src/__tests__/youtube-metada
 Tes memerlukan `bin/yt-dlp`, FFmpeg dan FFprobe; jika tool tidak ada, tes dilewati.
 Fixture lokal tidak menghubungi YouTube.
 
+## Lirik pada link YouTube Music
+
+Unduhan audio dari `https://music.youtube.com/watch?...` otomatis mencari lirik
+melalui [LRCLIB](https://lrclib.net/docs), memakai judul, artis, album (bila tersedia),
+dan durasi dari MP3. Hasil harus cocok dengan metadata dan selisih durasinya tidak
+lebih dari dua detik. Lirik ditanam ke frame ID3 `USLT` (Lyrics) sebagai teks biasa;
+LRC bertimestamp dikonversi menjadi teks jika hanya versi itu yang tersedia.
+Dukungan menampilkan lirik bergantung pada aplikasi pemutar musik.
+
+Jika lagu instrumental, lirik tidak ditemukan, tidak cocok, atau layanan gagal,
+MP3 tetap dikirim dengan tag dan cover yang sudah ada. Link YouTube biasa tidak
+memicu pencarian lirik. Tidak memerlukan API key tambahan. Respons provider dibatasi,
+hasil dicache, dan `Retry-After` dihormati jika provider membatasi request.
+
 ## RPG Kotonehara
 
 Hararest menyajikan game di `/rpg/` dan meneruskan API ke service Go Kotonehara. Lihat [konfigurasi RPG, alur pemain, dan pengujian](https://github.com/MapIHS/kotonehara/blob/dev/docs/rpg.md). Fitur memerlukan konfigurasi di kedua repo; tidak memakai Redis.

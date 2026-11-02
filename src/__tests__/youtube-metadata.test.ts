@@ -29,10 +29,18 @@ function run(file: string, args: string[]): Promise<string> {
 }
 
 offlineTest.each([
-  { name: 'music tags, release date and cover', music: true, date: '2020' },
-  { name: 'title/channel/date fallback without fabricated music tags', music: false, date: '2024' },
-])('writes a real playable MP3 with $name', async ({ music, date }) => {
+  { name: 'music tags, release date and cover', music: true, date: '2020', musicURL: false },
+  { name: 'title/channel/date fallback without fabricated music tags', music: false, date: '2024', musicURL: false },
+  { name: 'YouTube Music lyrics alongside cover and existing tags', music: true, date: '2020', musicURL: true },
+])('writes a real playable MP3 with $name', async ({ music, date, musicURL }) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-id3-'));
+  const lyricText = 'Original offline fixture lyric\nAnother original offline line';
+  const lyricsRequest = jest.spyOn(globalThis, 'fetch').mockImplementation(async endpoint => {
+    const query = new URL(String(endpoint));
+    expect(query.origin + query.pathname).toBe('https://lrclib.net/api/get');
+    return new Response(JSON.stringify({ trackName: 'Song title', artistName: 'Artist', albumName: 'Album', duration: Number(query.searchParams.get('duration')), instrumental: false, plainLyrics: lyricText }), { headers: { 'content-type': 'application/json' } });
+  });
+  const targetURL = `https://${musicURL ? 'music' : 'www'}.youtube.com/watch?v=offline`;
   try {
     const source = path.join(directory, 'source.wav');
     const cover = path.join(directory, 'cover.png');
@@ -44,7 +52,7 @@ offlineTest.each([
     fs.writeFileSync(metadata, JSON.stringify({
       id: 'offline-track', title: 'Video title', uploader: 'Channel name',
       upload_date: '20241105', description: 'Fixture description',
-      webpage_url: 'https://www.youtube.com/watch?v=offline',
+      webpage_url: targetURL,
       extractor: 'generic', extractor_key: 'Generic', ext: 'wav',
       url: pathToFileURL(source).href,
       ...(music ? {
@@ -54,12 +62,12 @@ offlineTest.each([
       } : {}),
     }));
     execFile.mockImplementation((file, args, options, callback) => realChildProcess.execFile(
-      file, ['--ignore-config', '--load-info-json', metadata, '--enable-file-urls', ...args], options, callback,
+      file, [...(file === binary ? ['--ignore-config', '--load-info-json', metadata, '--enable-file-urls'] : []), ...args], options, callback,
     ));
     const downloads = path.join(directory, 'downloads');
     const service = new YoutubeService(downloads);
     Object.assign(service, { binPath: binary, cookiePath: path.join(directory, 'no-cookies') });
-    const output = await service.downloadAudio('https://www.youtube.com/watch?v=offline');
+    const output = await service.downloadAudio(targetURL);
     const probe = JSON.parse(await run('ffprobe', [
       '-v', 'error', '-show_entries', 'format_tags:stream=codec_type,codec_name:stream_disposition=attached_pic', '-of', 'json', output,
     ])) as {
@@ -69,7 +77,7 @@ offlineTest.each([
     expect(probe.streams).toEqual(expect.arrayContaining([expect.objectContaining({ codec_name: 'mp3', codec_type: 'audio' })]));
     expect(probe.format.tags).toMatchObject({
       title: music ? 'Song title' : 'Video title', artist: music ? 'Artist' : 'Channel name',
-      date, purl: 'https://www.youtube.com/watch?v=offline', description: 'Fixture description',
+      date, purl: targetURL, description: 'Fixture description',
     });
     if (music) {
       expect(probe.format.tags).toMatchObject({ album: 'Album', album_artist: 'Album Artist', track: '3', disc: '1', composer: 'Composer', genre: 'Pop' });
@@ -82,10 +90,17 @@ offlineTest.each([
       expect(probe.format.tags.genre).toBeUndefined();
       expect(probe.streams).toHaveLength(1);
     }
+    if (musicURL) {
+      expect(Object.entries(probe.format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1]).toBe(lyricText);
+      expect(lyricsRequest).toHaveBeenCalledTimes(1);
+    } else {
+      expect(lyricsRequest).not.toHaveBeenCalled();
+    }
     // The delivered file remains decodable after writing ID3 and cover frames.
     await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:a:0', '-f', 'null', '-']);
     expect(fs.readdirSync(downloads)).toEqual([path.basename(output)]);
   } finally {
+    lyricsRequest.mockRestore();
     execFile.mockReset();
     fs.rmSync(directory, { recursive: true, force: true });
   }
