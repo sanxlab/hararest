@@ -45,7 +45,7 @@ async function main() {
       const service = new YoutubeService(path.join(directory, music ? 'music' : 'fallback'));
       Object.assign(service, { binPath: shim, cookiePath: path.join(directory, 'no-cookies') });
       const output = await service.downloadAudio(url);
-      const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format_tags:stream=codec_name,codec_type:stream_disposition=attached_pic', '-of', 'json', output]);
+      const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format_tags:stream=codec_name,codec_type,width,height:stream_disposition=attached_pic', '-of', 'json', output]);
       const { format, streams } = JSON.parse(stdout);
       assert.equal(format.tags.title, music ? 'Song' : 'Video title');
       assert.equal(format.tags.artist, music ? 'Artist' : 'Channel');
@@ -73,10 +73,7 @@ async function main() {
         for (const [key, value] of Object.entries({ album: 'Album', album_artist: 'Album Artist', composer: 'Composer', genre: 'Pop', track: '3', disc: '1' })) {
           assert.equal(format.tags[key], value);
         }
-        assert.ok(streams.some(s => s.codec_name === 'png' && s.disposition.attached_pic === 1));
-        const originalPixels = (await run('ffmpeg', ['-v', 'error', '-i', cover, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-'])).stdout;
-        const embeddedPixels = (await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-'])).stdout;
-        assert.equal(embeddedPixels, originalPixels);
+        assert.ok(streams.some(s => s.codec_name === 'mjpeg' && s.width === 64 && s.height === 64 && s.disposition.attached_pic === 1));
       } else {
         assert.equal(format.tags.album, undefined);
         assert.equal(format.tags.track, undefined);

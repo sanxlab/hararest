@@ -259,7 +259,7 @@ export class YoutubeService {
                 '--embed-metadata',
                 '--parse-metadata', '%(release_date,release_year,upload_date|).4s:%(meta_date)s',
                 '--embed-thumbnail',
-                '--convert-thumbnails', 'png',
+                '--convert-thumbnails', 'jpg',
                 '--no-playlist',
                 '--playlist-end', '1',
                 '--print', 'after_move:filepath',

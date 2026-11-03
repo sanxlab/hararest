@@ -69,10 +69,10 @@ offlineTest.each([
     Object.assign(service, { binPath: binary, cookiePath: path.join(directory, 'no-cookies') });
     const output = await service.downloadAudio(targetURL);
     const probe = JSON.parse(await run('ffprobe', [
-      '-v', 'error', '-show_entries', 'format_tags:stream=codec_type,codec_name:stream_disposition=attached_pic', '-of', 'json', output,
+      '-v', 'error', '-show_entries', 'format_tags:stream=codec_type,codec_name,width,height:stream_disposition=attached_pic', '-of', 'json', output,
     ])) as {
       format: { tags: Record<string, string> };
-      streams: Array<{ codec_type: string; codec_name: string; disposition: { attached_pic: number } }>;
+      streams: Array<{ codec_type: string; codec_name: string; width?: number; height?: number; disposition: { attached_pic: number } }>;
     };
     expect(probe.streams).toEqual(expect.arrayContaining([expect.objectContaining({ codec_name: 'mp3', codec_type: 'audio' })]));
     expect(probe.format.tags).toMatchObject({
@@ -82,18 +82,13 @@ offlineTest.each([
     if (music) {
       expect(probe.format.tags).toMatchObject({ album: 'Album', album_artist: 'Album Artist', track: '3', disc: '1', composer: 'Composer', genre: 'Pop' });
       expect(probe.streams).toEqual(expect.arrayContaining([
-        expect.objectContaining({ codec_name: 'png', disposition: { attached_pic: 1 } }),
+        expect.objectContaining({ codec_name: 'mjpeg', width: 128, height: 128, disposition: { attached_pic: 1 } }),
       ]));
     } else {
       expect(probe.format.tags.album).toBeUndefined();
       expect(probe.format.tags.track).toBeUndefined();
       expect(probe.format.tags.genre).toBeUndefined();
       expect(probe.streams).toHaveLength(1);
-    }
-    if (music) {
-      const originalPixels = await run('ffmpeg', ['-v', 'error', '-i', cover, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-']);
-      const embeddedPixels = await run('ffmpeg', ['-v', 'error', '-i', output, '-map', '0:v:0', '-pix_fmt', 'rgba', '-f', 'hash', '-hash', 'sha256', '-']);
-      expect(embeddedPixels).toBe(originalPixels);
     }
     if (musicURL) {
       expect(Object.entries(probe.format.tags).find(([key]) => /^lyrics(?:-|$)/i.test(key))?.[1]).toBe(lyricText);

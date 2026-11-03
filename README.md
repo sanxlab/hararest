@@ -81,9 +81,8 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 
 ## Tag musik MP3 YouTube
 
-Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover PNG bila tersedia.
-Cover tidak diperkecil atau di-encode ulang ke JPEG; kualitasnya dibatasi gambar
-sumber YouTube, tanpa menambah kompresi lossy saat penyematan.
+Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover JPEG bila tersedia.
+Pemilihan thumbnail mengikuti bawaan yt-dlp, lalu formatnya dikonversi ke JPEG.
 Judul memakai nama track, dengan judul video sebagai fallback; artis memakai
 metadata artis, dengan nama channel sebagai fallback. Album, album artist,
 nomor track/disc, composer, genre, deskripsi dan URL sumber disimpan sesuai
