@@ -84,9 +84,6 @@ semua pemeriksaan dan smoke test container lulus jika secrets Heroku sudah diisi
 Unduhan audio MP3 menyertakan tag ID3 dan thumbnail sebagai cover PNG bila tersedia.
 Cover tidak diperkecil atau di-encode ulang ke JPEG; kualitasnya dibatasi gambar
 sumber YouTube, tanpa menambah kompresi lossy saat penyematan.
-Untuk varian thumbnail YouTube yang sama, JPEG diprioritaskan di atas WebP
-karena WebP sumber dapat kehilangan detail lebih banyak. Varian resolusi
-tertinggi tetap diutamakan, dengan fallback ke kandidat berikutnya jika gagal.
 Judul memakai nama track, dengan judul video sebagai fallback; artis memakai
 metadata artis, dengan nama channel sebagai fallback. Album, album artist,
 nomor track/disc, composer, genre, deskripsi dan URL sumber disimpan sesuai
