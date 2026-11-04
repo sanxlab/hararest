@@ -80,56 +80,109 @@ export class LyricsClient {
     return task;
   }
 
+  private log(reason: string, detail: Record<string, number | boolean> = {}): void {
+    // Do not include track metadata, URLs, upstream bodies or exception messages.
+    logger.info('YouTube Music lyrics lookup', { reason, ...detail });
+  }
+
   private async request(track: LyricsTrack, signal?: AbortSignal): Promise<LyricsData | undefined> {
-    signal?.throwIfAborted();
+    if (signal?.aborted) {
+      this.log('cancelled');
+      signal.throwIfAborted();
+    }
     const artist = track.artist.replace(/\s*[-–—]\s*Topic$/i, '').trim();
     if (!track.title.trim() || !artist || track.title.length > 300 || artist.length > 300 ||
-        (track.album?.length ?? 0) > 300 || !Number.isFinite(track.duration) || track.duration < 1 || track.duration > 3600) return;
+        (track.album?.length ?? 0) > 300 || !Number.isFinite(track.duration) || track.duration < 1 || track.duration > 3600) {
+      this.log('invalid_metadata');
+      return;
+    }
     const key = JSON.stringify([normalized(track.title), normalized(artist), normalized(track.album || ''), Math.round(track.duration)]);
     const cached = this.cache.get(key);
-    if (cached && cached.expires > Date.now()) return cached.value;
-    if (Date.now() < this.blockedUntil) return;
-    if (this.nextRequest > Date.now()) await delay(this.nextRequest - Date.now(), undefined, { signal });
-    signal?.throwIfAborted();
-    this.nextRequest = Date.now() + 300;
+    if (cached && cached.expires > Date.now()) {
+      this.log('cache_hit', { found: !!cached.value });
+      return cached.value;
+    }
+    this.log('cache_miss');
+    if (Date.now() < this.blockedUntil) {
+      this.log('cooldown');
+      return;
+    }
     const url = new URL('https://lrclib.net/api/get');
     url.search = new URLSearchParams({
       track_name: track.title, artist_name: artist, duration: String(track.duration),
       ...(track.album ? { album_name: track.album } : {}),
     }).toString();
-    try {
-      const response = await fetch(url, {
-        headers: { Accept: 'application/json', 'User-Agent': 'Hararest/1.0 (https://github.com/sanxlab/hararest)' },
-        redirect: 'error',
-        signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(6000)]) : AbortSignal.timeout(6000),
-      });
-      if (response.status === 429 || response.status === 503) {
-        const retry = response.headers.get('retry-after');
-        const seconds = retry === null ? NaN : Number(retry);
-        const date = retry === null ? NaN : Date.parse(retry);
-        this.blockedUntil = Math.max(Date.now() + 1000,
-          Number.isFinite(seconds) ? Date.now() + Math.max(0, seconds) * 1000 : Number.isFinite(date) ? date : Date.now() + 30_000);
-        await response.body?.cancel();
-        return;
-      }
-      if (!response.ok) {
-        await response.body?.cancel();
-        if (response.status === 404) this.remember(key);
-        return;
-      }
-      if (!response.headers.get('content-type')?.includes('application/json')) {
-        await response.body?.cancel();
-        return;
-      }
-      const parsed = recordSchema.safeParse(JSON.parse(await readResponseText(response, 256 * 1024)));
-      if (!parsed.success) return;
-      const record = parsed.data;
-      if (normalized(record.trackName) !== normalized(track.title) || normalized(record.artistName) !== normalized(artist) ||
-          Math.abs(record.duration - track.duration) > 2 || (track.album && normalized(record.albumName) !== normalized(track.album))) return;
-      const value = record.instrumental ? undefined : lyricsData(record);
-      this.remember(key, value);
-      return value;
-    } finally { this.nextRequest = Date.now() + 300; }
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const waitUntil = Math.max(this.nextRequest, this.blockedUntil);
+        if (waitUntil > Date.now()) await delay(waitUntil - Date.now(), undefined, { signal });
+        signal?.throwIfAborted();
+        const response = await fetch(url, {
+          headers: { Accept: 'application/json', 'User-Agent': 'Hararest/1.0 (https://github.com/sanxlab/hararest)' },
+          redirect: 'error',
+          signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(6000)]) : AbortSignal.timeout(6000),
+        });
+        if (response.status === 429 || response.status === 503) {
+          const retry = response.headers.get('retry-after');
+          const seconds = retry !== null && /^\d+(?:\.\d+)?$/.test(retry.trim()) ? Number(retry) : NaN;
+          const date = retry === null || Number.isFinite(seconds) ? NaN : Date.parse(retry);
+          const requestedDelay = Number.isFinite(seconds) ? seconds * 1000 : Number.isFinite(date) ? Math.max(0, date - Date.now()) : 30_000;
+          const cooldown = Math.max(1000, requestedDelay);
+          this.blockedUntil = Date.now() + cooldown + Math.floor(Math.random() * 100);
+          const retrying = attempt === 1 && cooldown <= 2000;
+          this.log('http_error', { httpStatus: response.status, attempt, retrying });
+          await response.body?.cancel();
+          if (retrying) continue;
+          return;
+        }
+        if (!response.ok) {
+          const retrying = attempt === 1 && [500, 502, 504].includes(response.status);
+          this.log(response.status === 404 ? 'not_found' : 'http_error', { httpStatus: response.status, attempt, retrying });
+          await response.body?.cancel();
+          if (retrying) continue;
+          if (response.status === 404) this.remember(key);
+          return;
+        }
+        if (!response.headers.get('content-type')?.toLowerCase().includes('application/json')) {
+          this.log('wrong_content_type', { httpStatus: response.status, attempt });
+          await response.body?.cancel();
+          return;
+        }
+        const parsed = recordSchema.safeParse(JSON.parse(await readResponseText(response, 256 * 1024)));
+        if (!parsed.success) {
+          this.log('invalid_record', { attempt });
+          return;
+        }
+        const record = parsed.data;
+        const matches = {
+          titleMatches: normalized(record.trackName) === normalized(track.title),
+          artistMatches: normalized(record.artistName) === normalized(artist),
+          durationMatches: Math.abs(record.duration - track.duration) <= 2,
+          albumMatches: !track.album || normalized(record.albumName) === normalized(track.album),
+        };
+        if (!Object.values(matches).every(Boolean)) {
+          this.log('metadata_mismatch', { attempt, ...matches });
+          return;
+        }
+        const value = record.instrumental ? undefined : lyricsData(record);
+        this.remember(key, value);
+        this.log(record.instrumental ? 'instrumental' : value ? 'found' : 'no_lyrics', { attempt, synchronized: !!value?.synchronized.length });
+        return value;
+      } catch (error) {
+        if (signal?.aborted) {
+          this.log('cancelled', { attempt });
+          signal.throwIfAborted();
+        }
+        const errorName = error !== null && typeof error === 'object' && 'name' in error && typeof error.name === 'string' ? error.name : '';
+        const timeout = errorName === 'TimeoutError';
+        const network = errorName === 'TypeError';
+        const retrying = attempt === 1 && (timeout || network);
+        const oversized = error !== null && typeof error === 'object' && 'statusCode' in error && error.statusCode === 502;
+        this.log(timeout ? 'network_timeout' : network ? 'network_error' : oversized ? 'response_too_large' : errorName === 'SyntaxError' ? 'invalid_json' : 'request_failed', { attempt, retrying });
+        if (!retrying) throw error;
+      } finally { this.nextRequest = Date.now() + 300; }
+    }
   }
 
   private remember(key: string, value?: LyricsData): void {
@@ -205,26 +258,50 @@ export class YoutubeMusicLyrics {
   constructor(private readonly client = new LyricsClient()) {}
 
   async enrich(file: string, url: string, options: { signal?: AbortSignal; maxBytes: number }): Promise<void> {
-    if (!isYoutubeMusicURL(url)) return;
+    if (!isYoutubeMusicURL(url)) {
+      logger.info('YouTube Music lyrics skipped', { reason: 'not_youtube_music' });
+      return;
+    }
     const output = `${file}.lyrics.mp3`;
+    let stage = 'probe';
     try {
       options.signal?.throwIfAborted();
+      logger.info('YouTube Music lyrics enrichment started');
       const probe = JSON.parse(await command('ffprobe', [
         '-v', 'error', '-show_entries', 'format=duration:format_tags', '-of', 'json', file,
       ], options.signal)) as { format?: { duration?: string; tags?: Record<string, string> } };
       const tags = probe.format?.tags;
-      if (!tags?.title || !tags.artist || Object.keys(tags).some(key => /^lyrics(?:-|$)/i.test(key))) return;
+      if (!tags?.title?.trim() || !tags.artist?.trim()) {
+        logger.warn('YouTube Music lyrics not embedded', { stage, reason: 'missing_track_metadata' });
+        return;
+      }
+      if (Object.entries(tags).some(([key, value]) => /^lyrics(?:-|$)/i.test(key) && value.trim())) {
+        logger.info('YouTube Music lyrics skipped', { reason: 'already_embedded' });
+        return;
+      }
+      stage = 'lookup';
       const lyrics = await this.client.lookup({ title: tags.title, artist: tags.artist, album: tags.album, duration: Number(probe.format?.duration) }, options.signal);
-      if (!lyrics) return;
+      if (!lyrics) {
+        logger.info('YouTube Music lyrics not embedded', { stage, reason: 'not_available' });
+        return;
+      }
       options.signal?.throwIfAborted();
+      stage = 'embed';
       if (await writeLyrics(file, output, lyrics, options.maxBytes, options.signal)) {
         options.signal?.throwIfAborted();
         await fs.rename(output, file);
+        logger.info('YouTube Music lyrics embedded', { synchronized: lyrics.synchronized.length > 0 });
+      } else {
+        logger.warn('YouTube Music lyrics not embedded', { stage, reason: 'unsupported_tag_or_size_limit' });
       }
-    } catch {
+    } catch (error) {
       options.signal?.throwIfAborted();
       // Lyrics are optional: keep the already downloaded, tagged audio on failure.
-      logger.warn('YouTube Music lyrics unavailable; keeping audio without additional lyrics.');
+      const code = (error as NodeJS.ErrnoException | undefined)?.code;
+      logger.warn('YouTube Music lyrics unavailable; keeping audio without additional lyrics.', {
+        stage,
+        reason: code === 'ENOENT' ? 'binary_missing' : error instanceof SyntaxError ? 'invalid_response' : `${stage}_failed`,
+      });
     } finally {
       await fs.rm(output, { force: true }).catch(() => undefined);
     }
