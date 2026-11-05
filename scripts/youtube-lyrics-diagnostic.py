@@ -49,10 +49,10 @@ try:
         reference = helper._fallback_lyrics_reference(raw, '7IWlXi-hVxk')
         if reference:
             request = urllib.request.Request(
-                'https://ytmbrowseproxy.zvz.be/browse?prettyPrint=false',
+                'https://b-ytmbrowseproxy.zvz.be/browse?prettyPrint=false',
                 data=json.dumps({'browseId': reference, 'context': {'client': {
                     'clientName': '26', 'clientVersion': '7.01.05',
-                }}}).encode(), headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+                }}}).encode(), headers={'Content-Type': 'application/json', 'Accept': 'application/json', 'Origin': 'https://music.youtube.com'},
             )
             with urllib.request.urlopen(request, timeout=10) as response:
                 result['proxyHTTPStatus'] = response.status
@@ -65,6 +65,8 @@ try:
                 result['proxyTimedLines'] = len(helper.validated_lines({'hasTimestamps': True, 'lyrics': lines}))
     finally:
         session.close()
-except Exception:
+except Exception as error:
+    if hasattr(error, 'code') and isinstance(error.code, int):
+        result['proxyHTTPStatus'] = error.code
     result['timedLookup'] = 'failed'
 print(json.dumps(result), flush=True)
