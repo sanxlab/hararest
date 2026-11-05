@@ -42,6 +42,32 @@ it('matches Japanese lyrics to the actual romanized YouTube music metadata', asy
   expect(log).toHaveBeenCalledWith('YouTube Music lyrics lookup', { reason: 'found', attempt: 1, synchronized: true });
 });
 
+it('recovers single-release lyrics indexed under the lead collaborator and caches the full credit', async () => {
+  const single = { title: 'Original Single', artist: 'First Artist & Second Artist', album: 'Original Single', duration: 165 };
+  request.mockResolvedValueOnce(json({}, 404)).mockResolvedValueOnce(json({
+    trackName: single.title, artistName: 'First Artist', albumName: single.album,
+    duration: 165, instrumental: false, plainLyrics: 'Original synthetic fixture text',
+  }));
+  const client = new LyricsClient();
+  const value = { text: 'Original synthetic fixture text', synchronized: [] };
+  expect(await client.lookup(single)).toEqual(value);
+  expect(await client.lookup(single)).toEqual(value);
+  expect(request).toHaveBeenCalledTimes(2);
+  expect(new URL(String(request.mock.calls[1][0])).searchParams.get('artist_name')).toBe('First Artist');
+  expect(wait.mock.calls[0][0]).toBeGreaterThanOrEqual(300);
+});
+
+it.each(['album', 'duration', 'title'])('rejects a different lead-artist recording: %s', async field => {
+  const single = { title: 'Original Single', artist: 'First Artist & Second Artist', album: 'Original Single', duration: 165 };
+  const response = { trackName: single.title, artistName: 'First Artist', albumName: single.album, duration: 165,
+    instrumental: false, plainLyrics: 'Original synthetic fixture text' };
+  if (field === 'album') response.albumName = 'Other Album';
+  if (field === 'title') response.trackName = 'Original Single Live';
+  if (field === 'duration') response.duration = 180;
+  request.mockResolvedValueOnce(json({}, 404)).mockResolvedValueOnce(json(response));
+  expect(await new LyricsClient().lookup(single)).toBeUndefined();
+});
+
 it.each([500, 502, 504])('recovers from transient HTTP %s with one spaced retry', async status => {
   request.mockResolvedValueOnce(json({}, status)).mockResolvedValueOnce(json(record));
   expect(await new LyricsClient().lookup(track)).toEqual(expected);

@@ -143,7 +143,21 @@ export class LyricsClient {
           this.log(response.status === 404 ? 'not_found' : 'http_error', { httpStatus: response.status, attempt, retrying });
           await response.body?.cancel();
           if (retrying) continue;
-          if (response.status === 404) this.remember(key);
+          if (response.status === 404) {
+            // Some single releases list only the lead artist in LRCLIB.
+            // Retry explicit two-artist credits only for a matching single;
+            // the normal title, album, artist and duration checks still apply.
+            const artists = artist.split(/\s+&\s+/);
+            if (artists.length === 2 && artists.every(value => value.trim()) &&
+                track.album && normalized(track.album) === normalized(track.title)) {
+              this.nextRequest = Date.now() + 300;
+              const value = await this.request({ ...track, artist: artists[0].trim() }, signal);
+              if (value) this.remember(key, value);
+              this.log('lead_artist_fallback', { found: !!value });
+              return value;
+            }
+            this.remember(key);
+          }
           return;
         }
         if (!response.headers.get('content-type')?.toLowerCase().includes('application/json')) {
