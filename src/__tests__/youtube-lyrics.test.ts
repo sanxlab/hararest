@@ -141,6 +141,7 @@ const mediaTest = hasMediaTools ? it : it.skip;
 
 mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-japanese', 'found-empty-existing',
   'found-youtube-timed', 'found-youtube-without-lrclib', 'found-youtube-after-lrclib-error',
+  'found-kugou-after-plain', 'found-kugou-after-missing', 'found-kugou-after-error', 'found-plain-after-kugou-failed',
   'found-plain-after-youtube-failed', 'found-plain-after-youtube-missing',
   'missing', 'unavailable', 'malformed', 'too-large', 'ordinary-youtube'] as const)(
   'keeps MP3 playable, existing metadata and cover intact when lyrics are %s', async state => {
@@ -164,13 +165,14 @@ mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-j
       const lyrics = `${originalLyrics}\nartist=must not overwrite artist\nSymbols: # ; = \\ 日本語`;
       const lrc = '[00:00.00]Original first fixture line\n[00:00.45]Original 日本語 fixture line';
       const youtubeTimed = state.startsWith('found-youtube');
+      const kugouTimed = state.startsWith('found-kugou');
       const lrclibSynced = state.startsWith('found-synced') || state === 'found-japanese';
-      const synced = lrclibSynced || youtubeTimed;
+      const synced = lrclibSynced || youtubeTimed || kugouTimed;
       request.mockImplementation(async url => {
         const query = new URL(String(url)).searchParams;
-        if (state === 'unavailable' || state === 'found-youtube-after-lrclib-error') throw new Error('lyrics service down');
+        if (state === 'unavailable' || state === 'found-youtube-after-lrclib-error' || state === 'found-kugou-after-error') throw new Error('lyrics service down');
         if (state === 'malformed') return new Response('bad JSON', { headers: { 'content-type': 'application/json' } });
-        if (state === 'missing' || state === 'found-youtube-without-lrclib') return json({}, 404);
+        if (state === 'missing' || state === 'found-youtube-without-lrclib' || state === 'found-kugou-after-missing') return json({}, 404);
         expect(query.get('track_name')).toBe(metadata.title);
         expect(query.get('artist_name')).toBe(metadata.artist);
         return json({ ...record, trackName: metadata.title, artistName: metadata.artist, albumName: metadata.album,
@@ -183,7 +185,14 @@ mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-j
           { text: 'Original 日本語 fixture line', timeMs: 450 },
         ] } : undefined;
       });
-      const service = new YoutubeMusicLyrics(new LyricsClient(), { lookup: timedLookup });
+      const kugouLookup = jest.fn(async () => {
+        if (state === 'found-plain-after-kugou-failed') throw new Error('lyrics source unavailable');
+        return kugouTimed ? { text: lrc, synchronized: [
+          { text: 'Original first fixture line', timeMs: 0 },
+          { text: 'Original 日本語 fixture line', timeMs: 450 },
+        ] } : undefined;
+      });
+      const service = new YoutubeMusicLyrics(new LyricsClient(), { lookup: timedLookup }, { lookup: kugouLookup });
       await service.enrich(file, state === 'ordinary-youtube' ? 'https://www.youtube.com/watch?v=fixture' : 'https://music.youtube.com/watch?v=fixture', {
         maxBytes: state === 'too-large' ? before.length : 256 * 1024 * 1024,
       });
@@ -212,6 +221,11 @@ mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-j
       else {
         expect(timedLookup).toHaveBeenCalledTimes(1);
         expect(timedLookup).toHaveBeenCalledWith('https://music.youtube.com/watch?v=fixture', expect.any(Number), undefined);
+      }
+      if (lrclibSynced || youtubeTimed || state === 'ordinary-youtube') expect(kugouLookup).not.toHaveBeenCalled();
+      else {
+        expect(kugouLookup).toHaveBeenCalledTimes(1);
+        expect(kugouLookup).toHaveBeenCalledWith({ ...metadata, duration: expect.any(Number) }, undefined);
       }
       if (state === 'found') {
         request.mockClear();

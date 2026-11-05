@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { readResponseText } from '../../utils/readResponse';
 import logger from '../../utils/logger';
 import { YoutubeTimedLyrics } from './youtube.timed-lyrics';
+import { KugouLyricsClient } from './youtube.kugou-lyrics';
 
 const MAX_LYRICS_BYTES = 64 * 1024;
 const recordSchema = z.object({
@@ -259,6 +260,7 @@ export class YoutubeMusicLyrics {
   constructor(
     private readonly client = new LyricsClient(),
     private readonly timedClient: Pick<YoutubeTimedLyrics, 'lookup'> = new YoutubeTimedLyrics(),
+    private readonly kugouClient: Pick<KugouLyricsClient, 'lookup'> = new KugouLyricsClient(),
   ) {}
 
   async enrich(file: string, url: string, options: { signal?: AbortSignal; maxBytes: number }): Promise<void> {
@@ -285,10 +287,11 @@ export class YoutubeMusicLyrics {
       }
       stage = 'lookup';
       const duration = Number(probe.format?.duration);
+      const track = { title: tags.title, artist: tags.artist, album: tags.album, duration };
       let lyrics: LyricsData | undefined;
       let source = 'lrclib';
       try {
-        lyrics = await this.client.lookup({ title: tags.title, artist: tags.artist, album: tags.album, duration }, options.signal);
+        lyrics = await this.client.lookup(track, options.signal);
       } catch {
         options.signal?.throwIfAborted();
         logger.info('YouTube Music lyrics fallback needed', { reason: 'lrclib_failed' });
@@ -304,6 +307,19 @@ export class YoutubeMusicLyrics {
         } catch {
           options.signal?.throwIfAborted();
           logger.info('YouTube Music timed lyrics unavailable', { reason: 'fallback_failed' });
+        }
+      }
+      if (!lyrics?.synchronized.length) {
+        stage = 'kugou_lookup';
+        try {
+          const timed = await this.kugouClient.lookup(track, options.signal);
+          if (timed?.synchronized.length) {
+            lyrics = timed;
+            source = 'kugou';
+          }
+        } catch {
+          options.signal?.throwIfAborted();
+          logger.info('YouTube Music timed lyrics unavailable', { reason: 'kugou_failed' });
         }
       }
       if (!lyrics) {

@@ -147,8 +147,6 @@ def _fallback_lyrics_reference(response, video_id):
         renderer = _dict_path(tab, "tabRenderer")
         if not isinstance(renderer, dict):
             return None
-        if renderer.get("unselectable") is True:
-            continue
         queue = _dict_path(
             renderer, "content", "musicQueueRenderer", "content",
             "playlistPanelRenderer", "contents",
@@ -165,6 +163,8 @@ def _fallback_lyrics_reference(response, video_id):
                     )
                 if isinstance(track, dict) and track.get("selected") is True:
                     selected.append(track.get("videoId"))
+        # The unselectable UI flag alone does not determine the browse payload;
+        # fetch_timed_lyrics validates the actual lyrics result separately.
         endpoint = _dict_path(renderer, "endpoint", "browseEndpoint")
         page_type = _dict_path(
             endpoint, "browseEndpointContextSupportedConfigs",
