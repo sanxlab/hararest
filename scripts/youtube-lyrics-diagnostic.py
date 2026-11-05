@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import base64
 import tempfile
+import urllib.request
 
 result = {'probe': 'cookie'}
 try:
@@ -39,6 +40,31 @@ try:
     result['timedLines'] = len(data.get('lines', []))
     result['hasTimestamps'] = result['timedLines'] > 0
     result['timedLookup'] = 'found' if result['hasTimestamps'] else 'empty'
+    # Public reference from an independent anonymous client, never cookie auth.
+    from ytmusicapi import YTMusic
+    session = helper.create_bounded_session()
+    try:
+        anonymous = YTMusic(requests_session=session)
+        raw = anonymous._send_request('next', {'videoId': '7IWlXi-hVxk'})
+        reference = helper._fallback_lyrics_reference(raw, '7IWlXi-hVxk')
+        if reference:
+            request = urllib.request.Request(
+                'https://ytmbrowseproxy.zvz.be/browse?prettyPrint=false',
+                data=json.dumps({'browseId': reference, 'context': {'client': {
+                    'clientName': '26', 'clientVersion': '7.01.05',
+                }}}).encode(), headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+            )
+            with urllib.request.urlopen(request, timeout=10) as response:
+                result['proxyHTTPStatus'] = response.status
+                payload = response.read(4 * 1024 * 1024 + 1)
+            if len(payload) <= 4 * 1024 * 1024:
+                from ytmusicapi.navigation import nav, TIMESTAMPED_LYRICS
+                model = nav(json.loads(payload), TIMESTAMPED_LYRICS, True)
+                rows = model.get('timedLyricsData', []) if isinstance(model, dict) else []
+                lines = [{'start_time': int(row['cueRange']['startTimeMilliseconds']), 'text': row['lyricLine']} for row in rows]
+                result['proxyTimedLines'] = len(helper.validated_lines({'hasTimestamps': True, 'lyrics': lines}))
+    finally:
+        session.close()
 except Exception:
     result['timedLookup'] = 'failed'
 print(json.dumps(result), flush=True)
