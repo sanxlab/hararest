@@ -10,6 +10,7 @@ import sys
 
 sys.dont_write_bytecode = True
 VIDEO = "BFzh21UKNBk"
+PROBES = ("default", "minimal", "mobile_minimal")
 SAFE_CODES = {"unsupported_request", "request_limit", "upstream_status", "response_limit"}
 SAFE_ERRORS = {
     "AttributeError", "ConnectionError", "ConnectTimeout", "FileNotFoundError",
@@ -53,7 +54,11 @@ def probe(helper, yt_music, client):
                     "musicVideoType": "MUSIC_VIDEO_TYPE_ATV",
                 }},
             })
-        response = api._send_request("next", body)
+        if client == "mobile_minimal":
+            with api.as_mobile():
+                response = api._send_request("next", body)
+        else:
+            response = api._send_request("next", body)
         current = at(response, "currentVideoEndpoint", "watchEndpoint", "videoId")
         tabs = at(response, "contents", "singleColumnMusicWatchNextResultsRenderer",
                   "tabbedRenderer", "watchNextTabbedResultsRenderer", "tabs")
@@ -139,10 +144,10 @@ def main():
             spec.loader.exec_module(helper)
             from ytmusicapi import YTMusic
     except Exception as error:
-        for client in ("default", "minimal"):
+        for client in PROBES:
             print(json.dumps({"probe": client, **failure(error)}, separators=(",", ":")))
         return 1
-    for client in ("default", "minimal"):
+    for client in PROBES:
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 result = probe(helper, YTMusic, client)

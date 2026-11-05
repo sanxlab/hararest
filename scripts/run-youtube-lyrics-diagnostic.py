@@ -51,7 +51,7 @@ source = Path('scripts/youtube-lyrics-diagnostic.py').read_text()
 command = '/opt/media-fallback/bin/python -c ' + shlex.quote(source)
 try:
     result = subprocess.run(
-        ['heroku','run','--no-tty','--no-notify','--exit-code','--app',app,'--',command],
+        ['heroku','run','--no-tty','--no-notify','--exit-code','--type','web','--app',app,'--',command],
         capture_output=True, text=True, timeout=150,
     )
 except subprocess.TimeoutExpired:
@@ -62,9 +62,21 @@ for line in result.stdout.splitlines():
         row = json.loads(line)
     except json.JSONDecodeError:
         continue
-    if isinstance(row, dict) and row.get('probe') in ('default','minimal'):
+    if isinstance(row, dict) and row.get('probe') in ('default','minimal','mobile_minimal'):
         print(json.dumps(row), flush=True)
         found = True
 if result.returncode or not found:
-    print(json.dumps({'diagnostic':'remote','error':'remote_diagnostic_failed','exitCode':result.returncode}), flush=True)
+    combined = result.stderr + '\n' + result.stdout
+    markers = [name for name, pattern in {
+        'python_syntax':r'(?m)^SyntaxError:',
+        'python_indent':r'(?m)^IndentationError:',
+        'python_name':r'(?m)^NameError:',
+        'missing_file':r'No such file or directory',
+        'unknown_flag':r'(?i)unknown flag|nonexistent flag',
+        'unknown_process':r'(?i)process type.*not found|could not find.*process',
+        'not_authenticated':r'(?i)invalid credentials|authentication failed|not logged in',
+        'forbidden':r'(?i)forbidden|not authorized',
+        'attach_failed':r'(?i)error connecting to dyno|could not connect to dyno',
+    }.items() if re.search(pattern, combined)]
+    print(json.dumps({'diagnostic':'remote','error':'remote_diagnostic_failed','exitCode':result.returncode,'markers':markers,'stdoutBytes':len(result.stdout.encode()),'stderrBytes':len(result.stderr.encode())}), flush=True)
     raise SystemExit(1)
