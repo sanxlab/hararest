@@ -12,10 +12,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
-      - name: Install Heroku CLI
-        run: |
-          curl --fail --silent --show-error https://cli-assets.heroku.com/install.sh -o /tmp/install-heroku.sh
-          sh /tmp/install-heroku.sh
       - name: Inspect safe lyrics metadata in Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
