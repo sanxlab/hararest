@@ -3,6 +3,7 @@ import path from 'node:path';
 import { execFile } from 'child_process';
 import { YoutubeTimedLyrics } from '../modules/youtube/youtube.timed-lyrics';
 import logger from '../utils/logger';
+import { config } from '../config/default';
 
 jest.mock('child_process', () => ({ execFile: jest.fn() }));
 const command = execFile as unknown as jest.Mock;
@@ -41,6 +42,7 @@ it('preserves and sorts actual millisecond timings with multilingual lyrics', as
     path.resolve('src/modules/youtube/ytmusic_lyrics.py'), videoId,
   ], expect.objectContaining({ timeout: 15_000, maxBuffer: 256 * 1024, killSignal: 'SIGKILL' }), expect.any(Function));
   expect(command.mock.calls[0][2]).not.toHaveProperty('shell');
+  expect(command.mock.calls[0][2].env.HARAREST_YTMUSIC_COOKIE_PATH).toBe(config.youtube.cookiePath);
 });
 
 it('uses the configured Python interpreter without passing credentials or URLs', async () => {

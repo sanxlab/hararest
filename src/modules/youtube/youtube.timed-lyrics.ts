@@ -2,6 +2,7 @@ import { ChildProcess, execFile } from 'child_process';
 import path from 'node:path';
 import { z } from 'zod';
 import logger from '../../utils/logger';
+import { config } from '../../config/default';
 import type { LyricsData } from './youtube.lyrics';
 
 const MAX_RESPONSE_BYTES = 256 * 1024;
@@ -139,7 +140,9 @@ export class YoutubeTimedLyrics {
     const output = new Promise<string>((resolve, reject) => {
       child = execFile(process.env.PYTHON_BIN || 'python3', [
         path.resolve(__dirname, '../../../src/modules/youtube/ytmusic_lyrics.py'), videoId,
-      ], { signal, timeout: 15_000, killSignal: 'SIGKILL', maxBuffer: MAX_RESPONSE_BYTES }, (error, stdout) => {
+      ], { signal, timeout: 15_000, killSignal: 'SIGKILL', maxBuffer: MAX_RESPONSE_BYTES,
+        env: { ...process.env, HARAREST_YTMUSIC_COOKIE_PATH: config.youtube.cookiePath },
+      }, (error, stdout) => {
         if (error) reject(error);
         else resolve(stdout);
       });

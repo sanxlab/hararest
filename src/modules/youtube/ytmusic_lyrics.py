@@ -2,6 +2,8 @@
 
 import json
 import math
+import os
+import http.cookiejar
 import re
 import sys
 from urllib.parse import urlsplit
@@ -21,7 +23,37 @@ class LyricsLookupError(Exception):
     """An operational lookup failure; safe to report without raw details."""
 
 
-def create_bounded_session():
+def browser_auth_from_cookie_file(filename):
+    if not filename:
+        return None
+    try:
+        if os.stat(filename).st_size > 65536:
+            return None
+        jar = http.cookiejar.MozillaCookieJar(filename)
+        jar.load(ignore_discard=True)
+        cookies = {}
+        for cookie in jar:
+            if (cookie.domain.lstrip('.') not in ('youtube.com', 'music.youtube.com')
+                    or cookie.path != '/' or cookie.is_expired()
+                    or not re.fullmatch(r'[A-Za-z0-9_-]+', cookie.name)
+                    or not re.fullmatch(r'[\x21-\x3a\x3c-\x7e]+', cookie.value)):
+                continue
+            cookies[cookie.name] = cookie.value
+        if '__Secure-3PAPISID' not in cookies:
+            return None
+        from ytmusicapi.helpers import initialize_headers, get_authorization
+        headers = initialize_headers()
+        headers.update({
+            'cookie': '; '.join(name + '=' + value for name, value in cookies.items()),
+            'authorization': get_authorization(cookies['__Secure-3PAPISID'] + ' https://music.youtube.com'),
+            'x-goog-authuser': '0',
+        })
+        return dict(headers)
+    except Exception:
+        return None
+
+
+def create_bounded_session(browser_auth=False):
     # Lazy imports keep this module testable without optional runtime packages.
     import requests
 
@@ -54,7 +86,9 @@ def create_bounded_session():
             if (
                 not allowed
                 or kwargs.get("auth") is not None
-                or any(str(key).lower() == "authorization" for key in headers)
+                or any(str(key).lower() == "authorization" and (
+                    not browser_auth or re.fullmatch(r'SAPISIDHASH \d+_[a-f0-9]{40}', str(value)) is None
+                ) for key, value in headers.items())
             ):
                 raise ValueError("unsupported_request")
             self.request_count += 1
@@ -193,8 +227,9 @@ def fetch_timed_lyrics(video_id, api=None):
         if api is None:
             from ytmusicapi import YTMusic
 
-            session = create_bounded_session()
-            api = YTMusic(requests_session=session)
+            auth = browser_auth_from_cookie_file(os.environ.get('HARAREST_YTMUSIC_COOKIE_PATH'))
+            session = create_bounded_session(browser_auth=bool(auth))
+            api = YTMusic(auth=auth, requests_session=session)
         watch = api.get_watch_playlist(videoId=video_id, limit=1)
         if not isinstance(watch, dict):
             return empty("watch_invalid")

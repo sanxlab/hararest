@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import types
 import unittest
+import tempfile
 from unittest.mock import MagicMock, patch
 
 
@@ -336,6 +337,26 @@ class LookupTests(unittest.TestCase):
             self.assertNotIn("private", out.getvalue())
 
 
+class CookieTests(unittest.TestCase):
+    def test_reuses_only_unexpired_youtube_cookies_without_printing_them(self):
+        module = types.ModuleType('ytmusicapi.helpers')
+        module.initialize_headers = lambda: {'origin': 'https://music.youtube.com'}
+        module.get_authorization = lambda value: 'SAPISIDHASH 123_' + 'a' * 40
+        with tempfile.TemporaryDirectory() as directory:
+            filename = Path(directory) / 'cookies'
+            filename.write_text('# Netscape HTTP Cookie File\n'
+                '.youtube.com\tTRUE\t/\tTRUE\t2147483647\t__Secure-3PAPISID\tfixture-session\n'
+                '.attacker.example\tTRUE\t/\tTRUE\t2147483647\tprivate\toutside-fixture\n'
+                '.youtube.com\tTRUE\t/\tTRUE\t1\texpired\texpired-fixture\n')
+            with patch.dict(sys.modules, {'ytmusicapi.helpers': module}):
+                result = helper.browser_auth_from_cookie_file(str(filename))
+            self.assertEqual(result['cookie'], '__Secure-3PAPISID=fixture-session')
+            self.assertEqual(result['x-goog-authuser'], '0')
+            filename.write_text('# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t2147483647\tCONSENT\tYES\n')
+            self.assertIsNone(helper.browser_auth_from_cookie_file(str(filename)))
+        self.assertIsNone(helper.browser_auth_from_cookie_file('/nonexistent-fixture'))
+
+
 class SessionTests(unittest.TestCase):
     def setUp(self):
         self.calls = []
@@ -406,6 +427,18 @@ class SessionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "request_limit"):
             self.session.request("GET", "https://music.youtube.com/")
         self.assertEqual(len(self.calls), helper.MAX_HTTP_REQUESTS)
+
+    def test_explicit_browser_session_allows_only_generated_youtube_auth(self):
+        session = helper.create_bounded_session(browser_auth=True)
+        self.response()
+        session.request('POST', 'https://music.youtube.com/youtubei/v1/browse',
+                        headers={'Authorization': 'SAPISIDHASH 123_' + 'a' * 40})
+        with self.assertRaises(ValueError):
+            session.request('POST', 'https://music.youtube.com/youtubei/v1/browse',
+                            headers={'Authorization': 'Bearer fixture'})
+        with self.assertRaises(ValueError):
+            session.request('POST', 'https://attacker.example/youtubei/v1/browse',
+                            headers={'Authorization': 'SAPISIDHASH 123_' + 'a' * 40})
 
 
 if __name__ == "__main__":
