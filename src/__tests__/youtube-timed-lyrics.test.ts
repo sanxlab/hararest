@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import path from 'node:path';
+import axios from 'axios';
 import { execFile } from 'child_process';
 import { YoutubeTimedLyrics } from '../modules/youtube/youtube.timed-lyrics';
 import logger from '../utils/logger';
@@ -273,4 +274,42 @@ it('does not spawn an already-cancelled queued request', async () => {
   await first;
   await cancelled;
   expect(command).toHaveBeenCalledTimes(1);
+});
+
+describe('private home helper', () => {
+  afterEach(() => {
+    delete process.env.YTMUSIC_HELPER_URL;
+    delete process.env.YTMUSIC_HELPER_TOKEN;
+    delete process.env.TAILSCALE_AUTHKEY;
+    jest.restoreAllMocks();
+  });
+
+  it('requests the exact video via the local Tailscale proxy', async () => {
+    const get = jest.spyOn(axios, 'get').mockResolvedValue({ data: JSON.stringify({ videoId, lines }) });
+    process.env.YTMUSIC_HELPER_URL = 'http://100.112.3.60:20129';
+    process.env.YTMUSIC_HELPER_TOKEN = 'x'.repeat(43);
+    process.env.TAILSCALE_AUTHKEY = 'fixture';
+    expect(await new YoutubeTimedLyrics().lookup(url, 155)).toEqual(result);
+    expect(get).toHaveBeenCalledWith(`http://100.112.3.60:20129/lyrics/${videoId}`, expect.objectContaining({
+      maxRedirects: 0, timeout: 18000,
+      proxy: { protocol: 'http', host: '127.0.0.1', port: 1056 },
+    }));
+    expect(command).not.toHaveBeenCalled();
+  });
+
+  it('rejects an endpoint outside the tailnet before sending its token', async () => {
+    const get = jest.spyOn(axios, 'get');
+    process.env.YTMUSIC_HELPER_URL = 'http://example.com:20129';
+    process.env.YTMUSIC_HELPER_TOKEN = 'x'.repeat(43);
+    expect(await new YoutubeTimedLyrics().lookup(url, 155)).toBeUndefined();
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it('treats helper downtime as an optional-source miss', async () => {
+    jest.spyOn(axios, 'get').mockRejectedValue(new Error('offline'));
+    process.env.YTMUSIC_HELPER_URL = 'http://100.112.3.60:20129';
+    process.env.YTMUSIC_HELPER_TOKEN = 'x'.repeat(43);
+    expect(await new YoutubeTimedLyrics().lookup(url, 155)).toBeUndefined();
+    expect(command).not.toHaveBeenCalled();
+  });
 });

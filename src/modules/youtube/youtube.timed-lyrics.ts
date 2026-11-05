@@ -1,5 +1,6 @@
 import { ChildProcess, execFile } from 'child_process';
 import path from 'node:path';
+import axios from 'axios';
 import { z } from 'zod';
 import logger from '../../utils/logger';
 import { config } from '../../config/default';
@@ -136,6 +137,25 @@ export class YoutubeTimedLyrics {
   }
 
   private async run(videoId: string, signal?: AbortSignal): Promise<string> {
+    const endpoint = process.env.YTMUSIC_HELPER_URL;
+    if (endpoint) {
+      const url = new URL(endpoint);
+      // This transport is deliberately restricted to private tailnet IPv4.
+      if (url.protocol !== 'http:' || !/^100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}$/.test(url.hostname) ||
+          url.port !== '20129' || url.username || url.password || url.search || url.hash || url.pathname !== '/') {
+        throw new Error('Invalid helper endpoint');
+      }
+      const token = process.env.YTMUSIC_HELPER_TOKEN;
+      if (!token || token.length < 32) throw new Error('Missing helper token');
+      url.pathname = `/lyrics/${videoId}`;
+      const response = await axios.get<string>(url.toString(), {
+        responseType: 'text', transformResponse: [], signal, timeout: 18_000,
+        maxRedirects: 0, maxContentLength: MAX_RESPONSE_BYTES, maxBodyLength: MAX_RESPONSE_BYTES,
+        headers: { Authorization: `Bearer ${token}` },
+        proxy: process.env.TAILSCALE_AUTHKEY ? { protocol: 'http', host: '127.0.0.1', port: 1056 } : false,
+      });
+      return response.data;
+    }
     let child: ChildProcess | undefined;
     const output = new Promise<string>((resolve, reject) => {
       child = execFile(process.env.PYTHON_BIN || 'python3', [

@@ -48,6 +48,11 @@ RUN printf '%s\n' \
     '--remote-components ejs:github' \
     > /etc/yt-dlp.conf
 
+COPY --from=docker.io/tailscale/tailscale:stable /usr/local/bin/tailscale /app/tailscale
+COPY --from=docker.io/tailscale/tailscale:stable /usr/local/bin/tailscaled /app/tailscaled
+COPY tailscale.sh /app/tailscale.sh
+RUN chmod 755 /app/tailscale.sh
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -79,4 +84,4 @@ USER node
 
 EXPOSE 1337
 
-CMD ["node", "dist/server.js"]
+CMD ["/app/tailscale.sh"]

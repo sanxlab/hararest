@@ -1,0 +1,20 @@
+[Unit]
+Description=Hararest private lyrics helper
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/hararest-lyrics
+EnvironmentFile=%h/.config/hararest-lyrics.env
+ExecStart=/usr/bin/python3 %h/.local/share/hararest-lyrics/server.py
+Restart=on-failure
+RestartSec=5
+MemoryHigh=128M
+MemoryMax=192M
+TasksMax=8
+CPUQuota=50%
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target
