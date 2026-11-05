@@ -125,7 +125,11 @@ def validated_lines(result):
 def fetch_timed_lyrics(video_id, api=None):
     if not isinstance(video_id, str) or VIDEO_ID.fullmatch(video_id) is None:
         return {"videoId": "", "lines": []}
-    empty = {"videoId": video_id, "lines": []}
+
+    def empty(reason):
+        # Fixed diagnostic codes only; never return upstream content or IDs.
+        return {"videoId": video_id, "lines": [], "reason": reason}
+
     session = None
     try:
         if api is None:
@@ -135,20 +139,33 @@ def fetch_timed_lyrics(video_id, api=None):
             api = YTMusic(requests_session=session)
         watch = api.get_watch_playlist(videoId=video_id, limit=1)
         if not isinstance(watch, dict):
-            return empty
+            return empty("watch_invalid")
         tracks = watch.get("tracks")
         if (
             not isinstance(tracks, list)
             or not tracks
             or not isinstance(tracks[0], dict)
-            or tracks[0].get("videoId") != video_id
         ):
-            return empty
+            return empty("watch_invalid")
+        if tracks[0].get("videoId") != video_id:
+            return empty("video_mismatch")
         browse_id = watch.get("lyrics")
+        if browse_id is None or browse_id == "":
+            return empty("lyrics_ref_missing")
         if not isinstance(browse_id, str) or LYRICS_ID.fullmatch(browse_id) is None:
-            return empty
+            return empty("lyrics_ref_invalid")
         result = api.get_lyrics(browse_id, timestamps=True)
-        return {"videoId": video_id, "lines": validated_lines(result)}
+        if result is None:
+            return empty("no_lyrics")
+        if isinstance(result, dict):
+            if result.get("hasTimestamps") is False:
+                return empty("untimed")
+            if result.get("hasTimestamps") is True and result.get("lyrics") == []:
+                return empty("no_lyrics")
+        lines = validated_lines(result)
+        if not lines:
+            return empty("invalid_lines")
+        return {"videoId": video_id, "lines": lines}
     except Exception:
         # Distinguish outages from a legitimate miss, so the parent does not
         # cache transient failures. Never expose the original exception.

@@ -153,6 +153,35 @@ it('caches only a legitimate empty result for five minutes', async () => {
   expect(command).toHaveBeenCalledTimes(2);
 });
 
+it.each([
+  'watch_invalid', 'video_mismatch', 'lyrics_ref_missing', 'lyrics_ref_invalid',
+  'no_lyrics', 'untimed', 'invalid_lines',
+])('logs the allowlisted empty diagnostic and preserves its cache: %s', async detail => {
+  const log = jest.spyOn(logger, 'info');
+  respond({ videoId, lines: [], reason: detail });
+  const client = new YoutubeTimedLyrics();
+  expect(await client.lookup(url, 155)).toBeUndefined();
+  expect(log).toHaveBeenCalledWith('YouTube Music timed lyrics', { reason: 'empty', detail });
+  respond({ videoId, lines });
+  expect(await client.lookup(url, 155)).toBeUndefined();
+  expect(command).toHaveBeenCalledTimes(1);
+});
+
+it.each([
+  'https://private.test?secret=token', '', null, 42,
+  { secret: 'private' }, ['private'],
+])('ignores unknown or malformed helper diagnostics without logging them: %j', async reason => {
+  const log = jest.spyOn(logger, 'info');
+  respond({ videoId, lines: [], reason });
+  const client = new YoutubeTimedLyrics();
+  expect(await client.lookup(url, 155)).toBeUndefined();
+  expect(log).toHaveBeenCalledWith('YouTube Music timed lyrics', { reason: 'empty' });
+  expect(JSON.stringify(log.mock.calls)).not.toMatch(/private|secret|token/);
+  respond({ videoId, lines });
+  expect(await client.lookup(url, 155)).toBeUndefined();
+  expect(command).toHaveBeenCalledTimes(1);
+});
+
 it('bounds its cache to 128 recordings', async () => {
   command.mockImplementation((_bin: string, args: string[], _options: object, callback: Callback) => callback(null, JSON.stringify({ videoId: args[1], lines: [] }), ''));
   const client = new YoutubeTimedLyrics();

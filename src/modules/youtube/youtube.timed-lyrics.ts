@@ -7,12 +7,19 @@ import type { LyricsData } from './youtube.lyrics';
 const MAX_RESPONSE_BYTES = 256 * 1024;
 const MAX_LYRICS_BYTES = 64 * 1024;
 const MAX_PENDING = 16;
+const emptyReasonSchema = z.enum([
+  'watch_invalid', 'video_mismatch', 'lyrics_ref_missing', 'lyrics_ref_invalid',
+  'no_lyrics', 'untimed', 'invalid_lines',
+]);
+type EmptyReason = z.infer<typeof emptyReasonSchema>;
 const responseSchema = z.object({
   videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
   lines: z.array(z.object({
     timeMs: z.number().int().min(0),
     text: z.string().max(MAX_LYRICS_BYTES),
   })).max(4000),
+  // Ignore unknown diagnostics without changing valid-empty cache behavior.
+  reason: emptyReasonSchema.optional().catch(undefined),
 });
 
 function videoIdFromURL(value: string): string | undefined {
@@ -62,7 +69,7 @@ export class YoutubeTimedLyrics {
     finally { this.queued--; }
   }
 
-  private log(reason: string, details: Record<string, boolean> = {}): void {
+  private log(reason: string, details: { found?: boolean; detail?: EmptyReason } = {}): void {
     logger.info('YouTube Music timed lyrics', { reason, ...details });
   }
 
@@ -89,7 +96,7 @@ export class YoutubeTimedLyrics {
       const lines = parsed.data.lines;
       if (lines.length === 0) {
         this.remember(key);
-        this.log('empty');
+        this.log('empty', parsed.data.reason ? { detail: parsed.data.reason } : {});
         return;
       }
       let size = 0;

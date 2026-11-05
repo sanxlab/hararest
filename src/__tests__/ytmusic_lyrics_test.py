@@ -54,7 +54,9 @@ class LookupTests(unittest.TestCase):
 
     def test_does_not_pick_lyrics_from_a_different_song(self):
         self.api.get_watch_playlist.return_value["tracks"] = [{"videoId": "SVkGRoLicuA"}]
-        self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {"videoId": VIDEO, "lines": []})
+        self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+            "videoId": VIDEO, "lines": [], "reason": "video_mismatch",
+        })
         self.api.get_lyrics.assert_not_called()
 
     def test_rejects_invalid_id_before_any_request(self):
@@ -64,21 +66,41 @@ class LookupTests(unittest.TestCase):
         self.api.get_watch_playlist.assert_not_called()
 
     def test_skips_missing_or_untrusted_lyrics_reference(self):
-        for value in (None, "", "https://attacker.example/lyrics", "MPLY" + "x" * 501):
+        for value, reason in (
+            (None, "lyrics_ref_missing"),
+            ("", "lyrics_ref_missing"),
+            ("https://attacker.example/lyrics", "lyrics_ref_invalid"),
+            ("MPLY" + "x" * 501, "lyrics_ref_invalid"),
+            ({"private": "secret"}, "lyrics_ref_invalid"),
+        ):
             with self.subTest(value=value):
                 self.api.get_watch_playlist.return_value["lyrics"] = value
-                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api)["lines"], [])
+                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+                    "videoId": VIDEO, "lines": [], "reason": reason,
+                })
         self.api.get_lyrics.assert_not_called()
 
     def test_skips_missing_tracks_and_plain_lyrics(self):
-        for watch in ({}, {"tracks": []}, {"tracks": [None]}, {"tracks": "wrong"}):
+        for watch in (None, {}, {"tracks": []}, {"tracks": [None]}, {"tracks": "wrong"}):
             with self.subTest(watch=watch):
                 self.api.get_watch_playlist.return_value = watch
-                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api)["lines"], [])
+                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+                    "videoId": VIDEO, "lines": [], "reason": "watch_invalid",
+                })
         self.api.get_watch_playlist.return_value = {"tracks": [{"videoId": VIDEO}], "lyrics": REF}
-        for result in (None, {"hasTimestamps": False, "lyrics": "original fixture text"}, {"lyrics": []}):
-            self.api.get_lyrics.return_value = result
-            self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api)["lines"], [])
+        for result, reason in (
+            (None, "no_lyrics"),
+            ({"hasTimestamps": True, "lyrics": []}, "no_lyrics"),
+            ({"hasTimestamps": False, "lyrics": "original fixture text"}, "untimed"),
+            ({"lyrics": []}, "invalid_lines"),
+            ("private upstream payload", "invalid_lines"),
+            (timed([{"start_time": -1, "text": "private text"}]), "invalid_lines"),
+        ):
+            with self.subTest(reason=reason):
+                self.api.get_lyrics.return_value = result
+                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+                    "videoId": VIDEO, "lines": [], "reason": reason,
+                })
 
     def test_rejects_invalid_timing_instead_of_synthesizing_it(self):
         for value in (None, True, "1200", -1, 1.25, float("inf"), float("nan"), helper.MAX_TIME_MS + 1):
@@ -110,6 +132,7 @@ class LookupTests(unittest.TestCase):
     def test_cli_outputs_one_json_object_and_hides_runtime_errors(self):
         for result, failure, expected_code in (
             ({"videoId": VIDEO, "lines": []}, False, 0),
+            ({"videoId": VIDEO, "lines": [], "reason": "untimed"}, False, 0),
             (None, True, 1),
         ):
             out, err = io.StringIO(), io.StringIO()
@@ -117,7 +140,8 @@ class LookupTests(unittest.TestCase):
                 with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
                     code = helper.main([VIDEO])
             self.assertEqual(code, expected_code)
-            self.assertEqual(json.loads(out.getvalue()), {"videoId": VIDEO, "lines": []})
+            self.assertEqual(json.loads(out.getvalue()),
+                             {"videoId": VIDEO, "lines": []} if failure else result)
             self.assertEqual(len(out.getvalue().splitlines()), 1)
             self.assertEqual(err.getvalue(), "")
             self.assertNotIn("private", out.getvalue())
