@@ -70,6 +70,7 @@ def probe(helper, yt_music, client):
         })
         selected = []
         references = []
+        disabled_references = 0
         tab_shapes = []
         for tab in tabs if isinstance(tabs, list) else []:
             renderer = at(tab, "tabRenderer")
@@ -93,8 +94,9 @@ def probe(helper, yt_music, client):
             }
             if len(tab_shapes) < 8:
                 tab_shapes.append(shape)
-            if page_type == "MUSIC_PAGE_TYPE_TRACK_LYRICS" and valid_ref and disabled is not True:
+            if page_type == "MUSIC_PAGE_TYPE_TRACK_LYRICS" and valid_ref:
                 references.append(reference)
+                disabled_references += disabled is True
             queue = at(renderer, "content", "musicQueueRenderer", "content",
                        "playlistPanelRenderer", "contents")
             for item in queue if isinstance(queue, list) else []:
@@ -110,7 +112,9 @@ def probe(helper, yt_music, client):
             "selectedPrimaryCount": len(selected),
             "selectedPrimaryMatches": selected.count(True),
             "selectedPrimaryMismatches": selected.count(False),
-            "enabledLyricsRefCount": len(references),
+            "enabledLyricsRefCount": len(references) - disabled_references,
+            "lyricsRefCount": len(references),
+            "disabledLyricsRefCount": disabled_references,
         })
         if current == VIDEO and selected == [True] and len(references) == 1:
             result = api.get_lyrics(references[0], timestamps=True)
