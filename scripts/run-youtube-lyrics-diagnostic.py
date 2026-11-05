@@ -86,14 +86,6 @@ def remote_error(code, error=None):
             api_id = body.get('id') if isinstance(body, dict) else None
             if isinstance(api_id, str) and re.fullmatch(r'[a-z_]{1,40}', api_id):
                 safe['apiId'] = api_id
-            if error.code == 422:
-                # Only an operator API error, never application/lyrics content.
-                # Remove credentials, app identity, URLs, and opaque values.
-                summary = json.dumps(body, ensure_ascii=True).replace(key, '[credential]').replace(app, '[app]')
-                summary = re.sub(r'https?://[^\s"<>]+', '[url]', summary)
-                summary = re.sub(r'\S+@\S+', '[address]', summary)
-                summary = re.sub(r'[A-Za-z0-9_.:=-]{20,}', '[value]', summary)
-                safe['summary'] = summary[:800]
             message = body.get('message') if isinstance(body, dict) else None
             if error.code == 422 and isinstance(message, str):
                 message = message.lower()
@@ -193,6 +185,7 @@ def run_remote():
         created = api_request('/dynos', {
             'attach': False, 'type': 'web',
             'command': command,
+            'env': {'HARAREST_TEST_COOKIES_BASE64': os.environ.get('HARAREST_LYRICS_TEST_COOKIES', '')},
         })
         dyno_name, dyno_id = created.get('name'), created.get('id')
         if not isinstance(dyno_name, str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}', dyno_name):

@@ -5,13 +5,24 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import base64
+import tempfile
 
 result = {'probe': 'cookie'}
 try:
-    filename = subprocess.check_output(
-        ['node', '-p', "require('./dist/config/default').config.youtube.cookiePath"],
-        text=True, timeout=10,
-    ).strip().splitlines()[-1]
+    encoded = os.environ.pop('HARAREST_TEST_COOKIES_BASE64', '')
+    if encoded:
+        data = base64.b64decode(encoded, validate=True)
+        if len(data) > 65536:
+            raise ValueError('cookie_limit')
+        fd, filename = tempfile.mkstemp(prefix='lyrics-cookie-test-')
+        with os.fdopen(fd, 'wb') as output:
+            output.write(data)
+    else:
+        filename = subprocess.check_output(
+            ['node', '-p', "require('./dist/config/default').config.youtube.cookiePath"],
+            text=True, timeout=10,
+        ).strip().splitlines()[-1]
     result['cookieFilePresent'] = Path(filename).is_file()
     jar = http.cookiejar.MozillaCookieJar(filename)
     jar.load(ignore_discard=True, ignore_expires=True)

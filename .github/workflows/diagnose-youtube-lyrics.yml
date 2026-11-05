@@ -16,4 +16,5 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HARAREST_LYRICS_TEST_COOKIES: ${{ secrets.HARAREST_LYRICS_TEST_COOKIES }}
         run: python3 scripts/run-youtube-lyrics-diagnostic.py
