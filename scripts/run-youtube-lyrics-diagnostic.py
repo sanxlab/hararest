@@ -107,7 +107,7 @@ def safe_probe(row):
     for name in ('timedLines', 'tabCount', 'tabsOmitted', 'selectedPrimaryCount',
                  'selectedPrimaryMatches', 'selectedPrimaryMismatches',
                  'enabledLyricsRefCount', 'lyricsRefCount', 'disabledLyricsRefCount', 'httpRequests',
-                 'candidateCount', 'exactCandidateCount', 'durationMs', 'cookieCount', 'proxyTimedLines', 'proxyHTTPStatus'):
+                 'candidateCount', 'exactCandidateCount', 'durationMs', 'cookieCount', 'proxyTimedLines', 'proxyHTTPStatus', 'cookieMobileTimedLines'):
         if type(row.get(name)) is int and 0 <= row[name] <= 10_000_000:
             safe[name] = row[name]
     for name in ('currentEndpointPresent', 'currentEndpointMatches', 'tabsAreList', 'hasTimestamps', 'cookieFilePresent', 'authReady', 'sessionPresent', 'sessionUnexpired'):

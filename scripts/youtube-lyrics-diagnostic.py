@@ -40,6 +40,22 @@ try:
     result['timedLines'] = len(data.get('lines', []))
     result['hasTimestamps'] = result['timedLines'] > 0
     result['timedLookup'] = 'found' if result['hasTimestamps'] else 'empty'
+    from ytmusicapi import YTMusic
+    auth = helper.browser_auth_from_cookie_file(filename)
+    if auth:
+        web_session = helper.create_bounded_session(browser_auth=True)
+        mobile_session = helper.create_bounded_session()
+        try:
+            web = YTMusic(auth=auth, requests_session=web_session)
+            watch = web.get_watch_playlist(videoId='7IWlXi-hVxk', limit=1)
+            if watch['tracks'][0]['videoId'] == '7IWlXi-hVxk' and watch.get('lyrics'):
+                mobile_session.headers['Cookie'] = auth['cookie']
+                mobile = YTMusic(requests_session=mobile_session)
+                data = mobile.get_lyrics(watch['lyrics'], timestamps=True)
+                result['cookieMobileTimedLines'] = len(helper.validated_lines(data))
+        finally:
+            web_session.close()
+            mobile_session.close()
     # Public reference from an independent anonymous client, never cookie auth.
     from ytmusicapi import YTMusic
     session = helper.create_bounded_session()
