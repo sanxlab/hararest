@@ -10,6 +10,10 @@ const { config } = require(path.resolve('dist/config/default'));
 const run = promisify(execFile);
 
 async function main() {
+  // Verify the timed-lyrics dependency and helper are present in the same
+  // production Python environment used by the fallback. No network request.
+  await run(process.env.PYTHON_BIN || 'python3', ['-c', 'import ytmusicapi']);
+  fs.accessSync(path.resolve('src/modules/youtube/ytmusic_lyrics.py'), fs.constants.R_OK);
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'hararest-mp3-smoke-'));
   const originalFetch = globalThis.fetch;
   try {

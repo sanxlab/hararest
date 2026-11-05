@@ -139,7 +139,10 @@ const run = promisify(execFile);
 const hasMediaTools = ['ffmpeg', 'ffprobe'].every(binary => spawnSync(binary, ['-version'], { stdio: 'ignore' }).status === 0);
 const mediaTest = hasMediaTools ? it : it.skip;
 
-mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-japanese', 'found-empty-existing', 'missing', 'unavailable', 'malformed', 'too-large', 'ordinary-youtube'] as const)(
+mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-japanese', 'found-empty-existing',
+  'found-youtube-timed', 'found-youtube-without-lrclib', 'found-youtube-after-lrclib-error',
+  'found-plain-after-youtube-failed', 'found-plain-after-youtube-missing',
+  'missing', 'unavailable', 'malformed', 'too-large', 'ordinary-youtube'] as const)(
   'keeps MP3 playable, existing metadata and cover intact when lyrics are %s', async state => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-lyrics-'));
     try {
@@ -160,18 +163,28 @@ mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-j
       const beforeAudio = (await run('ffmpeg', ['-v', 'error', '-i', file, '-map', '0:a:0', '-f', 'hash', '-hash', 'sha256', '-'])).stdout;
       const lyrics = `${originalLyrics}\nartist=must not overwrite artist\nSymbols: # ; = \\ 日本語`;
       const lrc = '[00:00.00]Original first fixture line\n[00:00.45]Original 日本語 fixture line';
-      const synced = state.startsWith('found-synced') || state === 'found-japanese';
+      const youtubeTimed = state.startsWith('found-youtube');
+      const lrclibSynced = state.startsWith('found-synced') || state === 'found-japanese';
+      const synced = lrclibSynced || youtubeTimed;
       request.mockImplementation(async url => {
         const query = new URL(String(url)).searchParams;
-        if (state === 'unavailable') throw new Error('lyrics service down');
+        if (state === 'unavailable' || state === 'found-youtube-after-lrclib-error') throw new Error('lyrics service down');
         if (state === 'malformed') return new Response('bad JSON', { headers: { 'content-type': 'application/json' } });
-        if (state === 'missing') return json({}, 404);
+        if (state === 'missing' || state === 'found-youtube-without-lrclib') return json({}, 404);
         expect(query.get('track_name')).toBe(metadata.title);
         expect(query.get('artist_name')).toBe(metadata.artist);
         return json({ ...record, trackName: metadata.title, artistName: metadata.artist, albumName: metadata.album,
-          duration: Number(query.get('duration')), plainLyrics: lyrics, ...(synced ? { syncedLyrics: lrc } : {}) });
+          duration: Number(query.get('duration')), plainLyrics: lyrics, ...(lrclibSynced ? { syncedLyrics: lrc } : {}) });
       });
-      await new YoutubeMusicLyrics().enrich(file, state === 'ordinary-youtube' ? 'https://www.youtube.com/watch?v=fixture' : 'https://music.youtube.com/watch?v=fixture', {
+      const timedLookup = jest.fn(async () => {
+        if (state === 'found-plain-after-youtube-failed') throw new Error('fallback unavailable');
+        return youtubeTimed ? { text: lrc, synchronized: [
+          { text: 'Original first fixture line', timeMs: 0 },
+          { text: 'Original 日本語 fixture line', timeMs: 450 },
+        ] } : undefined;
+      });
+      const service = new YoutubeMusicLyrics(new LyricsClient(), { lookup: timedLookup });
+      await service.enrich(file, state === 'ordinary-youtube' ? 'https://www.youtube.com/watch?v=fixture' : 'https://music.youtube.com/watch?v=fixture', {
         maxBytes: state === 'too-large' ? before.length : 256 * 1024 * 1024,
       });
       const result = JSON.parse((await run('ffprobe', ['-v', 'error', '-show_entries', 'format_tags:stream=codec_type:stream_disposition=attached_pic', '-of', 'json', file])).stdout) as {
@@ -195,10 +208,15 @@ mediaTest.each(['found', 'found-v4', 'found-synced', 'found-synced-v4', 'found-j
       expect(afterAudio).toBe(beforeAudio);
       expect(fs.readdirSync(directory).sort()).toEqual(['cover.png', 'song.mp3']);
       if (state === 'ordinary-youtube') expect(request).not.toHaveBeenCalled();
+      if (lrclibSynced || state === 'ordinary-youtube') expect(timedLookup).not.toHaveBeenCalled();
+      else {
+        expect(timedLookup).toHaveBeenCalledTimes(1);
+        expect(timedLookup).toHaveBeenCalledWith('https://music.youtube.com/watch?v=fixture', expect.any(Number), undefined);
+      }
       if (state === 'found') {
         request.mockClear();
         const tagged = fs.readFileSync(file);
-        await new YoutubeMusicLyrics().enrich(file, 'https://music.youtube.com/watch?v=fixture', { maxBytes: 256 * 1024 * 1024 });
+        await service.enrich(file, 'https://music.youtube.com/watch?v=fixture', { maxBytes: 256 * 1024 * 1024 });
         expect(request).not.toHaveBeenCalled();
         expect(fs.readFileSync(file)).toEqual(tagged);
       }

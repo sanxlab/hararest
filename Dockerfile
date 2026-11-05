@@ -31,9 +31,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto-core fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
-# Python env for Instagram/Facebook fallback scrapers.
+# Python env for media fallback scrapers and YouTube Music lyrics.
 RUN python3 -m venv /opt/media-fallback && \
-    /opt/media-fallback/bin/pip install --no-cache-dir cloudscraper==1.2.71
+    /opt/media-fallback/bin/pip install --no-cache-dir cloudscraper==1.2.71 ytmusicapi==1.12.3
 
 # Install yt-dlp together with the BgUtils PO Token provider plugin. Keeping both
 # in the same virtual environment lets yt-dlp discover the plugin at runtime.
@@ -58,6 +58,7 @@ COPY public ./public
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/modules/instagram/snapinsta_scraper.py ./src/modules/instagram/snapinsta_scraper.py
 COPY --from=builder /app/src/modules/facebook/fdown_scraper.py ./src/modules/facebook/fdown_scraper.py
+COPY --from=builder /app/src/modules/youtube/ytmusic_lyrics.py ./src/modules/youtube/ytmusic_lyrics.py
 ENV NODE_ENV=production
 ENV YTDLP_PATH=/usr/local/bin/yt-dlp
 ENV PYTHON_BIN=/opt/media-fallback/bin/python

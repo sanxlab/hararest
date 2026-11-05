@@ -6,6 +6,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { z } from 'zod';
 import { readResponseText } from '../../utils/readResponse';
 import logger from '../../utils/logger';
+import { YoutubeTimedLyrics } from './youtube.timed-lyrics';
 
 const MAX_LYRICS_BYTES = 64 * 1024;
 const recordSchema = z.object({
@@ -255,7 +256,10 @@ async function writeLyrics(file: string, output: string, lyrics: LyricsData, max
 }
 
 export class YoutubeMusicLyrics {
-  constructor(private readonly client = new LyricsClient()) {}
+  constructor(
+    private readonly client = new LyricsClient(),
+    private readonly timedClient: Pick<YoutubeTimedLyrics, 'lookup'> = new YoutubeTimedLyrics(),
+  ) {}
 
   async enrich(file: string, url: string, options: { signal?: AbortSignal; maxBytes: number }): Promise<void> {
     if (!isYoutubeMusicURL(url)) {
@@ -280,7 +284,28 @@ export class YoutubeMusicLyrics {
         return;
       }
       stage = 'lookup';
-      const lyrics = await this.client.lookup({ title: tags.title, artist: tags.artist, album: tags.album, duration: Number(probe.format?.duration) }, options.signal);
+      const duration = Number(probe.format?.duration);
+      let lyrics: LyricsData | undefined;
+      let source = 'lrclib';
+      try {
+        lyrics = await this.client.lookup({ title: tags.title, artist: tags.artist, album: tags.album, duration }, options.signal);
+      } catch {
+        options.signal?.throwIfAborted();
+        logger.info('YouTube Music lyrics fallback needed', { reason: 'lrclib_failed' });
+      }
+      if (!lyrics?.synchronized.length) {
+        stage = 'youtube_music_lookup';
+        try {
+          const timed = await this.timedClient.lookup(url, duration, options.signal);
+          if (timed?.synchronized.length) {
+            lyrics = timed;
+            source = 'youtube_music';
+          }
+        } catch {
+          options.signal?.throwIfAborted();
+          logger.info('YouTube Music timed lyrics unavailable', { reason: 'fallback_failed' });
+        }
+      }
       if (!lyrics) {
         logger.info('YouTube Music lyrics not embedded', { stage, reason: 'not_available' });
         return;
@@ -290,7 +315,7 @@ export class YoutubeMusicLyrics {
       if (await writeLyrics(file, output, lyrics, options.maxBytes, options.signal)) {
         options.signal?.throwIfAborted();
         await fs.rename(output, file);
-        logger.info('YouTube Music lyrics embedded', { synchronized: lyrics.synchronized.length > 0 });
+        logger.info('YouTube Music lyrics embedded', { source, synchronized: lyrics.synchronized.length > 0 });
       } else {
         logger.warn('YouTube Music lyrics not embedded', { stage, reason: 'unsupported_tag_or_size_limit' });
       }

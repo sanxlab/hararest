@@ -31,6 +31,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test -- --runInBand --roots src
       - run: python3 -B src/__tests__/scraper_security_test.py
+      - run: python3 -B src/__tests__/ytmusic_lyrics_test.py
       - run: npm run lint
       - run: npm run build
 
