@@ -67,6 +67,19 @@ class LookupTests(unittest.TestCase):
         }
         self.api.get_lyrics.return_value = timed()
         self.api._send_request.return_value = None
+        self.web_context = {"client": {"clientName": "WEB_REMIX"}}
+        self.api.context = self.web_context
+
+        @contextlib.contextmanager
+        def as_mobile():
+            previous = self.api.context
+            self.api.context = {"client": {"clientName": "ANDROID_MUSIC"}}
+            try:
+                yield
+            finally:
+                self.api.context = previous
+
+        self.api.as_mobile.side_effect = as_mobile
 
     def test_matches_same_video_and_uses_actual_timestamps(self):
         result = helper.fetch_timed_lyrics(VIDEO, self.api)
@@ -80,21 +93,35 @@ class LookupTests(unittest.TestCase):
         self.api.get_watch_playlist.assert_called_once_with(videoId=VIDEO, limit=1)
         self.api.get_lyrics.assert_called_once_with(REF, timestamps=True)
         self.api._send_request.assert_not_called()
+        self.api.as_mobile.assert_not_called()
 
-    def test_minimal_next_recovers_a_missing_reference_for_the_exact_video(self):
+    def test_minimal_mobile_next_recovers_exact_video_and_restores_context_before_lyrics(self):
+        def next_response(endpoint, body):
+            self.assertEqual(self.api.context["client"]["clientName"], "ANDROID_MUSIC")
+            self.assertEqual((endpoint, body), ("next", {"videoId": VIDEO}))
+            return watch_next()
+
+        def lyrics_response(reference, timestamps):
+            self.assertIs(self.api.context, self.web_context)
+            self.assertEqual((reference, timestamps), (REF, True))
+            return timed()
+
+        self.api._send_request.side_effect = next_response
+        self.api.get_lyrics.side_effect = lyrics_response
         for missing in (None, ""):
             with self.subTest(missing=missing):
                 self.api.reset_mock()
                 self.api.get_watch_playlist.return_value["lyrics"] = missing
-                self.api._send_request.return_value = watch_next()
                 result = helper.fetch_timed_lyrics(VIDEO, self.api)
                 self.assertEqual(result["lines"], [
                     {"timeMs": 1200, "text": "検証用の架空の文章"},
                     {"timeMs": 2500, "text": "Another original fixture line"},
                 ])
                 self.api.get_watch_playlist.assert_called_once_with(videoId=VIDEO, limit=1)
+                self.api.as_mobile.assert_called_once_with()
                 self.api._send_request.assert_called_once_with("next", {"videoId": VIDEO})
                 self.api.get_lyrics.assert_called_once_with(REF, timestamps=True)
+                self.assertIs(self.api.context, self.web_context)
 
     def test_fallback_accepts_a_selected_primary_wrapper_and_ignores_counterparts(self):
         response = watch_next()
@@ -156,9 +183,16 @@ class LookupTests(unittest.TestCase):
 
     def test_fallback_network_errors_remain_operational_failures(self):
         self.api.get_watch_playlist.return_value["lyrics"] = None
-        self.api._send_request.side_effect = TimeoutError("private-cookie-secret")
+
+        def failed_request(endpoint, body):
+            self.assertEqual(self.api.context["client"]["clientName"], "ANDROID_MUSIC")
+            raise TimeoutError("private-cookie-secret")
+
+        self.api._send_request.side_effect = failed_request
         with self.assertRaisesRegex(helper.LyricsLookupError, "^lookup_failed$"):
             helper.fetch_timed_lyrics(VIDEO, self.api)
+        self.api.as_mobile.assert_called_once_with()
+        self.assertIs(self.api.context, self.web_context)
         self.api.get_lyrics.assert_not_called()
 
     def test_does_not_pick_lyrics_from_a_different_song(self):
