@@ -1,6 +1,5 @@
 """Temporary operator diagnostic; never print credentials or raw app logs."""
-import base64
-import gzip
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -87,6 +86,15 @@ def remote_error(code, error=None):
             api_id = body.get('id') if isinstance(body, dict) else None
             if isinstance(api_id, str) and re.fullmatch(r'[a-z_]{1,40}', api_id):
                 safe['apiId'] = api_id
+            message = body.get('message') if isinstance(body, dict) else None
+            if error.code == 422 and isinstance(message, str):
+                message = message.lower()
+                if 'command' in message and ('long' in message or 'length' in message):
+                    safe['marker'] = 'command_too_long'
+                for field in ('force_no_tty', 'time_to_live', 'command', 'attach', 'size', 'env', 'type'):
+                    if re.search(r'(?<![a-z_])' + field + r'(?![a-z_])', message):
+                        safe['parameter'] = field
+                        break
         except Exception:
             pass
     print(json.dumps(safe), flush=True)
@@ -159,10 +167,20 @@ def read_probe_logs(dyno_name):
 def run_remote():
     try:
         source = Path('scripts/youtube-lyrics-diagnostic.py').read_bytes()
-        encoded = base64.b64encode(gzip.compress(source, mtime=0)).decode('ascii')
-        # Compression is transport only for this reviewed, tracked source.
-        runner = 'import base64,gzip;exec(compile(gzip.decompress(base64.b64decode(' + repr(encoded) + ')),"<lyrics-diagnostic>","exec"))'
+        sha = os.environ.get('GITHUB_SHA', '')
+        if not re.fullmatch(r'[a-fA-F0-9]{40}', sha) or not 0 < len(source) <= 32768:
+            raise ValueError('invalid_diagnostic_source')
+        url = 'https://raw.githubusercontent.com/sanxlab/hararest/' + sha.lower() + '/scripts/youtube-lyrics-diagnostic.py'
+        expected = hashlib.sha256(source).hexdigest()
+        # Fetch only this reviewed commit; execute only bytes matching this checkout.
+        runner = ('import hashlib,urllib.request;'
+                  'r=urllib.request.urlopen(' + repr(url) + ',timeout=10);'
+                  's=r.read(32768);r.close();'
+                  'assert hashlib.sha256(s).hexdigest()==' + repr(expected) + ';'
+                  'exec(compile(s,"<lyrics-diagnostic>","exec"))')
         command = '/opt/media-fallback/bin/python -c ' + shlex.quote(runner)
+        if len(command.encode('utf-8')) >= 1000:
+            raise ValueError('diagnostic_command_limit')
         created = api_request('/dynos', {
             'attach': False, 'force_no_tty': True, 'type': 'web',
             'command': command,
