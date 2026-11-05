@@ -48,11 +48,20 @@ try:
         try:
             web = YTMusic(auth=auth, requests_session=web_session)
             watch = web.get_watch_playlist(videoId='7IWlXi-hVxk', limit=1)
-            if watch['tracks'][0]['videoId'] == '7IWlXi-hVxk' and watch.get('lyrics'):
+            raw = web._send_request('next', {'videoId': '7IWlXi-hVxk'})
+            flags = [p.get('value') for service in raw.get('responseContext', {}).get('serviceTrackingParams', [])
+                     for p in service.get('params', []) if p.get('key') in ('logged_in', 'is_logged_in')]
+            result['loggedInKnown'] = bool(flags)
+            result['loggedIn'] = any(v in ('1', 'true', True) for v in flags)
+            reference = watch.get('lyrics') or helper._fallback_lyrics_reference(raw, '7IWlXi-hVxk')
+            if watch['tracks'][0]['videoId'] == '7IWlXi-hVxk' and reference:
                 mobile_session.headers['Cookie'] = auth['cookie']
                 mobile = YTMusic(requests_session=mobile_session)
-                data = mobile.get_lyrics(watch['lyrics'], timestamps=True)
-                result['cookieMobileTimedLines'] = len(helper.validated_lines(data))
+                try:
+                    data = mobile.get_lyrics(reference, timestamps=True)
+                    result['cookieMobileTimedLines'] = len(helper.validated_lines(data))
+                except Exception:
+                    result['cookieMobileFailed'] = True
         finally:
             web_session.close()
             mobile_session.close()

@@ -110,7 +110,7 @@ def safe_probe(row):
                  'candidateCount', 'exactCandidateCount', 'durationMs', 'cookieCount', 'proxyTimedLines', 'proxyHTTPStatus', 'cookieMobileTimedLines'):
         if type(row.get(name)) is int and 0 <= row[name] <= 10_000_000:
             safe[name] = row[name]
-    for name in ('currentEndpointPresent', 'currentEndpointMatches', 'tabsAreList', 'hasTimestamps', 'cookieFilePresent', 'authReady', 'sessionPresent', 'sessionUnexpired'):
+    for name in ('currentEndpointPresent', 'currentEndpointMatches', 'tabsAreList', 'hasTimestamps', 'cookieFilePresent', 'authReady', 'sessionPresent', 'sessionUnexpired', 'loggedInKnown', 'loggedIn', 'cookieMobileFailed'):
         if type(row.get(name)) is bool:
             safe[name] = row[name]
     if row.get('timedLookup') in ('skipped', 'found', 'empty', 'untimed', 'failed'):
