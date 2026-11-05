@@ -190,7 +190,7 @@ def run_remote():
         if len(command.encode('utf-8')) >= 1000:
             raise ValueError('diagnostic_command_limit')
         created = api_request('/dynos', {
-            'attach': False, 'force_no_tty': True, 'type': 'web',
+            'attach': False, 'type': 'web',
             'command': command,
         })
         dyno_name, dyno_id = created.get('name'), created.get('id')
