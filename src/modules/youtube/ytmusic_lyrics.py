@@ -122,6 +122,64 @@ def validated_lines(result):
     return lines if any(line["text"] for line in lines) else []
 
 
+def _dict_path(value, *keys):
+    for key in keys:
+        if not isinstance(value, dict):
+            return None
+        value = value.get(key)
+    return value
+
+
+def _fallback_lyrics_reference(response, video_id):
+    # A minimal WEB next response can expose the tab omitted by the radio
+    # response. Accept only a server-issued reference tied to this exact video.
+    if _dict_path(response, "currentVideoEndpoint", "watchEndpoint", "videoId") != video_id:
+        return None
+    tabs = _dict_path(
+        response, "contents", "singleColumnMusicWatchNextResultsRenderer",
+        "tabbedRenderer", "watchNextTabbedResultsRenderer", "tabs",
+    )
+    if not isinstance(tabs, list):
+        return None
+    selected = []
+    references = []
+    for tab in tabs:
+        renderer = _dict_path(tab, "tabRenderer")
+        if not isinstance(renderer, dict):
+            return None
+        if renderer.get("unselectable") is True:
+            continue
+        queue = _dict_path(
+            renderer, "content", "musicQueueRenderer", "content",
+            "playlistPanelRenderer", "contents",
+        )
+        if queue is not None:
+            if not isinstance(queue, list):
+                return None
+            for item in queue:
+                track = _dict_path(item, "playlistPanelVideoRenderer")
+                if track is None:
+                    track = _dict_path(
+                        item, "playlistPanelVideoWrapperRenderer", "primaryRenderer",
+                        "playlistPanelVideoRenderer",
+                    )
+                if isinstance(track, dict) and track.get("selected") is True:
+                    selected.append(track.get("videoId"))
+        endpoint = _dict_path(renderer, "endpoint", "browseEndpoint")
+        page_type = _dict_path(
+            endpoint, "browseEndpointContextSupportedConfigs",
+            "browseEndpointContextMusicConfig", "pageType",
+        )
+        if page_type == "MUSIC_PAGE_TYPE_TRACK_LYRICS":
+            reference = endpoint.get("browseId")
+            if not isinstance(reference, str) or LYRICS_ID.fullmatch(reference) is None:
+                return None
+            references.append(reference)
+    if selected != [video_id] or len(references) != 1:
+        return None
+    return references[0]
+
+
 def fetch_timed_lyrics(video_id, api=None):
     if not isinstance(video_id, str) or VIDEO_ID.fullmatch(video_id) is None:
         return {"videoId": "", "lines": []}
@@ -151,7 +209,12 @@ def fetch_timed_lyrics(video_id, api=None):
             return empty("video_mismatch")
         browse_id = watch.get("lyrics")
         if browse_id is None or browse_id == "":
-            return empty("lyrics_ref_missing")
+            # Isolate the pinned ytmusicapi 1.12.3 internal request adapter:
+            # unlike get_watch_playlist, this does not force radio/ATV params.
+            response = api._send_request("next", {"videoId": video_id})
+            browse_id = _fallback_lyrics_reference(response, video_id)
+            if browse_id is None:
+                return empty("lyrics_ref_missing")
         if not isinstance(browse_id, str) or LYRICS_ID.fullmatch(browse_id) is None:
             return empty("lyrics_ref_invalid")
         result = api.get_lyrics(browse_id, timestamps=True)

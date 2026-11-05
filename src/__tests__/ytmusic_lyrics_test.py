@@ -32,6 +32,33 @@ def timed(lines=None):
     }
 
 
+def watch_next(current_video=VIDEO, selected_videos=None, reference=REF):
+    queue = [{"playlistPanelVideoRenderer": {"videoId": "SVkGRoLicuA", "selected": False}}]
+    queue.extend({"playlistPanelVideoRenderer": {"videoId": video_id, "selected": True}}
+                 for video_id in ([VIDEO] if selected_videos is None else selected_videos))
+    tabs = [
+        {"tabRenderer": {"content": {"musicQueueRenderer": {"content": {
+            "playlistPanelRenderer": {"contents": queue},
+        }}}}},
+        {"tabRenderer": {"unselectable": False, "endpoint": {"browseEndpoint": {
+            "browseId": reference,
+            "browseEndpointContextSupportedConfigs": {"browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_TRACK_LYRICS",
+            }},
+        }}}},
+    ]
+    return {
+        "currentVideoEndpoint": {"watchEndpoint": {"videoId": current_video}},
+        "contents": {"singleColumnMusicWatchNextResultsRenderer": {"tabbedRenderer": {
+            "watchNextTabbedResultsRenderer": {"tabs": tabs},
+        }}},
+    }
+
+
+def next_tabs(response):
+    return response["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"]["tabs"]
+
+
 class LookupTests(unittest.TestCase):
     def setUp(self):
         self.api = MagicMock()
@@ -39,6 +66,7 @@ class LookupTests(unittest.TestCase):
             "tracks": [{"videoId": VIDEO}], "lyrics": REF,
         }
         self.api.get_lyrics.return_value = timed()
+        self.api._send_request.return_value = None
 
     def test_matches_same_video_and_uses_actual_timestamps(self):
         result = helper.fetch_timed_lyrics(VIDEO, self.api)
@@ -51,6 +79,87 @@ class LookupTests(unittest.TestCase):
         })
         self.api.get_watch_playlist.assert_called_once_with(videoId=VIDEO, limit=1)
         self.api.get_lyrics.assert_called_once_with(REF, timestamps=True)
+        self.api._send_request.assert_not_called()
+
+    def test_minimal_next_recovers_a_missing_reference_for_the_exact_video(self):
+        for missing in (None, ""):
+            with self.subTest(missing=missing):
+                self.api.reset_mock()
+                self.api.get_watch_playlist.return_value["lyrics"] = missing
+                self.api._send_request.return_value = watch_next()
+                result = helper.fetch_timed_lyrics(VIDEO, self.api)
+                self.assertEqual(result["lines"], [
+                    {"timeMs": 1200, "text": "検証用の架空の文章"},
+                    {"timeMs": 2500, "text": "Another original fixture line"},
+                ])
+                self.api.get_watch_playlist.assert_called_once_with(videoId=VIDEO, limit=1)
+                self.api._send_request.assert_called_once_with("next", {"videoId": VIDEO})
+                self.api.get_lyrics.assert_called_once_with(REF, timestamps=True)
+
+    def test_fallback_accepts_a_selected_primary_wrapper_and_ignores_counterparts(self):
+        response = watch_next()
+        queue = next_tabs(response)[0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"]
+        queue[1] = {"playlistPanelVideoWrapperRenderer": {
+            "primaryRenderer": queue[1],
+            "counterpart": [{"counterpartRenderer": {"playlistPanelVideoRenderer": {
+                "videoId": "SVkGRoLicuA", "selected": True,
+            }}}],
+        }}
+        self.api.get_watch_playlist.return_value["lyrics"] = None
+        self.api._send_request.return_value = response
+        self.assertEqual(len(helper.fetch_timed_lyrics(VIDEO, self.api)["lines"]), 2)
+        self.api.get_lyrics.assert_called_once_with(REF, timestamps=True)
+
+    def test_fallback_rejects_wrong_or_ambiguous_video_identity(self):
+        missing_current = watch_next()
+        del missing_current["currentVideoEndpoint"]
+        for response in (
+            watch_next(current_video="SVkGRoLicuA"),
+            missing_current,
+            watch_next(selected_videos=["SVkGRoLicuA"]),
+            watch_next(selected_videos=[]),
+            watch_next(selected_videos=[VIDEO, VIDEO]),
+            watch_next(selected_videos=[VIDEO, "SVkGRoLicuA"]),
+        ):
+            with self.subTest(response=response):
+                self.api.get_watch_playlist.return_value["lyrics"] = None
+                self.api._send_request.return_value = response
+                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+                    "videoId": VIDEO, "lines": [], "reason": "lyrics_ref_missing",
+                })
+        self.api.get_lyrics.assert_not_called()
+
+    def test_fallback_rejects_disabled_duplicate_or_malformed_lyrics_navigation(self):
+        disabled, duplicate, wrong_type, nested_only = (watch_next() for _ in range(4))
+        next_tabs(disabled)[1]["tabRenderer"]["unselectable"] = True
+        next_tabs(duplicate).append(next_tabs(duplicate)[1])
+        next_tabs(wrong_type)[1]["tabRenderer"]["endpoint"]["browseEndpoint"]["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"] = "MUSIC_PAGE_TYPE_TRACK_RELATED"
+        endpoint = next_tabs(nested_only)[1]["tabRenderer"].pop("endpoint")
+        next_tabs(nested_only)[1]["tabRenderer"]["menu"] = {"arbitraryNestedEndpoint": endpoint}
+        malformed_tab = watch_next()
+        next_tabs(malformed_tab).append(None)
+        malformed_queue = watch_next()
+        next_tabs(malformed_queue)[0]["tabRenderer"]["content"]["musicQueueRenderer"]["content"]["playlistPanelRenderer"]["contents"] = "wrong"
+        for response in (
+            None, {}, disabled, duplicate, wrong_type, nested_only, malformed_tab, malformed_queue,
+            watch_next(reference=None), watch_next(reference=""),
+            watch_next(reference="https://attacker.example/private"),
+            watch_next(reference="MPLY" + "x" * 501),
+        ):
+            with self.subTest(response=response):
+                self.api.get_watch_playlist.return_value["lyrics"] = None
+                self.api._send_request.return_value = response
+                self.assertEqual(helper.fetch_timed_lyrics(VIDEO, self.api), {
+                    "videoId": VIDEO, "lines": [], "reason": "lyrics_ref_missing",
+                })
+        self.api.get_lyrics.assert_not_called()
+
+    def test_fallback_network_errors_remain_operational_failures(self):
+        self.api.get_watch_playlist.return_value["lyrics"] = None
+        self.api._send_request.side_effect = TimeoutError("private-cookie-secret")
+        with self.assertRaisesRegex(helper.LyricsLookupError, "^lookup_failed$"):
+            helper.fetch_timed_lyrics(VIDEO, self.api)
+        self.api.get_lyrics.assert_not_called()
 
     def test_does_not_pick_lyrics_from_a_different_song(self):
         self.api.get_watch_playlist.return_value["tracks"] = [{"videoId": "SVkGRoLicuA"}]
