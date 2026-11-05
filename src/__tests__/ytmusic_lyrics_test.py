@@ -96,6 +96,43 @@ class LookupTests(unittest.TestCase):
         self.api._send_request.assert_not_called()
         self.api.as_mobile.assert_not_called()
 
+    def test_browser_cookie_auth_is_not_forwarded_to_mobile_lyrics_client(self):
+        mobile = MagicMock()
+        mobile.get_lyrics.return_value = timed()
+        module = types.ModuleType('ytmusicapi')
+        module.YTMusic = MagicMock(side_effect=[self.api, mobile])
+        session = MagicMock()
+        auth = {'cookie': 'synthetic-private-fixture', 'authorization': 'synthetic-fixture'}
+        with patch.dict(sys.modules, {'ytmusicapi': module}), \
+                patch.object(helper, 'browser_auth_from_cookie_file', return_value=auth), \
+                patch.object(helper, 'create_bounded_session', return_value=session):
+            result = helper.fetch_timed_lyrics(VIDEO)
+        self.assertEqual(len(result['lines']), 2)
+        self.assertEqual(module.YTMusic.call_args_list[0].kwargs, {'auth': auth, 'requests_session': session})
+        self.assertEqual(module.YTMusic.call_args_list[1].kwargs, {'requests_session': session})
+        self.api.get_lyrics.assert_not_called()
+        mobile.get_lyrics.assert_called_once_with(REF, timestamps=True)
+        session.close.assert_called_once()
+
+    def test_authenticated_missing_reference_uses_mobile_client_for_fallback_too(self):
+        self.api.get_watch_playlist.return_value['lyrics'] = None
+        mobile = MagicMock()
+        mobile._send_request.return_value = watch_next()
+        mobile.get_lyrics.return_value = timed()
+        module = types.ModuleType('ytmusicapi')
+        module.YTMusic = MagicMock(side_effect=[self.api, mobile])
+        session = MagicMock()
+        with patch.dict(sys.modules, {'ytmusicapi': module}), \
+                patch.object(helper, 'browser_auth_from_cookie_file', return_value={'cookie': 'fixture'}), \
+                patch.object(helper, 'create_bounded_session', return_value=session):
+            result = helper.fetch_timed_lyrics(VIDEO)
+        self.assertEqual(len(result['lines']), 2)
+        self.api.as_mobile.assert_not_called()
+        self.api._send_request.assert_not_called()
+        mobile._send_request.assert_called_once_with('next', {'videoId': VIDEO})
+        mobile.get_lyrics.assert_called_once_with(REF, timestamps=True)
+        session.close.assert_called_once()
+
     def test_minimal_mobile_next_recovers_exact_video_and_restores_context_before_lyrics(self):
         def next_response(endpoint, body):
             self.assertEqual(self.api.context["client"]["clientName"], "ANDROID_MUSIC")

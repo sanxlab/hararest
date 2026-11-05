@@ -1,4 +1,4 @@
-"""Bounded, anonymous YouTube Music timed-lyrics lookup for one video."""
+"""Bounded YouTube Music lookup with separate web and mobile clients."""
 
 import json
 import math
@@ -13,7 +13,8 @@ VIDEO_ID = re.compile(r"[A-Za-z0-9_-]{11}\Z")
 LYRICS_ID = re.compile(r"MPLY[A-Za-z0-9_=-]{1,500}\Z")
 # The radio/next payload includes recommendations even when parsed with limit=1.
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
-MAX_HTTP_REQUESTS = 4
+# Authenticated web next plus mobile visitor/next/browse needs at most five.
+MAX_HTTP_REQUESTS = 5
 MAX_LINES = 4000
 MAX_TEXT_BYTES = 64 * 1024
 MAX_TIME_MS = 3_600_000
@@ -223,6 +224,7 @@ def fetch_timed_lyrics(video_id, api=None):
         return {"videoId": video_id, "lines": [], "reason": reason}
 
     session = None
+    auth = None
     try:
         if api is None:
             from ytmusicapi import YTMusic
@@ -242,18 +244,23 @@ def fetch_timed_lyrics(video_id, api=None):
             return empty("watch_invalid")
         if tracks[0].get("videoId") != video_id:
             return empty("video_mismatch")
+        # Browser SAPISID authentication cannot be mixed into Android browse:
+        # Google returns INVALID_ARGUMENT. Keep the issued reference, but use
+        # an independent mobile client without the web authentication headers.
+        # The same transport enforces one total request/response budget.
+        lyrics_api = YTMusic(requests_session=session) if auth else api
         browse_id = watch.get("lyrics")
         if browse_id is None or browse_id == "":
             # Isolate the pinned ytmusicapi 1.12.3 mobile context and request
             # adapter. A minimal body avoids forcing radio/ATV parameters.
-            with api.as_mobile():
-                response = api._send_request("next", {"videoId": video_id})
+            with lyrics_api.as_mobile():
+                response = lyrics_api._send_request("next", {"videoId": video_id})
             browse_id = _fallback_lyrics_reference(response, video_id)
             if browse_id is None:
                 return empty("lyrics_ref_missing")
         if not isinstance(browse_id, str) or LYRICS_ID.fullmatch(browse_id) is None:
             return empty("lyrics_ref_invalid")
-        result = api.get_lyrics(browse_id, timestamps=True)
+        result = lyrics_api.get_lyrics(browse_id, timestamps=True)
         if result is None:
             return empty("no_lyrics")
         if isinstance(result, dict):
