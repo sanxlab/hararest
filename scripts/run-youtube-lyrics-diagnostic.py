@@ -60,7 +60,7 @@ API_HEADERS = {
     'Accept': 'application/vnd.heroku+json; version=3',
     'Content-Type': 'application/json',
 }
-PROBES = {'default', 'minimal', 'mobile_minimal'}
+PROBES = {'default', 'minimal', 'mobile_minimal', 'mobile_id'}
 
 
 def api_request(route, data=None, method=None, timeout=10):

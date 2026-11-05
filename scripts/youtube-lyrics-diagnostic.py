@@ -10,7 +10,7 @@ import sys
 
 sys.dont_write_bytecode = True
 VIDEO = "BFzh21UKNBk"
-PROBES = ("default", "minimal", "mobile_minimal")
+PROBES = ("default", "minimal", "mobile_minimal", "mobile_id")
 SAFE_CODES = {"unsupported_request", "request_limit", "upstream_status", "response_limit"}
 SAFE_ERRORS = {
     "AttributeError", "ConnectionError", "ConnectTimeout", "FileNotFoundError",
@@ -41,7 +41,7 @@ def probe(helper, yt_music, client):
     summary = {"probe": client, "timedLookup": "skipped", "timedLines": 0}
     session = helper.create_bounded_session()
     try:
-        api = yt_music(requests_session=session)
+        api = yt_music(requests_session=session, location="ID" if client == "mobile_id" else "")
         body = {"videoId": VIDEO}
         if client == "default":
             body.update({
@@ -54,7 +54,7 @@ def probe(helper, yt_music, client):
                     "musicVideoType": "MUSIC_VIDEO_TYPE_ATV",
                 }},
             })
-        if client == "mobile_minimal":
+        if client in ("mobile_minimal", "mobile_id"):
             with api.as_mobile():
                 response = api._send_request("next", body)
         else:
