@@ -1,17 +1,23 @@
 """Temporary fixed-video diagnostic; stdout contains sanitized JSON only."""
 
+import base64
 import contextlib
 import importlib.util
 import io
 import json
+import math
 from pathlib import Path
+import re
 import sys
+import unicodedata
+import urllib.parse
+import urllib.request
 
 
 sys.dont_write_bytecode = True
 VIDEO = "BFzh21UKNBk"
-PROBES = ("default", "minimal", "mobile_minimal", "mobile_id")
-SAFE_CODES = {"unsupported_request", "request_limit", "upstream_status", "response_limit"}
+PROBES = ("default", "minimal", "mobile_minimal", "mobile_id", "kugou")
+SAFE_CODES = {"unsupported_request", "request_limit", "upstream_status", "response_limit", "invalid_response"}
 SAFE_ERRORS = {
     "AttributeError", "ConnectionError", "ConnectTimeout", "FileNotFoundError",
     "ImportError", "JSONDecodeError", "KeyError", "LyricsLookupError",
@@ -35,6 +41,98 @@ def at(value, *keys):
             return None
         value = value.get(key)
     return value
+
+
+def probe_kugou():
+    summary = {
+        "probe": "kugou", "candidateCount": 0, "exactCandidateCount": 0,
+        "durationMs": 0, "timedLines": 0, "hasTimestamps": False,
+        "timedLookup": "empty",
+    }
+    try:
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *args, **kwargs):
+                return None
+
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+
+        def request(endpoint, parameters):
+            url = "https://lyrics.kugou.com/" + endpoint + "?" + urllib.parse.urlencode(parameters)
+            with opener.open(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=5) as response:
+                data = response.read(256 * 1024 + 1)
+            if len(data) > 256 * 1024:
+                raise ValueError("response_limit")
+            result = json.loads(data)
+            if not isinstance(result, dict):
+                raise ValueError("invalid_response")
+            return result
+
+        def normalized(value):
+            if not isinstance(value, str):
+                return ""
+            return "".join(character for character in unicodedata.normalize("NFKC", value).casefold()
+                           if character.isalnum())
+
+        data = request("search", {
+            "ver": 1, "man": "yes", "client": "pc",
+            "keyword": "Chloe Pawapua - Jadian Yuk", "duration": 155000,
+        })
+        candidates = data.get("candidates")
+        if not isinstance(candidates, list):
+            raise ValueError("invalid_response")
+        summary["candidateCount"] = len(candidates)
+        matches = []
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            duration = candidate.get("duration")
+            if (type(duration) not in (int, float) or not math.isfinite(duration)
+                    or not float(duration).is_integer() or abs(duration - 155000) > 2000):
+                continue
+            if (normalized(candidate.get("song")) == normalized("Jadian Yuk")
+                    and normalized(candidate.get("singer")) == normalized("Chloe Pawapua")):
+                matches.append(candidate)
+        summary["exactCandidateCount"] = len(matches)
+        if not matches:
+            return summary
+        candidate = matches[0]
+        summary["durationMs"] = int(candidate["duration"])
+        identifier, access = candidate.get("id"), candidate.get("accesskey")
+        if (not isinstance(identifier, str) or re.fullmatch(r"[0-9]{1,30}", identifier) is None
+                or not isinstance(access, str) or not 0 < len(access) <= 256):
+            raise ValueError("invalid_response")
+        data = request("download", {
+            "ver": 1, "client": "pc", "id": identifier, "accesskey": access,
+            "fmt": "lrc", "charset": "utf8",
+        })
+        content = data.get("content")
+        if content is None or content == "":
+            return summary
+        if not isinstance(content, str) or len(content) > 128 * 1024:
+            raise ValueError("invalid_response")
+        lyrics = base64.b64decode(content, validate=True).decode("utf-8-sig")
+        timestamp = re.compile(r"\[(\d{1,3}):([0-5]\d)(?:[.:](\d{1,3}))?\]")
+        times = []
+        for line in lyrics.splitlines():
+            position = 0
+            line_times = []
+            while match := timestamp.match(line, position):
+                fraction = (match.group(3) or "").ljust(3, "0")
+                line_times.append(int(match.group(1)) * 60000 + int(match.group(2)) * 1000
+                                  + int(fraction or "0"))
+                position = match.end()
+            if line_times and line[position:].strip():
+                times.extend(line_times)
+        valid = (2 <= len(times) <= 4000 and len(set(times)) >= 2
+                 and min(times) >= 0 and max(times) <= summary["durationMs"] + 2000)
+        summary.update({
+            "hasTimestamps": valid, "timedLines": len(times) if valid else 0,
+            "timedLookup": "found" if valid else "untimed",
+        })
+    except Exception as error:
+        summary.update(failure(error))
+        summary["timedLookup"] = "failed"
+    return summary
 
 
 def probe(helper, yt_music, client):
@@ -154,7 +252,7 @@ def main():
     for client in PROBES:
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                result = probe(helper, YTMusic, client)
+                result = probe_kugou() if client == "kugou" else probe(helper, YTMusic, client)
         except Exception as error:
             result = {"probe": client, **failure(error)}
         print(json.dumps(result, separators=(",", ":")), flush=True)

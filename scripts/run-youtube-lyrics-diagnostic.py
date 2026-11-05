@@ -60,7 +60,7 @@ API_HEADERS = {
     'Accept': 'application/vnd.heroku+json; version=3',
     'Content-Type': 'application/json',
 }
-PROBES = {'default', 'minimal', 'mobile_minimal', 'mobile_id'}
+PROBES = {'default', 'minimal', 'mobile_minimal', 'mobile_id', 'kugou'}
 
 
 def api_request(route, data=None, method=None, timeout=10):
@@ -114,7 +114,8 @@ def safe_probe(row):
     safe = {'probe': row['probe']}
     for name in ('timedLines', 'tabCount', 'tabsOmitted', 'selectedPrimaryCount',
                  'selectedPrimaryMatches', 'selectedPrimaryMismatches',
-                 'enabledLyricsRefCount', 'lyricsRefCount', 'disabledLyricsRefCount', 'httpRequests'):
+                 'enabledLyricsRefCount', 'lyricsRefCount', 'disabledLyricsRefCount', 'httpRequests',
+                 'candidateCount', 'exactCandidateCount', 'durationMs'):
         if type(row.get(name)) is int and 0 <= row[name] <= 10_000_000:
             safe[name] = row[name]
     for name in ('currentEndpointPresent', 'currentEndpointMatches', 'tabsAreList', 'hasTimestamps'):
@@ -122,7 +123,7 @@ def safe_probe(row):
             safe[name] = row[name]
     if row.get('timedLookup') in ('skipped', 'found', 'empty', 'untimed', 'failed'):
         safe['timedLookup'] = row['timedLookup']
-    if row.get('errorCode') in ('unsupported_request', 'request_limit', 'upstream_status', 'response_limit'):
+    if row.get('errorCode') in ('unsupported_request', 'request_limit', 'upstream_status', 'response_limit', 'invalid_response'):
         safe['errorCode'] = row['errorCode']
     if row.get('errorType') in (
         'AttributeError', 'ConnectionError', 'ConnectTimeout', 'FileNotFoundError',
