@@ -49,6 +49,32 @@ Hanya push ke `main` yang kemudian mengirim **image yang sama** ke
 
 ## Migrasi cookies
 
+### Opsi A (disarankan): home helper
+
+Satu URL home helper (`deploy/home-helper/`) melayani lirik dan cookies YouTube
+lewat Tailscale. Isi Config Vars `HOME_HELPER_URL`, `HOME_HELPER_TOKEN`, dan
+`TAILSCALE_AUTHKEY` (lihat `deploy/home-helper/heroku.env.example`); kosongkan
+`YTDLP_COOKIES_BASE64`.
+
+Hararest mengambil `GET /cookies` saat startup, setiap 30 menit, dan langsung
+ketika yt-dlp mendapat "confirm you're not a bot"/HTTP 403 (maksimal sekali per
+menit, lalu mencoba ulang satu kali). Cookie disimpan di `/tmp` dengan izin
+`0600` dan tidak pernah dicatat di log. Jika helper offline, yt-dlp tetap
+berjalan dengan cookie terakhir atau tanpa cookie.
+
+Ketika `yt-dlp` memperbarui isi cookie, Hararest mengirim balik (`PUT /cookies`)
+setelah jeda 5 menit (dan saat shutdown `SIGTERM`/`SIGINT`) memakai `If-Match`
+ETag selama sesi login YouTube (`__Secure-3PAPISID`) masih aktif. Jika ada
+cookie baru yang diunggah manual di home server, helper menolak dengan `412`
+dan Hararest mengambil salinan terbaru tersebut alih-alih menimpanya.
+
+Untuk mengganti cookie cukup unggah ke home server, tanpa restart dyno:
+
+```bash
+deploy/home-helper/push-cookies.sh cookies/yt-dlp_cookies.txt
+```
+
+### Opsi B: Config Var base64
 File lokal dyno bersifat sementara. Mengunggah cookie ke satu dyno lewat terminal
 tidak membuatnya tersedia setelah restart/deploy atau pada dyno lain. Cookie
 tidak dimasukkan ke Git, build arguments, image Docker, atau GitHub Actions.

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
-import { restoreCookieFile } from './cookies';
+import { privateCookiePath, restoreCookieFile } from './cookies';
 
 dotenv.config({ quiet: true });
 
@@ -72,8 +72,11 @@ export const config = ConfigSchema.parse({
   youtube: {
     concurrency: process.env.YTDLP_CONCURRENCY,
     binPath: process.env.YTDLP_PATH,
+    // Priority: base64 Config Var, then a private file that the home helper
+    // sync fills at runtime, then a mounted file path.
     cookiePath:
-      restoreCookieFile(process.env.YTDLP_COOKIES_BASE64) ?? process.env.YTDLP_COOKIES_PATH,
+      restoreCookieFile(process.env.YTDLP_COOKIES_BASE64) ??
+      (process.env.HOME_HELPER_URL?.trim() ? privateCookiePath() : process.env.YTDLP_COOKIES_PATH),
     tmpDir: process.env.TMP_DIR,
     potProviderUrl: process.env.YTDLP_POT_PROVIDER_URL,
   },

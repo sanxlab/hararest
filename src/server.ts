@@ -4,6 +4,7 @@ import logger from './utils/logger';
 import { playerService } from './modules/player/player.route';
 import { attachPlayerWebSocket } from './modules/player/player.websocket';
 import { jobService } from './modules/jobs/jobs.route';
+import { homeCookieSync } from './modules/youtube/youtube.cookie-sync';
 
 const port = config.port;
 
@@ -11,6 +12,7 @@ const server = app.listen(port, () => {
   logger.info(`Server running in ${config.nodeEnv} mode on port ${port}`);
 });
 const closePlayer = attachPlayerWebSocket(server, playerService);
+homeCookieSync.start();
 
 
 // Graceful shutdown handler for Docker/Kubernetes container stop signals.
@@ -22,6 +24,8 @@ const gracefulShutdown = (signal: string) => {
   const jobsClosed = jobService.close();
   server.close(async () => {
     await jobsClosed;
+    await homeCookieSync.flush();
+    homeCookieSync.stop();
     logger.info('All connections closed. Exiting.');
     process.exit(0);
   });

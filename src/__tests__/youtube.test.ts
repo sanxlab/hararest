@@ -6,6 +6,7 @@ import os from 'os';
 import path from 'path';
 import { EventEmitter } from 'node:events';
 import { YoutubeService, YOUTUBE_LIMITS } from '../modules/youtube/youtube.service';
+import { homeCookieSync } from '../modules/youtube/youtube.cookie-sync';
 import { config } from '../config/default';
 import logger from '../utils/logger';
 
@@ -198,6 +199,54 @@ describe('Youtube Module', () => {
             );
 
             fs.rmSync(cookieDir, { recursive: true, force: true });
+        });
+
+        it('retries a bot check once with cookies refreshed from the home helper', async () => {
+            const cookieDir = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-home-cookie-'));
+            const cookiePath = path.join(cookieDir, 'cookies.txt');
+            const refresh = jest.spyOn(homeCookieSync, 'refresh').mockImplementation(async () => {
+                fs.writeFileSync(cookiePath, '# Netscape HTTP Cookie File\n');
+                return true;
+            });
+            const notify = jest.spyOn(homeCookieSync, 'notifyLocalChange').mockImplementation(() => {});
+            mockExecFile
+                .mockImplementationOnce((_file: string, _args: string[], _options: object,
+                    callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                    callback(new Error('failed'), '', "ERROR: Sign in to confirm you're not a bot");
+                })
+                .mockImplementationOnce((_file: string, _args: string[], _options: object,
+                    callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                    callback(null, JSON.stringify({ id: 'video123', formats: [] }), '');
+                });
+            const service = new YoutubeService();
+            (service as unknown as { cookiePath: string }).cookiePath = cookiePath;
+            try {
+                await expect(service.getInfo('https://youtube.com/watch?v=video123')).resolves.toMatchObject({ id: 'video123' });
+                expect(refresh).toHaveBeenCalledTimes(1);
+                expect(notify).toHaveBeenCalledTimes(1);
+                expect(mockExecFile.mock.calls[0][1]).not.toContain('--cookies');
+                expect(mockExecFile.mock.calls[1][1]).toEqual(expect.arrayContaining(['--cookies', cookiePath]));
+            } finally {
+                refresh.mockRestore();
+                notify.mockRestore();
+                fs.rmSync(cookieDir, { recursive: true, force: true });
+            }
+        });
+
+        it('does not retry a bot check when the home helper has no newer cookies', async () => {
+            const refresh = jest.spyOn(homeCookieSync, 'refresh').mockResolvedValue(false);
+            mockExecFile.mockImplementationOnce((_file: string, _args: string[], _options: object,
+                callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                callback(new Error('failed'), '', "ERROR: Sign in to confirm you're not a bot");
+            });
+            const service = new YoutubeService();
+            (service as unknown as { cookiePath: string }).cookiePath = path.join(os.tmpdir(), 'absent-home-cookie');
+            try {
+                await expect(service.getInfo('https://youtube.com/watch?v=video123')).rejects.toMatchObject({ statusCode: 500 });
+                expect(mockExecFile).toHaveBeenCalledTimes(1);
+            } finally {
+                refresh.mockRestore();
+            }
         });
     });
 });

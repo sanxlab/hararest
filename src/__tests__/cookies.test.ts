@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { restoreCookieFile } from '../config/cookies';
+import { hasYoutubeLogin, restoreCookieFile } from '../config/cookies';
 
 const cookie =
   '# Netscape HTTP Cookie File\n#HttpOnly_.youtube.com\tTRUE\t/\tTRUE\t2147483647\tSID\tfixture-secret\n';
@@ -49,4 +49,13 @@ it.each([
   expect(() => restoreCookieFile(encoded)).toThrow(
     'YTDLP_COOKIES_BASE64 must contain a base64-encoded Netscape cookie file.',
   );
+});
+
+it('detects an unexpired YouTube login cookie', () => {
+  const valid = '# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t2147483647\t__Secure-3PAPISID\tsecret\n';
+  const expired = '# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t1000\t__Secure-3PAPISID\tsecret\n';
+  const other = '# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t2147483647\tVISITOR_INFO1_LIVE\tvisitor\n';
+  expect(hasYoutubeLogin(Buffer.from(valid), 1_700_000_000_000)).toBe(true);
+  expect(hasYoutubeLogin(Buffer.from(expired), 1_700_000_000_000)).toBe(false);
+  expect(hasYoutubeLogin(Buffer.from(other), 1_700_000_000_000)).toBe(false);
 });

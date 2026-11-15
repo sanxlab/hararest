@@ -7,6 +7,7 @@ import { AppError } from '../../utils/AppError';
 import { VideoInfo, YtDlpJSON, SearchResult } from './youtube.types';
 import logger from '../../utils/logger';
 import { youtubeMusicLyrics } from './youtube.lyrics';
+import { homeCookieSync } from './youtube.cookie-sync';
 
 interface YtDlpResult {
     stdout: string;
@@ -102,8 +103,9 @@ export class YoutubeService {
                 resolve({ stdout, stderr });
             });
         });
+        let result: YtDlpResult;
         try {
-            return await output;
+            result = await output;
         } finally {
             // Abort can invoke execFile's callback before the killed child exits.
             // Retain the shared process slot until the operating system reaps it.
@@ -111,6 +113,8 @@ export class YoutubeService {
                 await new Promise<void>(resolve => child!.once('close', () => resolve()));
             }
         }
+        if (useCookie) homeCookieSync.notifyLocalChange();
+        return result;
     }
 
     private isHttp403(error: unknown): boolean {
@@ -126,6 +130,10 @@ export class YoutubeService {
         return /\b403\b/.test(output);
     }
 
+    private isVerificationRequired(error: unknown): boolean {
+        return failureDiagnostics(error).reason === 'youtube_verification_required';
+    }
+
     private async runYtDlp(args: string[], signal?: AbortSignal): Promise<YtDlpResult> {
         signal?.throwIfAborted();
         if (activeExtractions >= YOUTUBE_LIMITS.concurrency) {
@@ -137,7 +145,13 @@ export class YoutubeService {
             try {
                 return await this.executeYtDlp(args, useCookie, signal);
             } catch (error) {
-                if (signal?.aborted || !useCookie || !this.isHttp403(error)) {
+                if (signal?.aborted) throw error;
+                // A fresh cookie from the home helper may clear a bot check.
+                if ((this.isVerificationRequired(error) || this.isHttp403(error)) && await homeCookieSync.refresh()) {
+                    logger.warn('yt-dlp needed verification; retrying once with refreshed home helper cookies.');
+                    return await this.executeYtDlp(args, true, signal);
+                }
+                if (!useCookie || !this.isHttp403(error)) {
                     throw error;
                 }
 
