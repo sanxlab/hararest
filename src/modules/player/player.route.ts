@@ -38,8 +38,11 @@ export function createPlayerRouters(service: PlayerService) {
       res.status(410).type('text').send('Sesi player sudah berakhir atau tidak ditemukan. Jalankan playws lagi.');
       return;
     }
-    const wsOrigin = new URL(session.track.wsUrl).origin;
-    res.set('Content-Security-Policy', `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src ${wsOrigin}; media-src blob:; base-uri 'none'; frame-ancestors 'none'`);
+    const wsUrl = new URL(session.track.wsUrl);
+    const wsOrigin = wsUrl.origin;
+    // The card's diagnostic probe fetches /health on the same host over HTTPS.
+    const httpOrigin = `${wsUrl.protocol === 'wss:' ? 'https:' : 'http:'}//${wsUrl.host}`;
+    res.set('Content-Security-Policy', `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src ${wsOrigin} ${httpOrigin}; media-src blob:; base-uri 'none'; frame-ancestors 'none'`);
     res.type('html').send('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kotonehara Player</title></head><body>' + buildPlayerHtml(session.track) + '</body></html>');
   });
   return { apiRouter, pageRouter };
