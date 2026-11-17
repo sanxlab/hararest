@@ -21,6 +21,32 @@ export function normalizeFacebookInput(raw: string): string {
   return value;
 }
 
+/**
+ * Reads the progressive (audio+video) MP4 links Facebook embeds in a public
+ * post page. Only https links on Facebook's CDN are accepted, HD first.
+ */
+export function extractFacebookPageVideos(html: string): { quality: string; url: string }[] {
+  const found: { quality: string; url: string }[] = [];
+  for (const [key, quality] of [
+    ['browser_native_hd_url', 'hd'],
+    ['browser_native_sd_url', 'sd'],
+  ] as const) {
+    const match = html.match(new RegExp(`"${key}":"((?:[^"\\\\]|\\\\.)*)"`));
+    if (!match) continue;
+    try {
+      const link = new URL(JSON.parse(`"${match[1]}"`) as string);
+      const host = link.hostname.toLowerCase();
+      if (link.protocol !== 'https:' || !host.endsWith('.fbcdn.net')) continue;
+      if (!found.some((item) => item.url === link.toString())) {
+        found.push({ quality, url: link.toString() });
+      }
+    } catch {
+      // Ignore a malformed link and keep any other quality.
+    }
+  }
+  return found;
+}
+
 interface FDownMediaLink {
   quality?: string;
   label?: string;
@@ -151,6 +177,28 @@ export class FacebookService {
     };
   }
 
+  /**
+   * Public posts embed progressive MP4 links in the page itself. This covers
+   * /posts/ and /share/ links that FDown and yt-dlp cannot parse.
+   */
+  private async getVideoInfoFromPage(url: string): Promise<FacebookVideoInfo> {
+    const response = await getPublicPage<string>(url, allowedFacebookHosts, {
+      headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'text/html,application/xhtml+xml' },
+      responseType: 'text',
+    });
+    const html = typeof response.data === 'string' ? response.data : '';
+    const links = extractFacebookPageVideos(html);
+    if (!links.length) throw new AppError('No downloadable Facebook video found.', 404);
+    const videos: FacebookVideo[] = await Promise.all(
+      links.map(async (link) => {
+        const size = await getMediaSize(link.url);
+        return { quality: link.quality, url: link.url, size, fSize: bytesToSize(size) };
+      }),
+    );
+    const thumbnail = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)?.[1];
+    return { thumbnail: thumbnail ? thumbnail.replace(/&amp;/g, '&') : '', videos };
+  }
+
   private async getVideoInfoFromYtDlp(url: string): Promise<FacebookVideoInfo> {
     try {
       const run = await execFilePromise(
@@ -243,7 +291,15 @@ export class FacebookService {
     try {
       return await this.getVideoInfoFromFDown(resolvedUrl);
     } catch (error) {
-      logger.warn('FDown failed; trying the direct Facebook extractor', {
+      logger.warn('FDown failed; trying the Facebook page extractor', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+
+    try {
+      return await this.getVideoInfoFromPage(resolvedUrl);
+    } catch (error) {
+      logger.warn('Facebook page extractor failed; trying yt-dlp', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
       return this.getVideoInfoFromYtDlp(resolvedUrl);
