@@ -2,6 +2,7 @@ import { Server, IncomingMessage } from 'node:http';
 import { Duplex } from 'node:stream';
 import { WebSocket, WebSocketServer } from 'ws';
 import { PLAYER_CHUNK_BYTES, PlayerService } from './player.service';
+import logger from '../../utils/logger';
 
 export function attachPlayerWebSocket(server: Server, service: PlayerService): () => void {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 1024, perMessageDeflate: false });
@@ -12,6 +13,8 @@ export function attachPlayerWebSocket(server: Server, service: PlayerService): (
   const upgrade = (req: IncomingMessage, socket: Duplex, head: Buffer) => {
     const match = /^\/ws\/player\/([a-f0-9]{48})$/.exec(req.url || '');
     const reject = (status: string) => {
+      // Session ids are bearer tokens and are never logged.
+      logger.warn('Player socket rejected', { status });
       socket.on('error', () => {});
       socket.end(`HTTP/1.1 ${status}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`);
     };
@@ -37,8 +40,10 @@ export function attachPlayerWebSocket(server: Server, service: PlayerService): (
         ws.send(data, { binary: Buffer.isBuffer(data) }, (error) => error ? rejectSend(error) : resolve());
       });
       void (async () => {
+        const startedAt = Date.now();
+        const totalChunks = Math.ceil(session.audio.length / PLAYER_CHUNK_BYTES);
+        let sentChunks = 0;
         try {
-          const totalChunks = Math.ceil(session.audio.length / PLAYER_CHUNK_BYTES);
           await send(JSON.stringify({ type: 'start', totalChunks, size: session.audio.length, mimeType: session.track.mimeType }));
           for (let index = 0; index < totalChunks; index++) {
             const chunk = session.audio.subarray(index * PLAYER_CHUNK_BYTES, (index + 1) * PLAYER_CHUNK_BYTES);
@@ -47,10 +52,14 @@ export function attachPlayerWebSocket(server: Server, service: PlayerService): (
             chunk.copy(frame, 4);
             // Await each write so a slow receiver cannot queue an entire audio file.
             await send(frame);
+            sentChunks++;
           }
           await send(JSON.stringify({ type: 'end' }));
           ws.close(1000, 'Audio complete');
+          logger.info('Player audio delivered', { bytes: session.audio.length, ms: Date.now() - startedAt });
         } catch {
+          // The listener went away (or the socket failed) before the last chunk.
+          logger.warn('Player audio not delivered', { sentChunks, totalChunks, ms: Date.now() - startedAt });
           ws.terminate();
         }
       })();
