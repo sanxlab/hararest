@@ -46,13 +46,31 @@ function failureDiagnostics(error: unknown): Record<string, string | number> {
     };
 }
 
-const DEFAULT_VIDEO_FORMAT = '18/b[height<=360]/bv*[height<=360]+ba/b';
+// "360p" means the short side of the frame: 640x360 for landscape video and
+// 360x640 for vertical Shorts. A height filter would give Shorts a 144x256
+// stream, so the limit is applied with yt-dlp's "res" sort field, which is the
+// smaller dimension. H.264/AAC in MP4 is preferred so the result plays in
+// WhatsApp without re-encoding.
+const DEFAULT_VIDEO_RES = 360;
 
-function buildVideoFormat(quality?: string): string {
-    if (!quality) return DEFAULT_VIDEO_FORMAT;
-    const h = parseInt(quality.replace('p', ''), 10);
-    if (isNaN(h) || h <= 0) return DEFAULT_VIDEO_FORMAT;
-    return `bv*[height<=${h}][ext=mp4]+ba/b[height<=${h}]/bv*[height<=${h}]+ba/18/${DEFAULT_VIDEO_FORMAT}`;
+export function parseVideoRes(quality?: string): number {
+    const res = quality ? parseInt(quality.replace('p', ''), 10) : NaN;
+    return Number.isFinite(res) && res > 0 ? res : DEFAULT_VIDEO_RES;
+}
+
+export function buildVideoSelection(quality?: string): string[] {
+    const res = parseVideoRes(quality);
+    // Format 18 is a ready-made 360p MP4; use it when no other quality is asked.
+    const format = quality && res !== DEFAULT_VIDEO_RES ? 'bv*+ba/b' : '18/bv*+ba/b';
+    return ['-f', format, '-S', `res:${res},vcodec:h264,ext:mp4:m4a`];
+}
+
+/** Quality label of a format: its short side, e.g. "360p" for 360x640. */
+export function videoQualityLabel(format: { width?: number; height?: number }): string | undefined {
+    const height = format.height ?? 0;
+    const width = format.width ?? 0;
+    if (height <= 0) return undefined;
+    return `${width > 0 ? Math.min(width, height) : height}p`;
 }
 const MAX_BUFFER = 8 * 1024 * 1024;
 export const YOUTUBE_LIMITS = { concurrency: config.youtube.concurrency, maxFileBytes: 256 * 1024 * 1024 };
@@ -187,8 +205,8 @@ export class YoutubeService {
 
             if (rawInfo.formats) {
                 rawInfo.formats.forEach((f) => {
-                    if (f.ext === 'mp4' && f.height > 0) {
-                        const q = `${f.height}p`;
+                    const q = f.ext === 'mp4' ? videoQualityLabel(f) : undefined;
+                    if (q) {
                         if (!qualityMap.has(q)) {
                             qualityMap.add(q);
                             qualities.push(q);
@@ -228,13 +246,11 @@ export class YoutubeService {
     async downloadVideo(url: string, quality?: string, options: { signal?: AbortSignal; maxBytes?: number } = {}): Promise<string> {
         const ts = randomUUID();
         const outputTemplate = `${this.tmpDir}/${ts}.%(ext)s`;
-        const videoFormat = buildVideoFormat(quality);
         const maxBytes = this.downloadLimit(options.maxBytes);
 
         try {
             const { stdout } = await this.runYtDlp([
-                '-f',
-                videoFormat,
+                ...buildVideoSelection(quality),
                 '-o',
                 outputTemplate,
                 '--merge-output-format',

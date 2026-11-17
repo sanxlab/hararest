@@ -5,7 +5,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { EventEmitter } from 'node:events';
-import { YoutubeService, YOUTUBE_LIMITS } from '../modules/youtube/youtube.service';
+import { YoutubeService, YOUTUBE_LIMITS, buildVideoSelection, videoQualityLabel } from '../modules/youtube/youtube.service';
 import { homeCookieSync } from '../modules/youtube/youtube.cookie-sync';
 import { config } from '../config/default';
 import logger from '../utils/logger';
@@ -154,7 +154,7 @@ describe('Youtube Module', () => {
 
             expect(mockExecFile).toHaveBeenCalledWith(
                 expect.any(String),
-                expect.arrayContaining(['-f', '18/b[height<=360]/bv*[height<=360]+ba/b']),
+                expect.arrayContaining(['-f', '18/bv*+ba/b', '-S', 'res:360,vcodec:h264,ext:mp4:m4a']),
                 expect.any(Object),
                 expect.any(Function)
             );
@@ -392,5 +392,39 @@ describe('YouTube download lifecycle', () => {
         for (const run of [() => service.getInfo('https://youtu.be/123'), () => service.search('test'), () => service.downloadAudio('https://youtu.be/123')]) {
             await expect(run()).rejects.toMatchObject({ statusCode: 500, message: expect.not.stringMatching(/private|secret|cookies|stderr/) });
         }
+    });
+});
+
+describe('YouTube quality uses the short side of the frame', () => {
+    it('labels vertical and landscape formats by their smaller dimension', () => {
+        expect(videoQualityLabel({ width: 360, height: 640 })).toBe('360p');
+        expect(videoQualityLabel({ width: 1280, height: 720 })).toBe('720p');
+        // Width is not always reported; fall back to height.
+        expect(videoQualityLabel({ height: 480 })).toBe('480p');
+        expect(videoQualityLabel({ width: 640 })).toBeUndefined();
+    });
+
+    it('lists Shorts qualities as 360p/720p instead of their pixel heights', async () => {
+        mockExecFile.mockImplementation((_file: string, _args: string[], _options: object,
+            callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            callback(null, JSON.stringify({ id: 'short1', formats: [
+                { ext: 'mp4', width: 144, height: 256 },
+                { ext: 'mp4', width: 360, height: 640 },
+                { ext: 'mp4', width: 720, height: 1280 },
+                { ext: 'webm', width: 1080, height: 1920 },
+            ] }), '');
+        });
+        const info = await new YoutubeService().getInfo('https://youtube.com/shorts/short1');
+        expect(info.videos).toEqual(['144p', '360p', '720p']);
+    });
+
+    it('limits by resolution sort rather than a height filter', () => {
+        expect(buildVideoSelection()).toEqual(['-f', '18/bv*+ba/b', '-S', 'res:360,vcodec:h264,ext:mp4:m4a']);
+        expect(buildVideoSelection('360p')).toEqual(['-f', '18/bv*+ba/b', '-S', 'res:360,vcodec:h264,ext:mp4:m4a']);
+        expect(buildVideoSelection('720p')).toEqual(['-f', 'bv*+ba/b', '-S', 'res:720,vcodec:h264,ext:mp4:m4a']);
+        expect(buildVideoSelection('1080')).toEqual(['-f', 'bv*+ba/b', '-S', 'res:1080,vcodec:h264,ext:mp4:m4a']);
+        // Unusable input falls back to the default instead of reaching yt-dlp.
+        expect(buildVideoSelection('abc')).toEqual(buildVideoSelection());
+        expect(buildVideoSelection('-5p')).toEqual(buildVideoSelection());
     });
 });
