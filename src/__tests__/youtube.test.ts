@@ -91,6 +91,18 @@ describe('Youtube Module', () => {
             }
         });
 
+        it('bounds network waits so a dead media connection fails fast', async () => {
+            mockExecFile.mockImplementation((_file: string, _args: string[], _options: object,
+                callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+                callback(null, JSON.stringify({ id: 'video123', formats: [] }), '');
+            });
+            await new YoutubeService().getInfo('https://youtube.com/watch?v=video123');
+            const args = mockExecFile.mock.calls[0][1] as string[];
+            for (const [flag, value] of [['--socket-timeout', '15'], ['--retries', '2'], ['--fragment-retries', '2']]) {
+                expect(args[args.indexOf(flag) + 1]).toBe(value);
+            }
+        });
+
         it('does not pass an empty cookie file to yt-dlp', async () => {
             const cookieDir = fs.mkdtempSync(path.join(os.tmpdir(), 'youtube-empty-cookie-'));
             const cookiePath = path.join(cookieDir, 'cookies.txt');

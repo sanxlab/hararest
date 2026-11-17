@@ -37,6 +37,8 @@ const ConfigSchema = z.object({
   rpgGatewaySecret: z.string().default('').refine(value => !value || (value.length >= 32 && !/\s/.test(value)), 'RPG_GATEWAY_SECRET needs at least 32 characters without whitespace.'),
   youtube: z.object({
     concurrency: z.coerce.number().int().min(1).max(8).default(4),
+    // Consecutive stalled downloads before the process restarts itself; 0 disables.
+    stallRestartAfter: z.coerce.number().int().min(0).max(20).default(3),
     binPath: z.string().default('./bin/yt-dlp'),
     cookiePath: z.string().default('./cookies.txt'),
     tmpDir: z.string().default('./tmp'),
@@ -71,6 +73,7 @@ export const config = ConfigSchema.parse({
   rpgGatewaySecret: process.env.RPG_GATEWAY_SECRET?.trim(),
   youtube: {
     concurrency: process.env.YTDLP_CONCURRENCY,
+    stallRestartAfter: process.env.YTDLP_STALL_RESTART_AFTER,
     binPath: process.env.YTDLP_PATH,
     // Priority: base64 Config Var, then a private file that the home helper
     // sync fills at runtime, then a mounted file path.

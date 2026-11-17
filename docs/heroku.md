@@ -30,6 +30,7 @@ Hanya push ke `main` yang kemudian mengirim **image yang sama** ke
    | `BILIBILI_SESSDATA` | Nilai SESSDATA saja, tanpa `SESSDATA=` atau header Cookie |
    | `YTDLP_COOKIES_BASE64` | Isi file cookies YouTube format Netscape yang di-base64 |
    | `YTDLP_POT_PROVIDER_URL` | Opsional: URL server PO token yang bisa diakses dari Heroku |
+   | `YTDLP_STALL_RESTART_AFTER` | Opsional: jumlah download YouTube berturut-turut yang macet (timeout) sebelum Hararest restart sendiri. Default `3`, `0` untuk mematikan |
    | `BRAVE_SEARCH_API_KEY` | API key Brave bila memakai fitur pencarian |
    | `TRUST_PROXY_HOPS` | `1`, untuk membaca IP client melalui router Heroku |
    | `PLAYER_PUBLIC_URL` | Opsional: origin HTTPS publik, misalnya `https://api.example.com` |

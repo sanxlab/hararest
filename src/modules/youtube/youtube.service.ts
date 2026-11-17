@@ -8,6 +8,7 @@ import { VideoInfo, YtDlpJSON, SearchResult } from './youtube.types';
 import logger from '../../utils/logger';
 import { youtubeMusicLyrics } from './youtube.lyrics';
 import { homeCookieSync } from './youtube.cookie-sync';
+import { StallGuard } from './youtube.stall-guard';
 
 interface YtDlpResult {
     stdout: string;
@@ -57,6 +58,19 @@ const MAX_BUFFER = 8 * 1024 * 1024;
 export const YOUTUBE_LIMITS = { concurrency: config.youtube.concurrency, maxFileBytes: 256 * 1024 * 1024 };
 // Shared by legacy routes, queued jobs, and player service instances.
 let activeExtractions = 0;
+// Shared for the same reason: stalls are a property of the process, not an instance.
+const stallGuard = new StallGuard(config.youtube.stallRestartAfter, 10 * 60_000);
+// Give up on a dead media connection in about a minute instead of yt-dlp's
+// default of ten 20-second retries per file.
+const NETWORK_ARGS = ['--socket-timeout', '15', '--retries', '2', '--fragment-retries', '2'];
+
+function recordDownloadFailure(error: unknown): Record<string, string | number> {
+    const diagnostics = failureDiagnostics(error);
+    if (diagnostics.reason !== 'cancelled') {
+        stallGuard.record(diagnostics.reason === 'network_timeout' ? 'network_timeout' : 'other');
+    }
+    return diagnostics;
+}
 
 export class YoutubeService {
     private binPath: string;
@@ -83,7 +97,7 @@ export class YoutubeService {
     }
 
     private async executeYtDlp(args: string[], useCookie: boolean, signal?: AbortSignal): Promise<YtDlpResult> {
-        const runtimeArgs = ['--js-runtimes', 'node', ...args];
+        const runtimeArgs = ['--js-runtimes', 'node', ...NETWORK_ARGS, ...args];
         if (config.youtube.potProviderUrl) {
             runtimeArgs.unshift('--extractor-args', `youtubepot-bgutilhttp:base_url=${config.youtube.potProviderUrl}`);
         }
@@ -241,6 +255,7 @@ export class YoutubeService {
             const finalPath = stdout.trim().split('\n').at(-1)?.trim();
             if (finalPath && path.resolve(finalPath) === expectedFilename && fs.existsSync(finalPath)) {
                 await this.validateDownload(finalPath, maxBytes);
+                stallGuard.record('ok');
                 return path.resolve(finalPath);
             }
 
@@ -248,7 +263,7 @@ export class YoutubeService {
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
-            logger.error('YTDL download failed', { format: 'video', ...failureDiagnostics(error) });
+            logger.error('YTDL download failed', { format: 'video', ...recordDownloadFailure(error) });
             throw new AppError('Failed to download media.', 500);
         }
     }
@@ -288,6 +303,7 @@ export class YoutubeService {
                 await this.validateDownload(finalPath, maxBytes);
                 await youtubeMusicLyrics.enrich(finalPath, url, { signal: options.signal, maxBytes });
                 await this.validateDownload(finalPath, maxBytes);
+                stallGuard.record('ok');
                 return path.resolve(finalPath);
             }
 
@@ -295,7 +311,7 @@ export class YoutubeService {
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
-            logger.error('YTDL download failed', { format: 'audio', ...failureDiagnostics(error) });
+            logger.error('YTDL download failed', { format: 'audio', ...recordDownloadFailure(error) });
             throw new AppError('Failed to download media.', 500);
         }
     }
