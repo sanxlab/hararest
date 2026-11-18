@@ -312,6 +312,46 @@ describe('YouTube download lifecycle', () => {
         await expect(service.downloadAudio('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
     });
 
+    it.each(['video', 'audio'] as const)('records safe output diagnostics before cleanup for %s', async (format) => {
+        const log = jest.spyOn(logger, 'error');
+        const stderr = 'WARNING: File is larger than max-filesize; skipping\nAuthorization: Bearer private-secret\nCookie: session=private-secret\nhttps://example.com/video?token=private-secret\n';
+        mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            const output = args[args.indexOf('-o') + 1].replace('%(ext)s', 'mp4.part');
+            fs.writeFileSync(output, 'partial');
+            fs.writeFileSync(output.replace('.mp4.part', '.webm'), 'alternate output');
+            callback(null, '', stderr);
+        });
+        const download = format === 'video' ? service.downloadVideo.bind(service) : service.downloadAudio.bind(service);
+        await expect(download('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500, message: 'Failed to download media.' });
+        expect(log).toHaveBeenCalledWith('YTDL download failed', expect.objectContaining({
+            format, reason: 'output_missing', outputState: 'empty_stdout',
+            expectedFileExists: false, reportedPathMatches: false, directoryReadable: true,
+            partialFiles: 1, otherOutputFiles: 1, stdoutBytes: 0, stderrBytes: Buffer.byteLength(stderr),
+            stdoutLines: 0, stderrLines: 4, stdoutSummary: 'none', stderrSummary: 'size_limit,skipped,warning',
+        }));
+        expect(JSON.stringify(log.mock.calls)).not.toMatch(/private-secret|Authorization|Cookie|example\.com|youtube|youtu\.be/);
+        expect(fs.readdirSync(directory)).toEqual([]);
+    });
+
+    it.each(['empty_stdout', 'path_mismatch', 'file_missing'] as const)('distinguishes %s without logging reported paths', async (outputState) => {
+        const log = jest.spyOn(logger, 'error');
+        mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+            const expected = args[args.indexOf('-o') + 1].replace('%(ext)s', 'mp4');
+            if (outputState !== 'file_missing') fs.writeFileSync(expected, 'finished');
+            const stdout = outputState === 'empty_stdout' ? '' : outputState === 'path_mismatch' ? '/private/token=private-secret.webm\n' : expected + '\n';
+            callback(null, stdout, '');
+        });
+        await expect(service.downloadVideo('https://youtu.be/123')).rejects.toMatchObject({ statusCode: 500 });
+        expect(log).toHaveBeenCalledWith('YTDL download failed', expect.objectContaining({
+            reason: 'output_missing', outputState, expectedFileExists: outputState !== 'file_missing',
+            reportedPathMatches: outputState === 'file_missing',
+            reportedExtension: outputState === 'path_mismatch' ? '.webm' : outputState === 'file_missing' ? '.mp4' : 'unknown',
+        }));
+        expect(JSON.stringify(log.mock.calls)).not.toContain(directory);
+        expect(JSON.stringify(log.mock.calls)).not.toMatch(/private|secret/);
+        expect(fs.readdirSync(directory)).toEqual([]);
+    });
+
     it('applies a default download budget and removes outputs exceeding the final size limit', async () => {
         mockExecFile.mockImplementation((_file: string, args: string[], _options: object, callback: (error: Error | null, stdout: string, stderr: string) => void) => {
             const output = args[args.indexOf('-o') + 1].replace('%(ext)s', 'mp3');

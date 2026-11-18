@@ -22,8 +22,34 @@ interface YtDlpCommandError extends Error {
     signal?: string;
 }
 
+type DownloadDiagnostics = Record<string, string | number | boolean>;
+
+class OutputMissingError extends Error {
+    constructor(readonly diagnostics: DownloadDiagnostics) {
+        super('Could not determine output filename');
+    }
+}
+
+// Summarize streams with fixed labels: raw output can contain credentials,
+// cookie data, signed URLs, user-controlled titles, and local paths.
+function outputSummary(stream: string): string {
+    const signals: Array<[string, RegExp]> = [
+        ['size_limit', /max.filesize|larger than|smaller than|file.*size.*limit/i],
+        ['skipped', /skipping|skipped|does not pass filter/i],
+        ['verification', /sign in|not a bot|login required/i],
+        ['http_403', /HTTP(?: Error)?[: ]+403\b/i],
+        ['http_429', /HTTP(?: Error)?[: ]+429\b/i],
+        ['timeout', /timed? out|timeout/i],
+        ['postprocessing', /ffmpeg|ffprobe|postprocess|merger|remux/i],
+        ['warning', /warning/i],
+        ['error', /error/i],
+    ];
+    return signals.filter(([, pattern]) => pattern.test(stream)).map(([name]) => name).join(',') || 'none';
+}
+
 // Classify failures without logging command lines, cookies, paths or signed URLs.
-function failureDiagnostics(error: unknown): Record<string, string | number> {
+function failureDiagnostics(error: unknown): DownloadDiagnostics {
+    if (error instanceof OutputMissingError) return { reason: 'output_missing', ...error.diagnostics };
     const failure = error instanceof Error ? error as YtDlpCommandError : undefined;
     const detail = failure?.stderr ?? failure?.message ?? '';
     const httpStatus = detail.match(/HTTP(?: Error| error| status(?: code)?)?[: ]+(\d{3})\b/i)?.[1];
@@ -82,7 +108,7 @@ const stallGuard = new StallGuard(config.youtube.stallRestartAfter, 10 * 60_000)
 // default of ten 20-second retries per file.
 const NETWORK_ARGS = ['--socket-timeout', '15', '--retries', '2', '--fragment-retries', '2'];
 
-function recordDownloadFailure(error: unknown): Record<string, string | number> {
+function recordDownloadFailure(error: unknown): DownloadDiagnostics {
     const diagnostics = failureDiagnostics(error);
     if (diagnostics.reason !== 'cancelled') {
         stallGuard.record(diagnostics.reason === 'network_timeout' ? 'network_timeout' : 'other');
@@ -249,7 +275,7 @@ export class YoutubeService {
         const maxBytes = this.downloadLimit(options.maxBytes);
 
         try {
-            const { stdout } = await this.runYtDlp([
+            const { stdout, stderr } = await this.runYtDlp([
                 ...buildVideoSelection(quality),
                 '-o',
                 outputTemplate,
@@ -275,7 +301,7 @@ export class YoutubeService {
                 return path.resolve(finalPath);
             }
 
-            throw new Error('Could not determine output filename');
+            throw await this.outputMissingError(ts, expectedFilename, finalPath, { stdout, stderr });
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
@@ -291,7 +317,7 @@ export class YoutubeService {
         const maxBytes = this.downloadLimit(options.maxBytes);
 
         try {
-            const { stdout } = await this.runYtDlp([
+            const { stdout, stderr } = await this.runYtDlp([
                 '-f',
                 'bestaudio/best',
                 '-o',
@@ -323,13 +349,47 @@ export class YoutubeService {
                 return path.resolve(finalPath);
             }
 
-            throw new Error('Could not determine output filename');
+            throw await this.outputMissingError(ts, expectedFilename, finalPath, { stdout, stderr });
         } catch (error) {
             await this.cleanupDownload(ts);
             if (error instanceof AppError) throw error;
             logger.error('YTDL download failed', { format: 'audio', ...recordDownloadFailure(error) });
             throw new AppError('Failed to download media.', 500);
         }
+    }
+
+    private async outputMissingError(id: string, expected: string, reported: string | undefined, result: YtDlpResult): Promise<OutputMissingError> {
+        const expectedFileExists = fs.existsSync(expected);
+        const pathMatches = !!reported && path.resolve(reported) === expected;
+        let partialFiles = 0;
+        let otherOutputFiles = 0;
+        let directoryReadable = true;
+        try {
+            // Only inspect this download's filenames, before cleanup removes them.
+            for (const name of await fs.promises.readdir(this.tmpDir)) {
+                if (!name.startsWith(`${id}.`)) continue;
+                if (/\.(part|ytdl)(?:$|\.)|\.part-Frag\d+$/.test(name)) partialFiles++;
+                else if (name !== path.basename(expected)) otherOutputFiles++;
+            }
+        } catch {
+            directoryReadable = false;
+        }
+        const extension = reported ? path.extname(reported).toLowerCase() : '';
+        return new OutputMissingError({
+            outputState: !reported ? 'empty_stdout' : !pathMatches ? 'path_mismatch' : 'file_missing',
+            expectedFileExists,
+            reportedPathMatches: pathMatches,
+            reportedExtension: ['.mp4', '.mp3', '.webm', '.mkv', '.m4a', '.part', '.ytdl'].includes(extension) ? extension : 'unknown',
+            directoryReadable,
+            partialFiles,
+            otherOutputFiles,
+            stdoutBytes: Buffer.byteLength(result.stdout),
+            stderrBytes: Buffer.byteLength(result.stderr),
+            stdoutLines: result.stdout.split('\n').filter(line => line.trim()).length,
+            stderrLines: result.stderr.split('\n').filter(line => line.trim()).length,
+            stdoutSummary: outputSummary(result.stdout),
+            stderrSummary: outputSummary(result.stderr),
+        });
     }
 
     private downloadLimit(maxBytes = YOUTUBE_LIMITS.maxFileBytes): number {
