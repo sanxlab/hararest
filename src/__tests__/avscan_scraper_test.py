@@ -79,7 +79,7 @@ class AvscanScraperTests(unittest.TestCase):
         with unittest.mock.patch.object(avscan, "read_image_bytes", return_value=dummy_bytes):
             res = avscan.search_avscan("dummy_path", scraper=mock_scraper)
 
-        self.assertEqual(res["count"], 1)
+        self.assertEqual(len(res["results"]), 1)
         item = res["results"][0]
         self.assertEqual(item["video_code"], "FWAY-031")
         self.assertEqual(item["best_similarity"], 85.5)

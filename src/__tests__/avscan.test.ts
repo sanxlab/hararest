@@ -1,5 +1,7 @@
 import supertest from 'supertest';
 import app from '../app';
+import axios from 'axios';
+import * as dns from 'dns/promises';
 import { AvscanService } from '../modules/avscan/avscan.service';
 
 describe('AVScan Module', () => {
@@ -11,8 +13,27 @@ describe('AVScan Module', () => {
     });
 
     it('returns 403 or 400 when url points to a private or restricted host', async () => {
+      (dns.lookup as jest.Mock).mockResolvedValueOnce([{ address: '127.0.0.1', family: 4 }]);
       const response = await supertest(app).get('/api/avscan?url=http://127.0.0.1/test.jpg');
       expect([400, 403]).toContain(response.status);
+    });
+
+    it('rejects redirects that lead to a private host before invoking the scraper', async () => {
+      const getSpy = jest.spyOn(axios, 'get').mockResolvedValueOnce({
+        status: 302,
+        headers: { location: 'http://internal.example/secret.jpg' },
+        data: new ArrayBuffer(0),
+      });
+      (dns.lookup as jest.Mock)
+        .mockResolvedValueOnce([{ address: '93.184.216.34', family: 4 }])
+        .mockResolvedValueOnce([{ address: '10.0.0.5', family: 4 }]);
+
+      const response = await supertest(app).get('/api/avscan?url=https://example.com/image.jpg');
+
+      expect(response.status).toBe(403);
+      expect(getSpy).toHaveBeenCalledTimes(1);
+      expect(getSpy.mock.calls[0][1]).toMatchObject({ maxRedirects: 0, proxy: false });
+      getSpy.mockRestore();
     });
   });
 
@@ -27,7 +48,6 @@ describe('AVScan Module', () => {
 
     it('returns search results when service resolves successfully', async () => {
       const mockResult = {
-        count: 1,
         results: [
           {
             video_code: 'FWAY-031',
@@ -62,8 +82,9 @@ describe('AVScan Module', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
-      expect(response.body.data.count).toBe(1);
-      expect(response.body.data.results[0].video_code).toBe('FWAY-031');
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].video_code).toBe('FWAY-031');
 
       spy.mockRestore();
     });
