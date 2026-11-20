@@ -46,6 +46,7 @@ import quoteRouter from "./modules/quote/quote.route";
 import nsfwRouter from "./modules/nsfw/nsfw.route";
 import { playerApiRouter, playerPageRouter } from './modules/player/player.route';
 import googleLensRouter from './modules/google-lens/google-lens.route';
+import avscanRouter from './modules/avscan/avscan.route';
 
 app.use("/health", healthRouter);
 app.use("/api/youtube", downloadLimiter, ssrfProtect(["youtube.com", "youtu.be"]), youtubeRouter);
@@ -60,6 +61,7 @@ app.use("/api/pinterest", downloadLimiter, ssrfProtect(["pinterest.com", "www.pi
 app.use("/api/pixiv", downloadLimiter, ssrfProtect(["pixiv.net", "www.pixiv.net"]), pixivRouter);
 app.use("/api/ocr", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), ocrRouter);
 app.use("/api/google-lens", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "10mb" }), googleLensRouter);
+app.use("/api/avscan", downloadLimiter, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" }), avscanRouter);
 app.use("/api/brave", braveRouter);
 app.use("/api/wikipedia", wikipediaRouter);
 app.use('/api/quote', downloadLimiter, quoteRouter);
