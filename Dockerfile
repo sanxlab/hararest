@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr-ind \
     tesseract-ocr-eng \
     libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libjpeg62-turbo libgif7 librsvg2-2 \
-    fonts-noto-core fonts-dejavu-core \
+    fontconfig fonts-noto-core fonts-noto-cjk fonts-noto-color-emoji fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 # Python env for media fallback scrapers and YouTube Music lyrics.
@@ -73,6 +73,8 @@ ENV FACEBOOK_FALLBACK_PYTHON_SCRIPT=/app/src/modules/facebook/fdown_scraper.py
 ENV AVSCAN_PYTHON_SCRIPT=/app/src/modules/avscan/avscan_scraper.py
 ENV YTDLP_COOKIES_PATH=/app/cookies/yt-dlp_cookies.txt
 ENV TMP_DIR=/tmp/hararest
+# Heroku may run the image with an arbitrary UID; font caches must be writable.
+ENV XDG_CACHE_HOME=/tmp/hararest-cache
 ENV PORT=1337
 
 # Mount cookies here at runtime instead of baking them into the image.

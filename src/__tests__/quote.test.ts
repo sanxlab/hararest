@@ -195,3 +195,22 @@ it('supports image-only quotes and WebP output', async () => {
   const result = await new QuoteService().generate(input);
   expect((await sharp(Buffer.from(result.image, 'base64')).metadata()).format).toBe('webp');
 }, 30000);
+
+
+it('keeps Japanese sender names and UTF-16 emoji sequences renderable', async () => {
+  const requireVendor = createRequire(__filename);
+  const { prepareText } = requireVendor('../../vendor/quote-api/utils/quote-generate/text-prepare') as {
+    prepareText: (text: string, entities: unknown[], size: number, brand: string, telegram: unknown) => Promise<{
+      segments: Array<{ text: string; kind: string; emojiImage: unknown }>;
+    }>;
+  };
+  const name = '~ おおはら ことね';
+  const preparedName = await prepareText(name, [{ type: 'bold', offset: 0, length: name.length }], 24, 'apple', {});
+  expect(preparedName.segments.map(segment => segment.text).join('')).toBe(name);
+  const text = 'Mohamad Fikri 😳 🙄 👩🏽‍💻';
+  const preparedText = await prepareText(text, [], 24, 'apple', {});
+  expect(preparedText.segments.map(segment => segment.text).join('')).toBe(text);
+  const emojis = preparedText.segments.filter(segment => segment.kind === 'emoji');
+  expect(emojis.map(segment => segment.text)).toEqual(['😳', '🙄', '👩🏽‍💻']);
+  expect(emojis.every(segment => Boolean(segment.emojiImage))).toBe(true);
+});

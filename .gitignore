@@ -27,3 +27,4 @@ scripts/*
 !scripts/rpg-art-audit.cjs
 
 !scripts/youtube-metadata-smoke.cjs
+!scripts/quote-unicode-smoke.cjs
