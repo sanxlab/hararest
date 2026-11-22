@@ -4,8 +4,18 @@ import { YoutubeService } from './youtube.service';
 import { AppError } from '../../utils/AppError';
 import logger from '../../utils/logger';
 import fs from 'fs';
+import { getYoutubePost } from './youtube.post';
 
 const youtubeService = new YoutubeService();
+
+export const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (typeof req.query.url !== 'string' || !req.query.url) {
+      throw new AppError('URL is required', 400);
+    }
+    res.status(200).json({ status: 'success', data: await getYoutubePost(req.query.url) });
+  } catch (error) { next(error); }
+};
 const DOWNLOAD_TIMEOUT_MS = 10 * 60 * 1000;
 
 const extendDownloadTimeout = (req: Request, res: Response) => {

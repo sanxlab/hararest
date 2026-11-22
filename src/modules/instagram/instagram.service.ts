@@ -5,9 +5,12 @@ import util from 'util';
 import { getMediaSize, bytesToSize } from '../../utils/mediaSize';
 import { AppError } from '../../utils/AppError';
 import { InstagramMediaInfo, InstagramMedia } from './instagram.types';
+import { config } from '../../config/default';
+import { assertPublicUrl } from '../../middlewares/ssrf.middleware';
 
 const execFilePromise = util.promisify(execFile);
 const allowedInstagramHosts = ['instagram.com', 'instagr.am'] as const;
+let activeExtractions = 0;
 
 interface SnapInstaMediaLink {
     url: string;
@@ -76,7 +79,7 @@ export class InstagramService {
             const run = await execFilePromise(
                 this.pythonBin,
                 [scriptPath, url],
-                { maxBuffer: 1024 * 1024 * 10, timeout: 120000 }
+                { maxBuffer: 4 * 1024 * 1024, timeout: 12000, killSignal: 'SIGKILL' }
             );
             stdout = run.stdout;
         } catch (error: unknown) {
@@ -128,6 +131,46 @@ export class InstagramService {
         };
     }
 
+    // Public metadata extraction only: no cookies, login, or private downloader.
+    private async getMediaInfoFromYtDlp(url: string): Promise<InstagramMediaInfo> {
+        const parsed = new URL(url);
+        if (!/^\/(?:p|reel|reels|tv)\/[A-Za-z0-9_-]+\/?$/.test(parsed.pathname)) {
+            throw new AppError('Instagram media unavailable.', 404);
+        }
+        const canonicalUrl = `https://www.instagram.com${parsed.pathname}`;
+        const { stdout } = await execFilePromise(config.youtube.binPath, [
+            '--ignore-config', '--skip-download', '--dump-single-json', '--no-playlist',
+            '--socket-timeout', '5', '--retries', '0', '--no-warnings', '--', canonicalUrl,
+        ], { maxBuffer: 4 * 1024 * 1024, timeout: 12000, killSignal: 'SIGKILL' });
+        interface Media {
+            url?: string; ext?: string; filesize?: number; width?: number; height?: number;
+            vcodec?: string; acodec?: string; protocol?: string; formats?: Media[]; entries?: Media[];
+        }
+        const info = JSON.parse(stdout) as Media | null;
+        if (!info || typeof info !== 'object') throw new AppError('Instagram media unavailable.', 404);
+        const entries = info.entries ?? [info];
+        if (!Array.isArray(entries) || entries.length > 20) throw new AppError('Instagram media unavailable.', 422);
+        const photos: InstagramMedia[] = [], videos: InstagramMedia[] = [];
+        for (const entry of entries) {
+            if (!entry || typeof entry !== 'object') continue;
+            const formats = Array.isArray(entry.formats) ? entry.formats : [];
+            const candidates = [entry, ...formats].filter(item =>
+                typeof item?.url === 'string' && /^https?:\/\//.test(item.url) &&
+                ['mp4', 'jpg', 'jpeg', 'png', 'webp'].includes(item.ext || '') &&
+                (!item.protocol || ['http', 'https'].includes(item.protocol)) &&
+                (item.ext !== 'mp4' || (item.vcodec !== 'none' && item.acodec !== 'none')));
+            candidates.sort((a, b) => (b.width || 0) * (b.height || 0) - (a.width || 0) * (a.height || 0));
+            const selected = candidates[0];
+            if (!selected?.url) continue;
+            await assertPublicUrl(selected.url);
+            const size = Number.isSafeInteger(selected.filesize) && (selected.filesize || 0) > 0 ? selected.filesize! : 0;
+            const media = { url: selected.url, size, fSize: bytesToSize(size) };
+            (selected.ext === 'mp4' ? videos : photos).push(media);
+        }
+        if (!photos.length && !videos.length) throw new AppError('Instagram media unavailable.', 404);
+        return { thumbnail: photos[0]?.url || '', photos, videos };
+    }
+
     public async getMediaInfo(url: string): Promise<InstagramMediaInfo> {
         if (!url) {
             throw new AppError('URL Required', 400);
@@ -146,6 +189,22 @@ export class InstagramService {
             throw new AppError('Invalid URL', 400);
         }
 
-        return this.getMediaInfoFromSnapInsta(url);
+        if (activeExtractions >= 1) throw new AppError('Instagram sedang sibuk. Coba lagi sebentar.', 503);
+        activeExtractions++;
+        try {
+            try {
+                return await this.getMediaInfoFromSnapInsta(url);
+            } catch {
+                try {
+                    return await this.getMediaInfoFromYtDlp(url);
+                } catch (error) {
+                    const detail = error as { stderr?: string };
+                    if ((error instanceof AppError && error.statusCode === 404) || /private|login required|not available to everyone|can't be seen by certain audiences|content isn't available/i.test(detail.stderr || '')) {
+                        throw new AppError('Media Instagram tidak tersedia untuk akses publik.', 404);
+                    }
+                    throw new AppError('Gagal mengambil media Instagram. Coba lagi sebentar.', 502);
+                }
+            }
+        } finally { activeExtractions--; }
     }
 }
