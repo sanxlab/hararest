@@ -19,11 +19,11 @@ function fontInfo(pattern) {
   const loadFonts = require(process.cwd() + '/vendor/quote-api/utils/fonts');
   const { prepareText } = require(process.cwd() + '/vendor/quote-api/utils/quote-generate/text-prepare');
   await loadFonts();
-  const text = 'Mohamad Fikri 😳 🙄 👩🏽‍💻';
-  const prepared = await prepareText(text, [], 24, 'apple', {});
+  const text = 'Mohamad Fikri 🫪 🫫';
+  const prepared = await prepareText('😳 🙄 👩🏽‍💻 🫪 🫫', [], 24, 'apple', {});
   const emojis = prepared.segments.filter(segment => segment.kind === 'emoji');
-  assert.equal(emojis.length, 3, 'Emoji graphemes must stay intact');
-  assert.ok(emojis.every(segment => segment.emojiImage), 'Common emoji must load bundled images');
+  assert.equal(emojis.length, 5, 'Legacy and Emoji 17/18 graphemes must stay intact');
+  assert.ok(emojis.every(segment => segment.emojiImage), 'Legacy and Emoji 17/18 must load bundled images');
 
   const response = await fetch('http://127.0.0.1:18080/api/quote/generate', {
     method: 'POST',

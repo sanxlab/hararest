@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { gunzipSync } = require('zlib')
+const modern = require('./emoji-modern')
 
 const emojiJFilesDir = '../assets/emoji/'
 
@@ -22,7 +23,8 @@ function loadBrand (brand) {
   try {
     if (fs.existsSync(filePath)) {
       // Hararest keeps the upstream default emoji set compressed on disk.
-      emojiImageByBrand[brand] = JSON.parse(gunzipSync(fs.readFileSync(filePath)).toString('utf8'))
+      // Keep existing artwork; Noto fills only missing newer emoji.
+      emojiImageByBrand[brand] = { ...modern.images, ...JSON.parse(gunzipSync(fs.readFileSync(filePath)).toString('utf8')) }
     } else {
       emojiImageByBrand[brand] = {}
     }

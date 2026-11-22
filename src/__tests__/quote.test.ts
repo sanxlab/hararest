@@ -214,3 +214,36 @@ it('keeps Japanese sender names and UTF-16 emoji sequences renderable', async ()
   expect(emojis.map(segment => segment.text)).toEqual(['😳', '🙄', '👩🏽‍💻']);
   expect(emojis.every(segment => Boolean(segment.emojiImage))).toBe(true);
 });
+
+
+it('recognizes and renders every locally bundled Emoji 17/18 addition', async () => {
+  const requireVendor = createRequire(__filename);
+  const modern = requireVendor('../../vendor/quote-api/utils/emoji-modern') as {
+    images: Record<string, string>;
+    aliases: Record<string, string>;
+  };
+  const db = requireVendor('../../vendor/quote-api/utils/emoji-db') as {
+    fromCodePoint: (code: string) => string;
+    searchFromText: (input: { input: string; fixCodePoints: boolean }) => Array<{ found: string; offset: number; length: number }>;
+  };
+  const { prepareText } = requireVendor('../../vendor/quote-api/utils/quote-generate/text-prepare') as {
+    prepareText: (text: string, entities: unknown[], size: number, brand: string, telegram: unknown) => Promise<{
+      segments: Array<{ text: string; kind: string; emojiImage: unknown }>;
+    }>;
+  };
+  expect(Object.keys(modern.images)).toHaveLength(182);
+  for (const code of Object.keys(modern.images)) {
+    const emoji = db.fromCodePoint(code);
+    const found = db.searchFromText({ input: 'A ' + emoji + ' B', fixCodePoints: true });
+    expect(found).toEqual([{ found: code, offset: 2, length: emoji.length, emoji }]);
+  }
+  for (const [code, qualified] of Object.entries(modern.aliases)) {
+    expect(db.searchFromText({ input: db.fromCodePoint(code), fixCodePoints: true })[0].found).toBe(qualified);
+  }
+  const text = 'Mohamad Fikri 🫪 🫫 🫪';
+  const prepared = await prepareText(text, [], 24, 'apple', {});
+  expect(prepared.segments.map(segment => segment.text).join('')).toBe(text);
+  const emojis = prepared.segments.filter(segment => segment.kind === 'emoji');
+  expect(emojis.map(segment => segment.text)).toEqual(['🫪', '🫫', '🫪']);
+  expect(emojis.every(segment => Boolean(segment.emojiImage))).toBe(true);
+});
