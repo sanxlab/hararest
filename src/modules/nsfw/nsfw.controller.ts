@@ -6,6 +6,35 @@ import { generateNhentaiPdf } from "./nhentai-pdf.service";
 
 const nsfwService = new NsfwService();
 
+function parsePageIndex(value: unknown): number | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) {
+    throw new AppError('Parameter "pid" must be an integer between 0 and 1000.', 400);
+  }
+  const number = Number(value);
+  if (!Number.isSafeInteger(number) || number < 0 || number > 1000) {
+    throw new AppError('Parameter "pid" must be an integer between 0 and 1000.', 400);
+  }
+  return number;
+}
+
+export const rule34Handler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { tags, limit, pid } = req.query;
+    if (!tags || typeof tags !== "string" || !tags.trim()) {
+      return next(new AppError("Query parameter \"tags\" is required.", 400));
+    }
+    const limitNum = queryInteger(limit, 'limit', 10, 1000);
+    const pidNum = parsePageIndex(pid);
+    const data = pidNum !== undefined
+      ? await nsfwService.getRule34(tags.trim(), limitNum, pidNum)
+      : await nsfwService.getRule34(tags.trim(), limitNum);
+    res.status(200).json({ status: "success", data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const danbooruHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { tags, limit } = req.query;

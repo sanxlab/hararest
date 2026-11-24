@@ -3,8 +3,65 @@ import logger from '../../utils/logger';
 import axios from 'axios';
 import { publicHttpAgent, publicHttpsAgent } from '../../utils/publicAgent';
 
+const DEFAULT_RULE34_API_URL = 'https://api.rule34.xxx';
+
 export class NsfwService {
-  private async fetchJson(url: string, source: string): Promise<unknown> {
+  private buildRule34Url(tags: string, limit: number, pid?: number): string {
+    const normalizedTags = tags.trim();
+    if (!normalizedTags) {
+      throw new AppError('Query parameter "tags" is required.', 400);
+    }
+    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+      throw new AppError('Parameter "limit" must be an integer between 1 and 1000.', 400);
+    }
+    if (pid !== undefined && (!Number.isInteger(pid) || pid < 0 || pid > 1000)) {
+      throw new AppError('Parameter "pid" must be an integer between 0 and 1000.', 400);
+    }
+
+    const userId = process.env.RULE34_USER_ID?.trim() || '';
+    const apiKey = process.env.RULE34_API_KEY?.trim() || '';
+    if (!userId || !apiKey) {
+      throw new AppError('RULE34_USER_ID and RULE34_API_KEY are not configured.', 500);
+    }
+
+    const rawBaseUrl = process.env.RULE34_API_URL?.trim() || DEFAULT_RULE34_API_URL;
+    let url: URL;
+    try {
+      url = new URL(rawBaseUrl);
+      if (
+        !['http:', 'https:'].includes(url.protocol) ||
+        url.username ||
+        url.password ||
+        url.search ||
+        url.hash
+      ) {
+        throw new Error('Invalid Rule34 base URL');
+      }
+    } catch {
+      throw new AppError('RULE34_API_URL is invalid.', 500);
+    }
+
+    const basePath = url.pathname.replace(/\/+$/, '');
+    url.pathname = basePath.endsWith('/index.php') ? basePath : `${basePath}/index.php`;
+    url.searchParams.set('page', 'dapi');
+    url.searchParams.set('s', 'post');
+    url.searchParams.set('q', 'index');
+    url.searchParams.set('json', '1');
+    url.searchParams.set('limit', String(limit));
+    url.searchParams.set('tags', normalizedTags);
+    if (pid !== undefined) {
+      url.searchParams.set('pid', String(pid));
+    }
+    url.searchParams.set('user_id', userId);
+    url.searchParams.set('api_key', apiKey);
+    return url.toString();
+  }
+
+  private async fetchJson(
+    url: string,
+    source: string,
+    options: { allowEmptyArray?: boolean } = {},
+  ): Promise<unknown> {
     try {
       const response = await axios.get<string>(url, {
         adapter: 'http',
@@ -22,6 +79,9 @@ export class NsfwService {
           Accept: 'application/json',
         },
       });
+      if (options.allowEmptyArray && typeof response.data === 'string' && response.data.trim() === '') {
+        return [];
+      }
       let body: unknown;
       let validJson = true;
       try {
@@ -60,6 +120,15 @@ export class NsfwService {
       logger.error(`${source} request failed`);
       throw new AppError(`Gagal mengambil data dari ${source}.`, 502);
     }
+  }
+
+  public async getRule34(tags: string, limit: number, pid?: number): Promise<unknown[]> {
+    const url = this.buildRule34Url(tags, limit, pid);
+    const data = await this.fetchJson(url, 'Rule34', { allowEmptyArray: true });
+    if (!Array.isArray(data)) {
+      throw new AppError('Rule34 mengembalikan respons yang tidak sesuai.', 502);
+    }
+    return data as unknown[];
   }
 
   public async getDanbooru(tags: string, limit: number): Promise<unknown> {
